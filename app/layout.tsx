@@ -8,6 +8,39 @@ import GlitchBackground from "@/components/GlitchBackground";
 export const metadata: Metadata = {
   title: "KAMIYO App - Governance & Staking",
   description: "Governance and staking for the KAMIYO protocol",
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "KAMIYO App - Governance & Staking",
+    description: "Governance and staking for the KAMIYO protocol",
+    url: "https://app.kamiyo.ai",
+    siteName: "KAMIYO",
+    images: [
+      {
+        url: "https://kamiyo.ai/media/kamiyo_open-graph.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KAMIYO App - Governance & Staking",
+    description: "Governance and staking for the KAMIYO protocol",
+    images: ["https://kamiyo.ai/media/kamiyo_open-graph.png"],
+    site: "@KamiyoAI",
+    creator: "@KamiyoAI",
+  },
 };
 
 export default function RootLayout({
@@ -21,7 +54,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@200;300;400&display=swap" rel="stylesheet" />
-        <link rel="icon" type="image/png" href="/media/kamiyo.png" />
       </head>
       <body className="bg-black text-gray-300 min-h-screen flex flex-col">
         <Providers>
