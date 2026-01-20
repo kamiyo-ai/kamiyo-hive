@@ -23,7 +23,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@200;300;400&display=swap" rel="stylesheet" />
         <link rel="icon" type="image/png" href="/media/kamiyo.png" />
       </head>
-      <body className="bg-black text-gray-300 antialiased min-h-screen flex flex-col">
+      <body className="bg-black text-gray-300 min-h-screen flex flex-col">
         <Providers>
           <Header />
           <main className="pt-[var(--header-height)] flex-1">

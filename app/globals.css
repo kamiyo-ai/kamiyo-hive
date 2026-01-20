@@ -28,6 +28,11 @@ canvas {
     --footer-height: 60px;
 }
 
+/* Override Tailwind v4 tracking-wider to match v3 (0.05em) */
+.tracking-wider {
+    letter-spacing: 0.05em !important;
+}
+
 /* Globals/typography */
 body,
 p,

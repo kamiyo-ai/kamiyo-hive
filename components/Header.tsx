@@ -36,10 +36,9 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase ${
+                className={`text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase tracking-wider ${
                   pathname.startsWith(item.href) ? 'text-white' : ''
                 }`}
-                style={{ letterSpacing: '0.7px' }}
               >
                 {item.label}
               </Link>
@@ -48,8 +47,7 @@ export function Header() {
               href="https://kamiyo.ai"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase"
-              style={{ letterSpacing: '0.7px' }}
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase tracking-wider"
             >
               Website
             </a>
