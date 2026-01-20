@@ -107,21 +107,27 @@ export default function LinkWalletPage() {
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-12">
           <div className="flex items-center gap-4">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${stepNumber >= 1 ? 'bg-gradient-to-r from-cyan to-magenta text-black' : 'bg-gray-800 text-gray-400'}`}>
-              1
-            </div>
-            <div className={`w-12 h-0.5 ${stepNumber >= 2 ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${stepNumber >= 2 ? 'bg-gradient-to-r from-cyan to-magenta text-black' : 'bg-gray-800 text-gray-400'}`}>
-              2
-            </div>
-            <div className={`w-12 h-0.5 ${stepNumber >= 3 ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${stepNumber >= 3 ? 'bg-gradient-to-r from-cyan to-magenta text-black' : 'bg-gray-800 text-gray-400'}`}>
-              3
-            </div>
-            <div className={`w-12 h-0.5 ${stepNumber >= 4 ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${stepNumber >= 4 ? 'bg-gradient-to-r from-cyan to-magenta text-black' : 'bg-gray-800 text-gray-400'}`}>
-              4
-            </div>
+            {[1, 2, 3, 4].map((num) => (
+              <div key={num} className="flex items-center gap-4">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                    ${stepNumber === num
+                      ? 'bg-black border border-transparent text-white'
+                      : stepNumber > num
+                        ? 'bg-gradient-to-r from-cyan to-magenta text-black'
+                        : 'bg-gray-800 text-gray-400'
+                    }`}
+                  style={stepNumber === num ? {
+                    background: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #00ffff, #00ffff) border-box',
+                  } : undefined}
+                >
+                  {num}
+                </div>
+                {num < 4 && (
+                  <div className={`w-12 h-0.5 ${stepNumber > num ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
