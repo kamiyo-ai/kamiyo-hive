@@ -114,7 +114,7 @@ export default function LinkWalletPage() {
                     ${stepNumber === num
                       ? 'bg-black border border-transparent text-white'
                       : stepNumber > num
-                        ? 'bg-gradient-to-r from-cyan to-magenta text-black'
+                        ? 'bg-gray-800 text-cyan'
                         : 'bg-gray-800 text-gray-400'
                     }`}
                   style={stepNumber === num ? {
@@ -150,7 +150,7 @@ export default function LinkWalletPage() {
               ) : (
                 <PayButton
                   text="Sign in with X"
-                  onClick={() => signIn('twitter')}
+                  onClick={() => signIn('twitter', { callbackUrl: '/link-wallet' })}
                 />
               )}
             </div>
@@ -202,13 +202,14 @@ export default function LinkWalletPage() {
                 </div>
               </div>
 
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={reset}
-                  className="px-6 py-3 text-sm border border-gray-500/50 rounded text-gray-400 hover:text-white hover:border-gray-400 transition-all"
-                >
-                  Cancel
-                </button>
+              <button
+                onClick={reset}
+                className="text-sm text-magenta hover:text-white transition-colors mb-6 flex items-center gap-2"
+              >
+                <span>←</span> Start over
+              </button>
+
+              <div className="flex justify-center">
                 <PayButton
                   text={loading ? 'Linking...' : 'Sign & Link'}
                   disabled={loading}
