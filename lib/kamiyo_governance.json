@@ -1,0 +1,1432 @@
+{
+  "address": "E3oQcCm55mykVG1A92qGvgWQdxv8TmkpvWwat1NCFGav",
+  "metadata": {
+    "name": "kamiyo_governance",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "KAMIYO Governance - Token-weighted voting for protocol decisions"
+  },
+  "instructions": [
+    {
+      "name": "cancel_proposal",
+      "docs": [
+        "Cancel a proposal (only by proposer, before voting ends)"
+      ],
+      "discriminator": [
+        106,
+        74,
+        128,
+        146,
+        19,
+        65,
+        39,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal.id",
+                "account": "Proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposer",
+          "signer": true,
+          "relations": [
+            "proposal"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cast_vote",
+      "docs": [
+        "Cast a vote on a proposal",
+        "Vote weight = wallet balance + (staked amount * multiplier)"
+      ],
+      "discriminator": [
+        20,
+        212,
+        15,
+        189,
+        69,
+        180,
+        69,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal.id",
+                "account": "Proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter_token_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "voter"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.token_mint",
+                "account": "GovernanceConfig"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "stake_position",
+          "docs": [
+            "Optional stake position for vote weight multiplier"
+          ],
+          "optional": true
+        },
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "E3oQcCm55mykVG1A92qGvgWQdxv8TmkpvWwat1NCFGav"
+        }
+      ],
+      "args": [
+        {
+          "name": "support",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "create_proposal",
+      "docs": [
+        "Create a new proposal"
+      ],
+      "discriminator": [
+        132,
+        116,
+        68,
+        174,
+        216,
+        160,
+        198,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.proposal_count",
+                "account": "GovernanceConfig"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposer_token_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "proposer"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.token_mint",
+                "account": "GovernanceConfig"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "proposer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "E3oQcCm55mykVG1A92qGvgWQdxv8TmkpvWwat1NCFGav"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "execute_proposal",
+      "docs": [
+        "Execute a queued proposal after timelock"
+      ],
+      "discriminator": [
+        186,
+        60,
+        116,
+        133,
+        108,
+        128,
+        111,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal.id",
+                "account": "Proposal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "executor",
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "finalize_proposal",
+      "docs": [
+        "Finalize voting and queue proposal if passed"
+      ],
+      "discriminator": [
+        23,
+        68,
+        51,
+        167,
+        109,
+        173,
+        187,
+        164
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal.id",
+                "account": "Proposal"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize the governance system"
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_mint"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "E3oQcCm55mykVG1A92qGvgWQdxv8TmkpvWwat1NCFGav"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pause_governance",
+      "docs": [
+        "Pause governance (admin only, emergency)"
+      ],
+      "discriminator": [
+        80,
+        63,
+        244,
+        229,
+        7,
+        245,
+        57,
+        116
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unpause_governance",
+      "docs": [
+        "Unpause governance (admin only)"
+      ],
+      "discriminator": [
+        254,
+        237,
+        136,
+        252,
+        3,
+        182,
+        46,
+        174
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_config",
+      "docs": [
+        "Update governance parameters (admin only)"
+      ],
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  101,
+                  114,
+                  110,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "proposal_threshold",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "quorum_threshold",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "approval_threshold_bps",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "voting_period",
+          "type": {
+            "option": "i64"
+          }
+        },
+        {
+          "name": "timelock_duration",
+          "type": {
+            "option": "i64"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GovernanceConfig",
+      "discriminator": [
+        81,
+        63,
+        124,
+        107,
+        210,
+        100,
+        145,
+        70
+      ]
+    },
+    {
+      "name": "Proposal",
+      "discriminator": [
+        26,
+        94,
+        189,
+        187,
+        116,
+        136,
+        53,
+        33
+      ]
+    },
+    {
+      "name": "VoteRecord",
+      "discriminator": [
+        112,
+        9,
+        123,
+        165,
+        234,
+        9,
+        157,
+        167
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "ProposalCancelled",
+      "discriminator": [
+        253,
+        59,
+        104,
+        46,
+        129,
+        78,
+        9,
+        14
+      ]
+    },
+    {
+      "name": "ProposalCreated",
+      "discriminator": [
+        186,
+        8,
+        160,
+        108,
+        81,
+        13,
+        51,
+        206
+      ]
+    },
+    {
+      "name": "ProposalDefeated",
+      "discriminator": [
+        123,
+        85,
+        17,
+        187,
+        14,
+        157,
+        180,
+        192
+      ]
+    },
+    {
+      "name": "ProposalExecuted",
+      "discriminator": [
+        92,
+        213,
+        189,
+        201,
+        101,
+        83,
+        111,
+        83
+      ]
+    },
+    {
+      "name": "ProposalQueued",
+      "discriminator": [
+        127,
+        31,
+        107,
+        17,
+        2,
+        119,
+        72,
+        39
+      ]
+    },
+    {
+      "name": "VoteCast",
+      "discriminator": [
+        39,
+        53,
+        195,
+        104,
+        188,
+        17,
+        225,
+        213
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InsufficientTokensForProposal",
+      "msg": "Insufficient tokens to create proposal"
+    },
+    {
+      "code": 6001,
+      "name": "NotInVotingState",
+      "msg": "Proposal is not in voting state"
+    },
+    {
+      "code": 6002,
+      "name": "VotingPeriodEnded",
+      "msg": "Proposal voting period has ended"
+    },
+    {
+      "code": 6003,
+      "name": "VotingPeriodNotEnded",
+      "msg": "Proposal voting period has not ended"
+    },
+    {
+      "code": 6004,
+      "name": "AlreadyVoted",
+      "msg": "Already voted on this proposal"
+    },
+    {
+      "code": 6005,
+      "name": "QuorumNotReached",
+      "msg": "Quorum not reached"
+    },
+    {
+      "code": 6006,
+      "name": "ProposalNotApproved",
+      "msg": "Proposal not approved"
+    },
+    {
+      "code": 6007,
+      "name": "NotQueued",
+      "msg": "Proposal is not queued for execution"
+    },
+    {
+      "code": 6008,
+      "name": "TimelockNotEnded",
+      "msg": "Timelock period has not ended"
+    },
+    {
+      "code": 6009,
+      "name": "ExecutionExpired",
+      "msg": "Execution grace period expired"
+    },
+    {
+      "code": 6010,
+      "name": "AlreadyExecuted",
+      "msg": "Proposal already executed"
+    },
+    {
+      "code": 6011,
+      "name": "TitleTooLong",
+      "msg": "Title too long"
+    },
+    {
+      "code": 6012,
+      "name": "DescriptionTooLong",
+      "msg": "Description too long"
+    },
+    {
+      "code": 6013,
+      "name": "TooManyInstructions",
+      "msg": "Too many instructions"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidAuthority",
+      "msg": "Invalid authority"
+    },
+    {
+      "code": 6015,
+      "name": "GovernancePaused",
+      "msg": "Governance is paused"
+    }
+  ],
+  "types": [
+    {
+      "name": "GovernanceConfig",
+      "docs": [
+        "Global governance configuration"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Admin authority (can pause governance)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "docs": [
+              "KAMIYO token mint"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "proposal_count",
+            "docs": [
+              "Total proposals created"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "proposal_threshold",
+            "docs": [
+              "Proposal creation threshold"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "quorum_threshold",
+            "docs": [
+              "Quorum threshold"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "approval_threshold_bps",
+            "docs": [
+              "Approval threshold in basis points"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voting_period",
+            "docs": [
+              "Voting period in seconds"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "timelock_duration",
+            "docs": [
+              "Timelock duration in seconds"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "is_paused",
+            "docs": [
+              "Whether governance is paused"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Proposal",
+      "docs": [
+        "A governance proposal"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "Unique proposal ID"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "docs": [
+              "Creator of the proposal"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "docs": [
+              "Title of the proposal"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "docs": [
+              "Description/rationale"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "docs": [
+              "Current state"
+            ],
+            "type": {
+              "defined": {
+                "name": "ProposalState"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Timestamp when proposal was created"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "voting_ends_at",
+            "docs": [
+              "Timestamp when voting ends"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "execution_eta",
+            "docs": [
+              "Timestamp when timelock ends (if queued)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "votes_for",
+            "docs": [
+              "Total votes for"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "votes_against",
+            "docs": [
+              "Total votes against"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voter_count",
+            "docs": [
+              "Number of unique voters"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "executed",
+            "docs": [
+              "Whether the proposal has been executed"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "voting_ends_at",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalDefeated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "votes_for",
+            "type": "u64"
+          },
+          {
+            "name": "votes_against",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "executor",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalQueued",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "execution_eta",
+            "type": "i64"
+          },
+          {
+            "name": "votes_for",
+            "type": "u64"
+          },
+          {
+            "name": "votes_against",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalState",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Voting"
+          },
+          {
+            "name": "Queued"
+          },
+          {
+            "name": "Executed"
+          },
+          {
+            "name": "Defeated"
+          },
+          {
+            "name": "Expired"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "support",
+            "type": "bool"
+          },
+          {
+            "name": "weight",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteRecord",
+      "docs": [
+        "Record of a user's vote on a proposal"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "docs": [
+              "The proposal this vote is for"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "docs": [
+              "The voter"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "weight",
+            "docs": [
+              "Vote weight (token amount * multiplier)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "support",
+            "docs": [
+              "Whether voted for (true) or against (false)"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "voted_at",
+            "docs": [
+              "Timestamp of vote"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "Bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

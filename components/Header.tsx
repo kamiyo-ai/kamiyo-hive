@@ -1,0 +1,126 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useScrambleText } from '@/hooks/useScrambleText';
+
+export function Header() {
+  const pathname = usePathname();
+  const { publicKey, disconnect, connected } = useWallet();
+  const { setVisible } = useWalletModal();
+  const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText('Connect', true);
+
+  const navItems = [
+    { href: '/governance', label: 'Governance' },
+    { href: '/stake', label: 'Stake' },
+    { href: '/escrow', label: 'Escrow' },
+  ];
+
+  return (
+    <header className="fixed top-0 left-0 w-full bg-black/90 backdrop-blur-sm border-b border-gray-500/25 z-40">
+      <div className="w-full px-5 mx-auto py-3 flex items-center justify-between" style={{ maxWidth: '1400px' }}>
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center">
+            <img
+              src="/media/KAMIYO_logomark.png"
+              alt="KAMIYO"
+              width="240"
+              height="64"
+              className="object-contain h-10 sm:h-12 md:h-14 w-auto"
+            />
+          </Link>
+          <nav className="hidden md:flex items-center gap-5">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase ${
+                  pathname.startsWith(item.href) ? 'text-white' : ''
+                }`}
+                style={{ letterSpacing: '0.7px' }}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <a
+              href="https://kamiyo.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase"
+              style={{ letterSpacing: '0.7px' }}
+            >
+              Website
+            </a>
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {connected && publicKey ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm text-gray-400 border border-gray-500/50 rounded px-3 py-1.5">
+                <svg className="w-[18px] h-[18px] brightness-150" viewBox="0 0 21 18">
+                  <defs>
+                    <linearGradient id="connectedIconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#00f0ff" />
+                      <stop offset="100%" stopColor="#ff44f5" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="7.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="7.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="11.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="15.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="15.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="1.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="1.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="17.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="19.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="19.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="3.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="7.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="7.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="11.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                  <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
+                </svg>
+                <span className="font-mono text-xs">
+                  {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+                </span>
+              </div>
+              <button
+                onClick={() => disconnect()}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setVisible(true)}
+              onMouseEnter={() => setConnectHovering(true)}
+              onMouseLeave={() => setConnectHovering(false)}
+              className="flex items-center gap-2 text-sm text-white tracking-wider group cursor-pointer"
+            >
+              <svg className="w-[22px] h-[22px] transition-all duration-300 group-hover:brightness-150" viewBox="0 0 21 18">
+                <defs>
+                  <linearGradient id="connectIconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#00f0ff" />
+                    <stop offset="100%" stopColor="#ff44f5" />
+                  </linearGradient>
+                </defs>
+                <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="7.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="7.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="11.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="15.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="15.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="1.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="1.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="17.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="19.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="19.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="3.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="7.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="7.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="11.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+                <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
+              </svg>
+              {connectText}
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
