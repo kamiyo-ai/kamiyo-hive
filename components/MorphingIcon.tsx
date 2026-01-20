@@ -150,11 +150,14 @@ export default function MorphingIcon({ size = 64, className = "", paused = false
     const rafRef = useRef<number | null>(null);
     const pausedRef = useRef(paused);
 
+    const returningRef = useRef(false);
+
     useEffect(() => {
         pausedRef.current = paused;
         if (paused) {
-            progressRef.current = 0.75; // Reset to Settlement when paused
+            returningRef.current = true; // Animate back to Settlement
         } else {
+            returningRef.current = false;
             // Skip to morph phase (past the 70% hold) so morphing starts immediately
             const iconIndex = Math.floor(progressRef.current * 4);
             progressRef.current = (iconIndex + 0.7) / 4;
@@ -179,7 +182,17 @@ export default function MorphingIcon({ size = 64, className = "", paused = false
             const delta = (now - lastTime) / 1000;
             lastTime = now;
 
-            if (!pausedRef.current) {
+            if (returningRef.current) {
+                // Smoothly animate back to Settlement (0.75)
+                const target = 0.75;
+                const diff = target - progressRef.current;
+                if (Math.abs(diff) < 0.01) {
+                    progressRef.current = target;
+                    returningRef.current = false;
+                } else {
+                    progressRef.current += diff * delta * 4; // Smooth lerp
+                }
+            } else if (!pausedRef.current) {
                 progressRef.current += delta * 0.08;
                 if (progressRef.current >= 1) progressRef.current = 0;
             }
@@ -201,7 +214,7 @@ export default function MorphingIcon({ size = 64, className = "", paused = false
         <canvas
             ref={canvasRef}
             className={className}
-            style={{ width: size, height: size }}
+            style={{ width: size, height: size, verticalAlign: 'middle', marginTop: 4 }}
         />
     );
 }
