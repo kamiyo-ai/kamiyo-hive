@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { useScrambleText } from '@/hooks/useScrambleText';
+import MorphingIcon from '@/components/MorphingIcon';
 
 export function Header() {
   const pathname = usePathname();
   const { publicKey, disconnect, connected } = useWallet();
   const { setVisible } = useWalletModal();
   const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText('Connect', true);
+  const [isConnectHovered, setIsConnectHovered] = useState(false);
 
   const navItems = [
     { href: '/stake', label: 'Stake' },
@@ -91,29 +94,11 @@ export function Header() {
           ) : (
             <button
               onClick={() => setVisible(true)}
-              onMouseEnter={() => setConnectHovering(true)}
-              onMouseLeave={() => setConnectHovering(false)}
+              onMouseEnter={() => { setConnectHovering(true); setIsConnectHovered(true); }}
+              onMouseLeave={() => { setConnectHovering(false); setIsConnectHovered(false); }}
               className="flex items-center gap-2 text-sm text-white tracking-wider group cursor-pointer"
             >
-              <svg className="w-[22px] h-[22px] transition-all duration-300 group-hover:brightness-150" viewBox="0 0 21 18">
-                <defs>
-                  <linearGradient id="connectIconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#00f0ff" />
-                    <stop offset="100%" stopColor="#ff44f5" />
-                  </linearGradient>
-                </defs>
-                <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="7.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="7.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="11.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="15.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="3.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="15.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="5.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="1.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="1.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="17.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="19.4" y="7.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="19.4" y="9.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="3.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="3.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="5.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="7.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="7.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="9.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="11.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="11.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="13.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-                <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectIconGradient)" />
-              </svg>
+              <MorphingIcon size={22} paused={!isConnectHovered} />
               {connectText}
             </button>
           )}
