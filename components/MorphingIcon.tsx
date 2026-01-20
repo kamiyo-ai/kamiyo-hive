@@ -154,6 +154,10 @@ export default function MorphingIcon({ size = 64, className = "", paused = false
         pausedRef.current = paused;
         if (paused) {
             progressRef.current = 0.75; // Reset to Settlement when paused
+        } else {
+            // Skip to morph phase (past the 70% hold) so morphing starts immediately
+            const iconIndex = Math.floor(progressRef.current * 4);
+            progressRef.current = (iconIndex + 0.7) / 4;
         }
     }, [paused]);
 
