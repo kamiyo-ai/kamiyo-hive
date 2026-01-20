@@ -13,8 +13,8 @@ export function Header() {
   const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText('Connect', true);
 
   const navItems = [
-    { href: '/governance', label: 'Governance' },
     { href: '/stake', label: 'Stake' },
+    { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
   ];
 
