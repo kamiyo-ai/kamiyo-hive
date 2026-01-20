@@ -152,6 +152,9 @@ export default function MorphingIcon({ size = 64, className = "", paused = false
 
     useEffect(() => {
         pausedRef.current = paused;
+        if (paused) {
+            progressRef.current = 0.75; // Reset to Settlement when paused
+        }
     }, [paused]);
 
     useEffect(() => {
