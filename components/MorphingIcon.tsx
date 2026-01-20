@@ -146,7 +146,7 @@ interface MorphingIconProps {
 
 export default function MorphingIcon({ size = 64, className = "", paused = false }: MorphingIconProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const progressRef = useRef(0);
+    const progressRef = useRef(0.75); // Start at Settlement (icon index 3 = 0.75 of cycle)
     const rafRef = useRef<number | null>(null);
     const pausedRef = useRef(paused);
 
