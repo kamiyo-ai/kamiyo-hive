@@ -1,7 +1,7 @@
 {
-  "name": "KAMIYO App - Governance & Staking",
-  "short_name": "KAMIYO App",
-  "description": "Governance and staking for the KAMIYO protocol",
+  "name": "KAMIYO",
+  "short_name": "KAMIYO",
+  "description": "The trust layer for AI agents",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
