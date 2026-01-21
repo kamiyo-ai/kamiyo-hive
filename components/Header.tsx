@@ -19,6 +19,7 @@ export function Header() {
 
   const navItems = [
     { href: '/stake', label: 'Stake' },
+    { href: '/trials', label: 'Trials' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
   ];
