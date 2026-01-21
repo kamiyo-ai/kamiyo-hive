@@ -11,6 +11,7 @@ interface TwitterProfile {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Twitter({
       clientId: process.env.TWITTER_CLIENT_ID!,
