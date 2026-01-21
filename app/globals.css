@@ -349,3 +349,11 @@ ol li {
     background: rgba(255, 255, 255, 0.05) !important;
     border-radius: 4px !important;
 }
+
+/* Wallet adapter dropdown overrides */
+.wallet-adapter-dropdown-list {
+    max-width: 150px !important;
+}
+.wallet-adapter-dropdown-list-item {
+    font-size: 0.8rem !important;
+}
