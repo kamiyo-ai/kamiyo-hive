@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
+import { useSearchParams } from 'next/navigation';
 import PayButton from '@/components/PayButton';
 import Link from 'next/link';
 import bs58 from 'bs58';
 
 const STAKING_PROGRAM_ID = new PublicKey('9QZGdEZ13j8fASEuhpj3eVwUPT4BpQjXSabVjRppJW2N');
-const KAMIYO_MINT = new PublicKey('Gy55EJmheLyDXiZ7k7CW2FhunD1UgjQxQibuBn3Npump');
 const DECIMALS = 6;
 
 interface Challenge {
@@ -90,10 +90,19 @@ const CHALLENGES: Challenge[] = [
   },
 ];
 
-type TrialPhase = 'intro' | 'stake-check' | 'challenges' | 'complete';
+type TrialPhase = 'intro' | 'stake-check' | 'challenges' | 'complete' | 'share';
 
 interface StakePosition {
   stakedAmount: number;
+}
+
+interface CompletionStatus {
+  completed: boolean;
+  score?: number;
+  refCode?: string;
+  shared?: boolean;
+  referralCount?: number;
+  entries?: number;
 }
 
 function fromRawAmount(raw: bigint): number {
@@ -104,6 +113,7 @@ export default function TrialsPage() {
   const { publicKey, signMessage } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
+  const searchParams = useSearchParams();
 
   const [phase, setPhase] = useState<TrialPhase>('intro');
   const [currentChallenge, setCurrentChallenge] = useState(0);
@@ -112,11 +122,45 @@ export default function TrialsPage() {
   const [stakePosition, setStakePosition] = useState<StakePosition | null>(null);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [completionStatus, setCompletionStatus] = useState<CompletionStatus | null>(null);
+  const [refCode, setRefCode] = useState<string | null>(null);
+  const [referralCount, setReferralCount] = useState(0);
+  const [entries, setEntries] = useState(0);
+  const [shared, setShared] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Get referral code from URL
+  const referredBy = searchParams.get('ref');
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Check if user already completed
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (!publicKey) return;
+      try {
+        const response = await fetch(`/api/trials/complete?wallet=${publicKey.toBase58()}`);
+        const data = await response.json();
+        if (data.completed) {
+          setCompletionStatus(data);
+          setRefCode(data.refCode);
+          setShared(data.shared);
+          setReferralCount(data.referralCount || 0);
+          setEntries(data.entries || 0);
+          if (data.shared) {
+            setPhase('complete');
+          } else {
+            setPhase('share');
+          }
+        }
+      } catch (err) {
+        console.error('Error checking status:', err);
+      }
+    };
+    checkStatus();
+  }, [publicKey]);
 
   const fetchStakePosition = useCallback(async () => {
     if (!publicKey) return;
@@ -166,16 +210,18 @@ export default function TrialsPage() {
     if (currentChallenge < CHALLENGES.length - 1) {
       setCurrentChallenge(currentChallenge + 1);
     } else {
-      setPhase('complete');
-      // Submit completion if eligible
-      if (getScore() >= 3 && publicKey && signMessage) {
+      const score = getScore();
+      if (score === 5 && publicKey && signMessage) {
         await submitCompletion();
+        setPhase('share');
+      } else {
+        setPhase('complete');
       }
     }
   };
 
   const submitCompletion = async () => {
-    if (!publicKey || !signMessage || submitted) return;
+    if (!publicKey || !signMessage) return;
 
     try {
       setLoading(true);
@@ -193,17 +239,79 @@ export default function TrialsPage() {
           score,
           signature: bs58.encode(signature),
           message,
+          referredBy,
         }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        setSubmitted(true);
+        setRefCode(data.refCode);
+        setReferralCount(data.referralCount || 0);
+        setEntries(data.entries || 0);
       }
     } catch (error) {
       console.error('Failed to submit completion:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleShare = async () => {
+    if (!publicKey || !signMessage || !refCode) return;
+
+    // Open X share intent
+    const shareText = `I passed The KAMIYO Trials with a perfect score.
+
+5M $KAMIYO prize pool. Think you can do it?
+
+app.kamiyo.ai/trials?ref=${refCode}
+
+@KamiyoAI`;
+
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
+      '_blank'
+    );
+
+    // After a short delay, prompt to confirm share
+    setTimeout(async () => {
+      try {
+        setLoading(true);
+        const message = `KAMIYO Trials Share Confirmation\nWallet: ${publicKey.toBase58()}\nTimestamp: ${Date.now()}`;
+
+        const messageBytes = new TextEncoder().encode(message);
+        const signature = await signMessage(messageBytes);
+
+        const response = await fetch('/api/trials/complete', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            wallet: publicKey.toBase58(),
+            signature: bs58.encode(signature),
+            message,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setShared(true);
+          setReferralCount(data.referralCount || 0);
+          setEntries(data.entries || 0);
+          setPhase('complete');
+        }
+      } catch (error) {
+        console.error('Failed to confirm share:', error);
+      } finally {
+        setLoading(false);
+      }
+    }, 2000);
+  };
+
+  const copyRefLink = () => {
+    if (!refCode) return;
+    navigator.clipboard.writeText(`https://app.kamiyo.ai/trials?ref=${refCode}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const getScore = () => {
@@ -216,9 +324,8 @@ export default function TrialsPage() {
     return correct;
   };
 
-  const isEligible = () => {
-    return getScore() >= 3 && stakePosition && stakePosition.stakedAmount >= 100000;
-  };
+  const isPerfect = () => getScore() === 5;
+  const hasMinStake = () => stakePosition && stakePosition.stakedAmount >= 100000;
 
   const challenge = CHALLENGES[currentChallenge];
 
@@ -247,15 +354,22 @@ export default function TrialsPage() {
                 <div className="flex gap-4">
                   <div className="w-8 h-8 rounded-full border border-cyan flex items-center justify-center text-cyan text-sm flex-shrink-0">2</div>
                   <div>
-                    <p className="text-white">Complete 5 Challenges</p>
-                    <p className="text-sm">Oracle-themed puzzles testing dispute resolution intuition</p>
+                    <p className="text-white">Score 5/5</p>
+                    <p className="text-sm">Complete all 5 challenges correctly to qualify</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-8 h-8 rounded-full border border-cyan flex items-center justify-center text-cyan text-sm flex-shrink-0">3</div>
                   <div>
-                    <p className="text-white">Claim Entry</p>
-                    <p className="text-sm">Score 3/5 or higher to enter the giveaway</p>
+                    <p className="text-white">Share to Enter</p>
+                    <p className="text-sm">Post your result on X to claim your entry</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="w-8 h-8 rounded-full border border-magenta flex items-center justify-center text-magenta text-sm flex-shrink-0">+</div>
+                  <div>
+                    <p className="text-white">Referral Bonus</p>
+                    <p className="text-sm">Each friend who completes = +1 entry (max 10 bonus)</p>
                   </div>
                 </div>
               </div>
@@ -266,9 +380,13 @@ export default function TrialsPage() {
               <div className="text-gray-400 text-sm space-y-1">
                 <p><span className="text-magenta">Grand Prize:</span> 1,000,000 KAMIYO + Genesis Oracle NFT</p>
                 <p><span className="text-cyan">10x Runner-up:</span> 400,000 KAMIYO each</p>
-                <p><span className="text-gray-500">All Qualifiers:</span> Trial Survivor badge</p>
+                <p className="text-gray-500 text-xs mt-2">Winners drawn weighted by entries. More referrals = better odds.</p>
               </div>
             </div>
+
+            {referredBy && (
+              <p className="text-gray-500 text-sm mb-4">Referred by: {referredBy}</p>
+            )}
 
             <PayButton
               text={publicKey ? "Begin Trials" : "Connect Wallet"}
@@ -414,62 +532,120 @@ export default function TrialsPage() {
           </div>
         )}
 
+        {/* Share Phase - Only shown after 5/5 */}
+        {phase === 'share' && (
+          <div className="max-w-xl mx-auto text-center">
+            <div className="w-24 h-24 rounded-full border-2 border-cyan flex items-center justify-center mx-auto mb-6">
+              <span className="text-4xl text-cyan">5/5</span>
+            </div>
+
+            <h2 className="text-3xl text-white mb-4">Perfect Score!</h2>
+
+            <p className="text-gray-400 mb-8">
+              One step left: share on X to claim your entry.
+            </p>
+
+            <div className="bg-black border border-cyan/25 rounded-lg p-6 mb-8">
+              <p className="text-gray-400 text-sm mb-4">
+                Your share will include your unique referral link. Each friend who completes the trials = +1 bonus entry for you.
+              </p>
+              <PayButton
+                text={loading ? "Confirming..." : "Share on X to Enter"}
+                onClick={handleShare}
+                disabled={loading}
+              />
+            </div>
+
+            <p className="text-gray-500 text-xs">
+              After sharing, sign a message to confirm your entry.
+            </p>
+          </div>
+        )}
+
         {/* Complete Phase */}
         {phase === 'complete' && (
           <div className="max-w-xl mx-auto text-center">
             <div className={`w-24 h-24 rounded-full border-2 flex items-center justify-center mx-auto mb-6 ${
-              isEligible() ? 'border-cyan' : 'border-gray-500'
+              shared ? 'border-cyan' : 'border-gray-500'
             }`}>
-              <span className={`text-4xl ${isEligible() ? 'text-cyan' : 'text-gray-500'}`}>
-                {getScore()}/{CHALLENGES.length}
+              <span className={`text-4xl ${shared ? 'text-cyan' : 'text-gray-500'}`}>
+                {completionStatus?.score || getScore()}/{CHALLENGES.length}
               </span>
             </div>
 
-            <h2 className="text-3xl text-white mb-4">
-              {isEligible() ? 'You Passed!' : 'Trial Complete'}
-            </h2>
-
-            <p className="text-gray-400 mb-8">
-              {isEligible()
-                ? 'You\'ve proven your oracle intuition. You\'re entered in the giveaway.'
-                : 'You need at least 3 correct answers to qualify. Try again!'}
-            </p>
-
-            {isEligible() ? (
-              <div className="bg-black border border-cyan/25 rounded-lg p-6 mb-8">
-                <p className="text-cyan text-sm mb-2">Entry Confirmed</p>
-                <p className="text-white font-mono text-xs">
-                  {publicKey?.toBase58()}
+            {shared ? (
+              <>
+                <h2 className="text-3xl text-white mb-4">You're In!</h2>
+                <p className="text-gray-400 mb-8">
+                  Entry confirmed. Recruit friends to boost your odds.
                 </p>
-              </div>
-            ) : (
-              <PayButton
-                text="Try Again"
-                onClick={() => {
-                  setPhase('challenges');
-                  setCurrentChallenge(0);
-                  setAnswers(new Array(CHALLENGES.length).fill(null));
-                  setShowExplanation(false);
-                }}
-              />
-            )}
 
-            <div className="mt-8 pt-8 border-t border-gray-800">
-              <p className="text-gray-500 text-sm mb-4">Share your result</p>
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                  `I scored ${getScore()}/${CHALLENGES.length} on The KAMIYO Trials. ${isEligible() ? 'Qualified for the giveaway!' : 'The oracles judge harshly.'}\n\nTry it: app.kamiyo.ai/trials\n\n@KamiyoAI`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                Share on X
-              </a>
-            </div>
+                {/* Entry Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-black border border-cyan/25 rounded-lg p-4">
+                    <p className="text-cyan text-2xl">{entries}</p>
+                    <p className="text-gray-500 text-sm">Total Entries</p>
+                  </div>
+                  <div className="bg-black border border-magenta/25 rounded-lg p-4">
+                    <p className="text-magenta text-2xl">{referralCount}</p>
+                    <p className="text-gray-500 text-sm">Referrals</p>
+                  </div>
+                </div>
+
+                {/* Referral Link */}
+                <div className="bg-black border border-gray-500/25 rounded-lg p-6 mb-8">
+                  <p className="text-gray-400 text-sm mb-3">Your referral link:</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`app.kamiyo.ai/trials?ref=${refCode}`}
+                      className="flex-1 bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm font-mono text-white"
+                    />
+                    <button
+                      onClick={copyRefLink}
+                      className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className="text-gray-500 text-xs mt-3">
+                    Max 10 bonus entries. You have {10 - referralCount} slots left.
+                  </p>
+                </div>
+
+                <Link href="/trials/leaderboard" className="text-cyan hover:text-white transition-colors text-sm">
+                  View Leaderboard
+                </Link>
+              </>
+            ) : isPerfect() ? (
+              <>
+                <h2 className="text-3xl text-white mb-4">Almost There!</h2>
+                <p className="text-gray-400 mb-8">
+                  Share on X to claim your entry.
+                </p>
+                <PayButton
+                  text="Share to Enter"
+                  onClick={() => setPhase('share')}
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="text-3xl text-white mb-4">Not Quite</h2>
+                <p className="text-gray-400 mb-8">
+                  You need a perfect 5/5 to qualify. Study up and try again.
+                </p>
+                <PayButton
+                  text="Try Again"
+                  onClick={() => {
+                    setPhase('challenges');
+                    setCurrentChallenge(0);
+                    setAnswers(new Array(CHALLENGES.length).fill(null));
+                    setShowExplanation(false);
+                  }}
+                />
+              </>
+            )}
           </div>
         )}
 

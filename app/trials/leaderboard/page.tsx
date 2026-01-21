@@ -7,20 +7,21 @@ import Link from 'next/link';
 interface LeaderboardEntry {
   wallet: string;
   score: number;
-  stakedAmount: number;
+  entries: number;
+  referralCount: number;
   completedAt: number;
 }
 
-// Mock data - replace with actual API/on-chain fetching
+// Mock data for demo
 const MOCK_ENTRIES: LeaderboardEntry[] = [
-  { wallet: '7xKp...3mN2', score: 5, stakedAmount: 500000, completedAt: Date.now() - 3600000 },
-  { wallet: '9aB2...kL8p', score: 5, stakedAmount: 250000, completedAt: Date.now() - 7200000 },
-  { wallet: '4cD5...wX9q', score: 4, stakedAmount: 1000000, completedAt: Date.now() - 10800000 },
-  { wallet: '2eF7...yZ1r', score: 4, stakedAmount: 150000, completedAt: Date.now() - 14400000 },
-  { wallet: '8gH3...aS4t', score: 4, stakedAmount: 100000, completedAt: Date.now() - 18000000 },
-  { wallet: '5iJ9...bU6v', score: 3, stakedAmount: 750000, completedAt: Date.now() - 21600000 },
-  { wallet: '1kL2...cV7w', score: 3, stakedAmount: 300000, completedAt: Date.now() - 25200000 },
-  { wallet: '6mN4...dW8x', score: 3, stakedAmount: 200000, completedAt: Date.now() - 28800000 },
+  { wallet: '7xKp...3mN2', score: 5, entries: 8, referralCount: 7, completedAt: Date.now() - 3600000 },
+  { wallet: '9aB2...kL8p', score: 5, entries: 5, referralCount: 4, completedAt: Date.now() - 7200000 },
+  { wallet: '4cD5...wX9q', score: 5, entries: 4, referralCount: 3, completedAt: Date.now() - 10800000 },
+  { wallet: '2eF7...yZ1r', score: 5, entries: 3, referralCount: 2, completedAt: Date.now() - 14400000 },
+  { wallet: '8gH3...aS4t', score: 5, entries: 2, referralCount: 1, completedAt: Date.now() - 18000000 },
+  { wallet: '5iJ9...bU6v', score: 5, entries: 1, referralCount: 0, completedAt: Date.now() - 21600000 },
+  { wallet: '1kL2...cV7w', score: 5, entries: 1, referralCount: 0, completedAt: Date.now() - 25200000 },
+  { wallet: '6mN4...dW8x', score: 5, entries: 1, referralCount: 0, completedAt: Date.now() - 28800000 },
 ];
 
 export default function LeaderboardPage() {
@@ -35,12 +36,8 @@ export default function LeaderboardPage() {
         if (response.ok) {
           const data = await response.json();
           if (data.entries && data.entries.length > 0) {
-            setEntries(data.entries.map((e: any) => ({
-              ...e,
-              stakedAmount: 100000, // Default, can be fetched separately
-            })));
+            setEntries(data.entries);
           } else {
-            // Fall back to mock data for demo
             setEntries(MOCK_ENTRIES);
           }
         } else {
@@ -71,6 +68,9 @@ export default function LeaderboardPage() {
     return 'Just now';
   };
 
+  const totalEntries = entries.reduce((sum, e) => sum + e.entries, 0);
+  const totalReferrals = entries.reduce((sum, e) => sum + e.referralCount, 0);
+
   const userEntry = publicKey
     ? entries.find((e) => e.wallet.startsWith(publicKey.toBase58().slice(0, 4)))
     : null;
@@ -82,7 +82,7 @@ export default function LeaderboardPage() {
           <div>
             <h1 className="text-3xl md:text-4xl text-white mb-2">Trials Leaderboard</h1>
             <p className="text-gray-400">
-              {entries.length} participants qualified
+              {entries.length} participants entered
             </p>
           </div>
           <Link
@@ -100,16 +100,12 @@ export default function LeaderboardPage() {
             <div className="text-white text-2xl font-light">{entries.length}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Perfect Scores</div>
-            <div className="text-white text-2xl font-light">
-              {entries.filter((e) => e.score === 5).length}
-            </div>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Total Entries</div>
+            <div className="text-white text-2xl font-light">{totalEntries}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Total Staked</div>
-            <div className="text-white text-2xl font-light">
-              {(entries.reduce((sum, e) => sum + e.stakedAmount, 0) / 1000000).toFixed(1)}M
-            </div>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Referrals</div>
+            <div className="text-white text-2xl font-light">{totalReferrals}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">Prize Pool</div>
@@ -132,8 +128,8 @@ export default function LeaderboardPage() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-cyan text-2xl">{userEntry.score}/5</p>
-                <p className="text-gray-500 text-sm">{userEntry.stakedAmount.toLocaleString()} staked</p>
+                <p className="text-cyan text-2xl">{userEntry.entries} entries</p>
+                <p className="text-gray-500 text-sm">{userEntry.referralCount} referrals</p>
               </div>
             </div>
           </div>
@@ -146,8 +142,8 @@ export default function LeaderboardPage() {
               <tr>
                 <th className="text-left p-4 text-gray-400 font-light text-sm">Rank</th>
                 <th className="text-left p-4 text-gray-400 font-light text-sm">Wallet</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm">Score</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">Staked</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm">Entries</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">Referrals</th>
                 <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">Completed</th>
               </tr>
             </thead>
@@ -189,20 +185,16 @@ export default function LeaderboardPage() {
                     </td>
                     <td className="p-4 font-mono text-sm text-white">{formatWallet(entry.wallet)}</td>
                     <td className="p-4">
-                      <span
-                        className={
-                          entry.score === 5
-                            ? 'text-cyan'
-                            : entry.score >= 3
-                            ? 'text-white'
-                            : 'text-gray-500'
-                        }
-                      >
-                        {entry.score}/5
+                      <span className={entry.entries > 1 ? 'text-cyan' : 'text-white'}>
+                        {entry.entries}
                       </span>
                     </td>
                     <td className="p-4 text-gray-400 hidden md:table-cell">
-                      {entry.stakedAmount.toLocaleString()}
+                      {entry.referralCount > 0 ? (
+                        <span className="text-magenta">+{entry.referralCount}</span>
+                      ) : (
+                        <span className="text-gray-600">0</span>
+                      )}
                     </td>
                     <td className="p-4 text-gray-500 text-sm hidden md:table-cell">
                       {formatTime(entry.completedAt)}
@@ -233,8 +225,9 @@ export default function LeaderboardPage() {
               <span className="text-cyan">400,000 KAMIYO each</span>
             </div>
             <p className="text-gray-500 text-sm text-center pt-4">
-              Winners drawn randomly from qualified participants (3/5+ score).
-              Higher scores = more entries.
+              Winners drawn weighted by entries. More referrals = better odds.
+              <br />
+              Must score 5/5 and share on X to qualify.
             </p>
           </div>
         </div>
