@@ -19,6 +19,7 @@ export function Header() {
     { href: '/stake', label: 'Stake' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
+    { href: '/link-wallet', label: 'Link X' },
   ];
 
   return (
