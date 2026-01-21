@@ -150,7 +150,7 @@ export default function LinkWalletPage() {
               ) : (
                 <PayButton
                   text="Sign in with X"
-                  onClick={() => signIn('twitter', { callbackUrl: window.location.href })}
+                  onClick={() => signIn('twitter')}
                 />
               )}
             </div>
