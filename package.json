@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "@solana/spl-token": "^0.4.14",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
@@ -22,6 +24,7 @@
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "three": "^0.182.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {

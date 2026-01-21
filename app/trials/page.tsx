@@ -422,20 +422,49 @@ app.kamiyo.ai/trials?ref=${refCode}
                 </Link>
               </div>
             ) : (
-              <div className="bg-black border border-cyan/25 rounded-lg p-8">
-                <div className="w-16 h-16 rounded-full border-2 border-cyan flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+              <div className="space-y-6">
+                <div className="bg-black border border-cyan/25 rounded-lg p-6 text-center">
+                  <div className="w-12 h-12 rounded-full border-2 border-cyan flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-white mb-1">Stake Verified</p>
+                  <p className="text-gray-500 text-sm">
+                    {stakePosition.stakedAmount.toLocaleString()} KAMIYO
+                  </p>
                 </div>
-                <p className="text-white text-lg mb-2">Stake Verified</p>
-                <p className="text-gray-400 mb-6">
-                  {stakePosition.stakedAmount.toLocaleString()} KAMIYO staked
-                </p>
-                <PayButton
-                  text="Start Challenges"
-                  onClick={() => setPhase('challenges')}
-                />
+
+                <div className="bg-black border border-gray-500/25 rounded-lg p-6">
+                  <h3 className="text-white text-lg mb-4">5 Challenges Ahead</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    You'll be tested on core KAMIYO concepts. Must get all 5 correct to qualify.
+                  </p>
+                  <div className="space-y-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <span className="text-cyan">1.</span> Identifying faulty AI outputs
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-cyan">2.</span> Commit-reveal voting mechanics
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-cyan">3.</span> ZK reputation proofs
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-cyan">4.</span> Stake-weighted consensus
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-cyan">5.</span> x402 payment protocol
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <PayButton
+                    text="Start Challenges"
+                    onClick={() => setPhase('challenges')}
+                  />
+                </div>
               </div>
             )}
           </div>
