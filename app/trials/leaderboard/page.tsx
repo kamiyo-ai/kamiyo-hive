@@ -156,7 +156,7 @@ export default function LeaderboardPage() {
                         <span
                           className={`font-mono ${
                             idx === 0
-                              ? 'text-yellow-400'
+                              ? 'gradient-text'
                               : idx < 3
                               ? 'text-gray-300'
                               : 'text-gray-500'
@@ -206,7 +206,7 @@ export default function LeaderboardPage() {
                 <span className="gradient-text text-lg">1st</span>
                 <span className="text-white">Grand Prize</span>
               </div>
-              <span style={{ color: '#00f0ff' }}>1,000,000 $KAMIYO</span>
+              <span className="gradient-text">1,000,000 $KAMIYO</span>
             </div>
             <div className="flex justify-between items-center p-4 border border-gray-500/25 rounded-lg">
               <div className="flex items-center gap-3">
