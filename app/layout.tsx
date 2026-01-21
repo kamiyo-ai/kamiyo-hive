@@ -7,7 +7,7 @@ import GlitchBackground from "@/components/GlitchBackground";
 
 export const metadata: Metadata = {
   title: "KAMIYO",
-  description: "The trust layer for AI agents",
+  description: "Trust layer for AI agents",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     title: "KAMIYO",
-    description: "The trust layer for AI agents",
+    description: "Trust layer for AI agents",
     url: "https://app.kamiyo.ai",
     siteName: "KAMIYO",
     images: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KAMIYO",
-    description: "The trust layer for AI agents",
+    description: "Trust layer for AI agents",
     images: ["https://kamiyo.ai/media/kamiyo_open-graph.png"],
     site: "@KamiyoAI",
     creator: "@KamiyoAI",

@@ -1,7 +1,7 @@
 {
   "name": "KAMIYO",
   "short_name": "KAMIYO",
-  "description": "The trust layer for AI agents",
+  "description": "Trust layer for AI agents",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
