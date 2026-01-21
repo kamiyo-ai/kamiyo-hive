@@ -429,7 +429,7 @@ app.kamiyo.ai/trials?ref=${refCode}
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="text-white mb-1">Stake Verified</p>
+                  <p className="text-cyan mb-1">Stake Verified</p>
                   <p className="text-gray-500 text-sm">
                     {stakePosition.stakedAmount.toLocaleString()} KAMIYO
                   </p>
