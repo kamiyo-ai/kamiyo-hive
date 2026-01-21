@@ -111,32 +111,32 @@ export function Header() {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-black border border-gray-500/50 rounded-lg shadow-xl overflow-hidden">
-                  <div className="px-4 py-3 border-b border-gray-500/25">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">Connected</p>
-                    <p className="text-sm text-white font-mono mt-1">
-                      {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-8)}
+                <div className="absolute right-0 mt-2 w-[150px] bg-black border border-gray-500/50 rounded-lg shadow-xl overflow-hidden">
+                  <div className="px-3 py-2 border-b border-gray-500/25">
+                    <p className="text-[0.65rem] text-gray-500 uppercase tracking-wider">Connected</p>
+                    <p className="text-[0.7rem] text-white font-mono mt-1 truncate">
+                      {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-4)}
                     </p>
                   </div>
                   <div className="py-1">
                     <Link
                       href="/link-wallet"
                       onClick={() => setIsDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
-                      Link X Account
+                      Link X
                     </Link>
                     <button
                       onClick={() => {
                         disconnect();
                         setIsDropdownOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
                       Disconnect
