@@ -20,14 +20,14 @@ export default function LinkWalletPage() {
 
   // Update step based on auth state
   useEffect(() => {
-    console.log('[link-wallet] sessionStatus:', sessionStatus, 'session:', session, 'publicKey:', publicKey?.toBase58());
+    console.log('[link-wallet] sessionStatus:', sessionStatus, 'session:', session, 'publicKey:', publicKey?.toBase58(), 'step:', step);
     if (sessionStatus === 'loading') return;
 
     if (!session) {
       setStep('twitter');
     } else if (!publicKey) {
       setStep('wallet');
-    } else if (step === 'wallet') {
+    } else if (step !== 'sign' && step !== 'done') {
       setStep('sign');
       generateChallenge();
     }
