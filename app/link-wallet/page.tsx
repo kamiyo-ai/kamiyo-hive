@@ -235,14 +235,10 @@ export default function LinkWalletPage() {
               <p className="text-gray-400 mb-8">
                 You can now use holder features like <span className="text-white">!image</span> on X.
               </p>
-              <a
-                href="https://x.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-8 py-3 text-sm font-medium text-black bg-gradient-to-r from-cyan to-magenta rounded hover:opacity-90 transition-opacity"
-              >
-                Go to X
-              </a>
+              <PayButton
+                text="Go to X"
+                onClick={() => window.open('https://x.com', '_blank')}
+              />
             </div>
           )}
         </div>
