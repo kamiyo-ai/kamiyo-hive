@@ -237,7 +237,7 @@ export default function LinkWalletPage() {
               </p>
               <PayButton
                 text="Go to X"
-                onClick={() => window.open('https://x.com', '_blank')}
+                onClick={() => { window.open('https://x.com', '_blank'); }}
               />
             </div>
           )}
