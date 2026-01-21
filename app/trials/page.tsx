@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
@@ -110,7 +110,7 @@ function fromRawAmount(raw: bigint): number {
   return Number(raw) / Math.pow(10, DECIMALS);
 }
 
-export default function TrialsPage() {
+function TrialsContent() {
   const { publicKey, signMessage } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
@@ -791,5 +791,13 @@ app.kamiyo.ai/trials?ref=${refCode}
 
       </div>
     </div>
+  );
+}
+
+export default function TrialsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <TrialsContent />
+    </Suspense>
   );
 }
