@@ -20,6 +20,7 @@ export default function LinkWalletPage() {
 
   // Update step based on auth state
   useEffect(() => {
+    console.log('[link-wallet] sessionStatus:', sessionStatus, 'session:', session, 'publicKey:', publicKey?.toBase58());
     if (sessionStatus === 'loading') return;
 
     if (!session) {
