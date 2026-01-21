@@ -138,7 +138,7 @@ export default function LinkWalletPage() {
           </div>
         )}
 
-        <div className="card relative p-8 rounded-xl border border-gray-500/25">
+        <div className="card relative p-8 rounded-xl border border-transparent" style={{ background: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #00ffff, #ff00ff) border-box', borderWidth: '1px' }}>
           {/* Step 1: Sign in with X */}
           {step === 'twitter' && (
             <div className="text-center">
@@ -228,19 +228,21 @@ export default function LinkWalletPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-xl text-white mb-4">Wallet Linked</h2>
+              <h2 className="text-xl text-white mb-4">Wallet linked!</h2>
               <p className="text-gray-400 mb-2">
                 Your wallet is now linked to <span className="text-cyan">@{session?.user?.twitterUsername}</span>
               </p>
               <p className="text-gray-400 mb-8">
                 You can now use holder features like <span className="text-white">!image</span> on X.
               </p>
-              <button
-                onClick={reset}
-                className="px-6 py-3 text-sm border border-gray-500/50 rounded text-gray-400 hover:text-white hover:border-gray-400 transition-all"
+              <a
+                href="https://x.com/kamiyoai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-3 text-sm font-medium text-black bg-gradient-to-r from-cyan to-magenta rounded hover:opacity-90 transition-opacity"
               >
-                Link Another Wallet
-              </button>
+                Go to X
+              </a>
             </div>
           )}
         </div>
