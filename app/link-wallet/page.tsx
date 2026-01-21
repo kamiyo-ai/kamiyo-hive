@@ -236,7 +236,7 @@ export default function LinkWalletPage() {
                 You can now use holder features like <span className="text-white">!image</span> on X.
               </p>
               <a
-                href="https://x.com/kamiyoai"
+                href="https://x.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-8 py-3 text-sm font-medium text-black bg-gradient-to-r from-cyan to-magenta rounded hover:opacity-90 transition-opacity"
