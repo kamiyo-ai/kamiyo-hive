@@ -6,6 +6,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useSearchParams } from 'next/navigation';
 import PayButton from '@/components/PayButton';
+import CountdownTimer from '@/components/CountdownTimer';
 import Link from 'next/link';
 import bs58 from 'bs58';
 
@@ -404,9 +405,11 @@ app.kamiyo.ai/trials?ref=${refCode}
         {phase === 'intro' && (
           <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center text-center">
             <h1 className="text-3xl md:text-4xl font-medium mb-4">The KAMIYO Trials</h1>
-            <span className="text-gray-400 text-sm md:text-lg block">
+            <span className="text-gray-400 text-sm md:text-lg block mb-8">
               Not everyone can judge an AI. Prove you can.
             </span>
+
+            <CountdownTimer />
 
             <div className="grid md:grid-cols-2 gap-6 mt-10 mb-12">
               <div className="bg-black border border-gray-500/25 rounded-lg p-8 text-left">

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import CtaButton from '@/components/CtaButton';
+import CountdownTimer from '@/components/CountdownTimer';
 
 interface LeaderboardEntry {
   wallet: string;
@@ -84,10 +85,8 @@ export default function LeaderboardPage() {
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">Referrals</div>
             <div className="text-white text-2xl font-light">{totalReferrals}</div>
           </div>
-          <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Prize Pool</div>
-            <div className="text-white text-2xl font-light">5,000,000</div>
-            <div className="text-gray-500 text-xs">KAMIYO</div>
+          <div className="bg-black border border-gray-500/25 rounded-lg p-5">
+            <CountdownTimer />
           </div>
         </div>
 
