@@ -75,9 +75,9 @@ export function Header() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 text-sm text-gray-400 border border-gray-500/50 rounded px-3 py-1.5 hover:border-gray-400 transition-colors min-w-[192px]"
+                className="flex items-center gap-2 text-sm text-gray-400 border border-gray-500/50 rounded px-3 py-1.5 hover:border-gray-400 transition-colors w-[192px]"
               >
-                <svg className="w-[18px] h-[18px] brightness-150" viewBox="0 0 21 18">
+                <svg className="w-[18px] h-[18px] brightness-150 flex-shrink-0" viewBox="0 0 21 18">
                   <defs>
                     <linearGradient id="connectedIconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#00f0ff" />
@@ -96,11 +96,11 @@ export function Header() {
                   <rect x="11.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
                   <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
                 </svg>
-                <span className="font-mono text-xs">
+                <span className="font-mono text-xs flex-1 text-left">
                   {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
                 </span>
                 <svg
-                  className={`w-3 h-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                  className={`w-3 h-3 transition-transform flex-shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -123,7 +123,7 @@ export function Header() {
                       onClick={() => setIsDropdownOpen(false)}
                       className="flex items-center gap-2 px-4 py-2 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <svg className="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
                       Link X Account
