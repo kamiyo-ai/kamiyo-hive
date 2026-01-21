@@ -185,13 +185,30 @@ export async function GET(request: NextRequest) {
     ],
   });
 
-  const entries = completions.map((entry) => ({
+  const failedAttempts = await prisma.trialsAttempt.findMany({
+    where: { completed: true, passed: false },
+    orderBy: { updatedAt: 'desc' },
+  });
+
+  const successEntries = completions.map((entry) => ({
     wallet: `${entry.wallet.slice(0, 4)}...${entry.wallet.slice(-4)}`,
     score: entry.score,
     completedAt: entry.completedAt.getTime(),
     referralCount: entry.referralCount,
     entries: Math.min(1 + entry.referralCount, 11),
+    failed: false,
   }));
+
+  const failedEntries = failedAttempts.map((entry) => ({
+    wallet: `${entry.wallet.slice(0, 4)}...${entry.wallet.slice(-4)}`,
+    score: entry.score ?? 0,
+    completedAt: entry.updatedAt.getTime(),
+    referralCount: 0,
+    entries: 0,
+    failed: true,
+  }));
+
+  const entries = [...successEntries, ...failedEntries];
 
   return NextResponse.json({ entries, total: entries.length });
 }

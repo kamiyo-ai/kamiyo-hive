@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { wallet, passed } = body;
+    const { wallet, passed, score } = body;
 
     if (!wallet || passed === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest) {
 
     await prisma.trialsAttempt.update({
       where: { wallet },
-      data: { completed: true, passed },
+      data: { completed: true, passed, score: score ?? null },
     });
 
     return NextResponse.json({

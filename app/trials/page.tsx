@@ -235,6 +235,7 @@ function TrialsContent() {
             body: JSON.stringify({
               wallet: publicKey.toBase58(),
               passed: score === 5,
+              score,
             }),
           });
         } catch (err) {
@@ -739,8 +740,8 @@ app.kamiyo.ai/trials?ref=${refCode}
                   </p>
                 </div>
 
-                <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm" style={{ color: '#00f0ff' }}>
-                  View Leaderboard
+                <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm inline-flex items-center gap-1" style={{ color: '#ff44f5' }}>
+                  View Leaderboard <span>&rarr;</span>
                 </Link>
               </>
             ) : (
@@ -767,7 +768,7 @@ app.kamiyo.ai/trials?ref=${refCode}
               className="w-24 h-24 rounded-full border-2 flex items-center justify-center mx-auto mb-6"
               style={{ borderColor: '#ff44f5' }}
             >
-              <span className="text-4xl" style={{ color: '#ff44f5' }}>
+              <span className="text-4xl gradient-text">
                 {finalScore !== null ? finalScore : '?'}/5
               </span>
             </div>
@@ -783,8 +784,8 @@ app.kamiyo.ai/trials?ref=${refCode}
               </p>
             </div>
 
-            <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm" style={{ color: '#00f0ff' }}>
-              View Leaderboard
+            <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm inline-flex items-center gap-1" style={{ color: '#ff44f5' }}>
+              View Leaderboard <span>&rarr;</span>
             </Link>
           </div>
         )}

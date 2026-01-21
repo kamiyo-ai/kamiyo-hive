@@ -11,6 +11,7 @@ interface LeaderboardEntry {
   entries: number;
   referralCount: number;
   completedAt: number;
+  failed?: boolean;
 }
 
 
@@ -141,32 +142,46 @@ export default function LeaderboardPage() {
                   <tr
                     key={entry.wallet}
                     style={
-                      publicKey && entry.wallet.startsWith(publicKey.toBase58().slice(0, 4))
+                      entry.failed
+                        ? { opacity: 0.5 }
+                        : publicKey && entry.wallet.startsWith(publicKey.toBase58().slice(0, 4))
                         ? { backgroundColor: 'rgba(0, 240, 255, 0.05)' }
                         : undefined
                     }
                   >
                     <td className="p-4">
-                      <span
-                        className={`font-mono ${
-                          idx === 0
-                            ? 'text-yellow-400'
-                            : idx < 3
-                            ? 'text-gray-300'
-                            : 'text-gray-500'
-                        }`}
-                      >
-                        #{idx + 1}
-                      </span>
+                      {entry.failed ? (
+                        <span className="font-mono text-gray-600">-</span>
+                      ) : (
+                        <span
+                          className={`font-mono ${
+                            idx === 0
+                              ? 'text-yellow-400'
+                              : idx < 3
+                              ? 'text-gray-300'
+                              : 'text-gray-500'
+                          }`}
+                        >
+                          #{idx + 1}
+                        </span>
+                      )}
                     </td>
-                    <td className="p-4 font-mono text-sm text-white">{formatWallet(entry.wallet)}</td>
+                    <td className={`p-4 font-mono text-sm ${entry.failed ? 'text-gray-500' : 'text-white'}`}>
+                      {formatWallet(entry.wallet)}
+                    </td>
                     <td className="p-4">
-                      <span style={{ color: entry.entries > 1 ? '#00f0ff' : '#ffffff' }}>
-                        {entry.entries}
-                      </span>
+                      {entry.failed ? (
+                        <span className="text-gray-500">{entry.score}/5</span>
+                      ) : (
+                        <span style={{ color: entry.entries > 1 ? '#00f0ff' : '#ffffff' }}>
+                          {entry.entries}
+                        </span>
+                      )}
                     </td>
                     <td className="p-4 text-gray-400 hidden md:table-cell">
-                      {entry.referralCount > 0 ? (
+                      {entry.failed ? (
+                        <span className="text-gray-600">-</span>
+                      ) : entry.referralCount > 0 ? (
                         <span style={{ color: '#ff44f5' }}>+{entry.referralCount}</span>
                       ) : (
                         <span className="text-gray-600">0</span>
