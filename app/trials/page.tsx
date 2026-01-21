@@ -264,8 +264,8 @@ export default function TrialsPage() {
             <div className="bg-black border border-magenta/25 rounded-lg p-6 mb-8">
               <h3 className="text-lg text-white mb-2">Prizes</h3>
               <div className="text-gray-400 text-sm space-y-1">
-                <p><span className="text-magenta">Grand Prize:</span> 10,000 KAMIYO + Genesis Oracle NFT</p>
-                <p><span className="text-cyan">10x Runner-up:</span> 2,500 KAMIYO each</p>
+                <p><span className="text-magenta">Grand Prize:</span> 1,000,000 KAMIYO + Genesis Oracle NFT</p>
+                <p><span className="text-cyan">10x Runner-up:</span> 400,000 KAMIYO each</p>
                 <p><span className="text-gray-500">All Qualifiers:</span> Trial Survivor badge</p>
               </div>
             </div>

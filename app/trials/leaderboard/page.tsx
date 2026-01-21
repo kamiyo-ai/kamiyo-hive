@@ -113,7 +113,7 @@ export default function LeaderboardPage() {
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">Prize Pool</div>
-            <div className="text-white text-2xl font-light">35,000</div>
+            <div className="text-white text-2xl font-light">5,000,000</div>
             <div className="text-gray-500 text-xs">KAMIYO</div>
           </div>
         </div>
@@ -223,14 +223,14 @@ export default function LeaderboardPage() {
                 <span className="text-yellow-400 text-lg">1st</span>
                 <span className="text-white">Grand Prize</span>
               </div>
-              <span className="text-magenta">10,000 KAMIYO</span>
+              <span className="text-magenta">1,000,000 KAMIYO</span>
             </div>
             <div className="flex justify-between items-center p-4 border border-gray-500/25 rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="text-gray-300">2nd-11th</span>
                 <span className="text-white">Runner-up (10x)</span>
               </div>
-              <span className="text-cyan">2,500 KAMIYO each</span>
+              <span className="text-cyan">400,000 KAMIYO each</span>
             </div>
             <p className="text-gray-500 text-sm text-center pt-4">
               Winners drawn randomly from qualified participants (3/5+ score).
