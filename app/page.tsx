@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import CtaButton from '@/components/CtaButton';
 import Footer from '@/components/Footer';
@@ -12,6 +12,14 @@ const ParticleScene = dynamic(() => import('@/components/ParticleScene'), {
 
 export default function Home() {
   const [sceneReady, setSceneReady] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    if (sceneReady) {
+      const timer = setTimeout(() => setShowContent(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [sceneReady]);
 
   return (
     <>
@@ -28,8 +36,6 @@ export default function Home() {
           className="absolute inset-0 pointer-events-none z-[1]"
           style={{
             background: 'radial-gradient(circle at 50% 50%, transparent 20%, black 60%)',
-            opacity: sceneReady ? 1 : 0,
-            transition: 'opacity 0.5s ease',
           }}
         />
 
@@ -37,14 +43,14 @@ export default function Home() {
         <div
           className="absolute inset-0 bg-black pointer-events-none z-[2]"
           style={{
-            opacity: sceneReady ? 0 : 1,
+            opacity: showContent ? 0 : 1,
             transition: 'opacity 0.5s ease',
           }}
         />
 
         <div className="flex-1 flex flex-col items-center justify-center z-10 gap-6">
           <h1 className="text-[1.75rem] md:text-[2.25rem] text-white tracking-wider text-center leading-snug pb-4">
-            <Typewriter text="The KAMIYO Trials have begun..." speed={50} />
+            <Typewriter text="The Trials have begun..." speed={50} />
           </h1>
           <CtaButton text="Enter Trials" href="/trials" variant="hero" />
         </div>

@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model TrialsAttempt {
+  id          String   @id @default(cuid())
+  wallet      String   @unique
+  startedAt   DateTime @default(now())
+  completed   Boolean  @default(false)
+  passed      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("trials_attempts")
+}
+
+model TrialsCompletion {
+  id            String   @id @default(cuid())
+  wallet        String   @unique
+  score         Int
+  completedAt   DateTime @default(now())
+  signature     String
+  refCode       String   @unique
+  referredBy    String?
+  referralCount Int      @default(0)
+  shared        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("trials_completions")
+}
