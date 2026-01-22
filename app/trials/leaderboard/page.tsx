@@ -53,11 +53,13 @@ export default function LeaderboardPage() {
     return 'Just now';
   };
 
-  const totalEntries = entries.reduce((sum, e) => sum + e.entries, 0);
-  const totalReferrals = entries.reduce((sum, e) => sum + e.referralCount, 0);
+  const successfulEntries = entries.filter((e) => !e.failed);
+  const failedEntries = entries.filter((e) => e.failed);
+  const totalEntries = successfulEntries.reduce((sum, e) => sum + e.entries, 0);
+  const totalReferrals = successfulEntries.reduce((sum, e) => sum + e.referralCount, 0);
 
   const userEntry = publicKey
-    ? entries.find((e) => e.wallet.startsWith(publicKey.toBase58().slice(0, 4)))
+    ? successfulEntries.find((e) => e.wallet.startsWith(publicKey.toBase58().slice(0, 4)))
     : null;
 
   return (
@@ -97,7 +99,7 @@ export default function LeaderboardPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center font-mono" style={{ backgroundColor: 'rgba(0, 240, 255, 0.2)', color: '#00f0ff' }}>
-                  #{entries.findIndex((e) => e.wallet === userEntry.wallet) + 1}
+                  #{successfulEntries.findIndex((e) => e.wallet === userEntry.wallet) + 1}
                 </div>
                 <div>
                   <p className="text-white">Your Position</p>
@@ -112,7 +114,7 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        {/* Leaderboard Table */}
+        {/* Leaderboard Table - Successful Entries */}
         <div className="border border-gray-500/25 rounded-lg overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-900/50">
@@ -131,57 +133,45 @@ export default function LeaderboardPage() {
                     Loading...
                   </td>
                 </tr>
-              ) : entries.length === 0 ? (
+              ) : successfulEntries.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-gray-500">
                     No participants yet. Be the first!
                   </td>
                 </tr>
               ) : (
-                entries.map((entry, idx) => (
+                successfulEntries.map((entry, idx) => (
                   <tr
                     key={entry.wallet}
                     style={
-                      entry.failed
-                        ? { opacity: 0.5 }
-                        : publicKey && entry.wallet.startsWith(publicKey.toBase58().slice(0, 4))
+                      publicKey && entry.wallet.startsWith(publicKey.toBase58().slice(0, 4))
                         ? { backgroundColor: 'rgba(0, 240, 255, 0.05)' }
                         : undefined
                     }
                   >
                     <td className="p-4">
-                      {entry.failed ? (
-                        <span className="font-mono text-gray-600">-</span>
-                      ) : (
-                        <span
-                          className={`font-mono ${
-                            idx === 0
-                              ? 'gradient-text'
-                              : idx < 3
-                              ? 'text-gray-300'
-                              : 'text-gray-500'
-                          }`}
-                        >
-                          #{idx + 1}
-                        </span>
-                      )}
+                      <span
+                        className={`font-mono ${
+                          idx === 0
+                            ? 'gradient-text'
+                            : idx < 3
+                            ? 'text-gray-300'
+                            : 'text-gray-500'
+                        }`}
+                      >
+                        #{idx + 1}
+                      </span>
                     </td>
-                    <td className={`p-4 font-mono text-sm ${entry.failed ? 'text-gray-500' : 'text-white'}`}>
+                    <td className="p-4 font-mono text-sm text-white">
                       {formatWallet(entry.wallet)}
                     </td>
                     <td className="p-4">
-                      {entry.failed ? (
-                        <span className="text-gray-500">{entry.score}/5</span>
-                      ) : (
-                        <span style={{ color: entry.entries > 1 ? '#00f0ff' : '#ffffff' }}>
-                          {entry.entries}
-                        </span>
-                      )}
+                      <span style={{ color: entry.entries > 1 ? '#00f0ff' : '#ffffff' }}>
+                        {entry.entries}
+                      </span>
                     </td>
                     <td className="p-4 text-gray-400 hidden md:table-cell">
-                      {entry.failed ? (
-                        <span className="text-gray-600">-</span>
-                      ) : entry.referralCount > 0 ? (
+                      {entry.referralCount > 0 ? (
                         <span style={{ color: '#ff44f5' }}>+{entry.referralCount}</span>
                       ) : (
                         <span className="text-gray-600">0</span>
@@ -196,6 +186,39 @@ export default function LeaderboardPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Failed Entries Section */}
+        {failedEntries.length > 0 && (
+          <div className="mt-8">
+            <h3 className="text-lg text-gray-400 mb-4">Failed Attempts ({failedEntries.length})</h3>
+            <div className="border border-gray-700/50 rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-900/30">
+                  <tr>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm">Wallet</th>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm">Score</th>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm hidden md:table-cell">Attempted</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800/50">
+                  {failedEntries.map((entry) => (
+                    <tr key={entry.wallet} style={{ opacity: 0.6 }}>
+                      <td className="p-4 font-mono text-sm text-gray-500">
+                        {formatWallet(entry.wallet)}
+                      </td>
+                      <td className="p-4 text-gray-500">
+                        {entry.score}/5
+                      </td>
+                      <td className="p-4 text-gray-600 text-sm hidden md:table-cell">
+                        {formatTime(entry.completedAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Prize Breakdown */}
         <div className="mt-12 border-t border-gray-800 pt-12">
