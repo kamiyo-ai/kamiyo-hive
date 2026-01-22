@@ -399,7 +399,7 @@ app.kamiyo.ai/trials?ref=${refCode}
   const challenge = CHALLENGES[currentChallenge];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="bg-black text-white">
       <div className="w-full px-5 mx-auto max-w-[1400px] py-16">
 
         {/* Intro Phase */}

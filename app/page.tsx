@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <>
       <style>{`
-        body > div > main + div { display: none !important; }
+        #layout-footer-section { display: none !important; }
       `}</style>
       <div className="relative w-full h-[calc(100vh-var(--header-height))] flex flex-col bg-black overflow-hidden">
         <div className="absolute inset-0">

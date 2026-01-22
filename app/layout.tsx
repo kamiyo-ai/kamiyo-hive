@@ -61,11 +61,10 @@ export default function RootLayout({
           <main className="pt-[var(--header-height)] flex-1">
             {children}
           </main>
-          <div className="relative">
+          <div className="relative mt-auto overflow-hidden" id="layout-footer-section">
             <div
-              className="absolute left-0 right-0 h-[800px] z-0 pointer-events-none"
+              className="absolute inset-x-0 bottom-0 h-[800px] z-0 pointer-events-none"
               style={{
-                bottom: 0,
                 maskImage: 'linear-gradient(to top, transparent 0%, black 35%, black 45%, transparent 60%), linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%)',
                 WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 35%, black 45%, transparent 60%), linear-gradient(to right, transparent 0%, black 25%, black 75%, transparent 100%)',
                 maskComposite: 'intersect',
@@ -74,7 +73,7 @@ export default function RootLayout({
             >
               <GlitchBackground />
             </div>
-            <div className="pb-[24rem]" />
+            <div className="pt-[24rem]" />
             <div className="relative z-10">
               <Footer />
             </div>
