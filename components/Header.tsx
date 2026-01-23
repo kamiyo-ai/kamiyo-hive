@@ -21,6 +21,7 @@ export function Header() {
     { href: '/stake', label: 'Stake' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
+    { href: '/swarm', label: 'Swarm' },
   ];
 
   // Close dropdown when clicking outside
