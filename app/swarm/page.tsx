@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import PayButton from '@/components/PayButton';
 import { listTeams, createTeam, SwarmTeam } from '@/lib/swarm-api';
 
 export default function SwarmPage() {
@@ -71,16 +72,14 @@ export default function SwarmPage() {
     <div className="min-h-screen py-16 px-5 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-2xl font-bold text-white">SwarmTeams</h1>
-        <button
+        <PayButton
+          text={showCreate ? 'Cancel' : 'Create Team'}
           onClick={() => setShowCreate(!showCreate)}
-          className="border border-gray-500/50 text-gray-300 px-4 py-2 rounded text-sm hover:border-[#00f0ff] hover:text-[#00f0ff] transition-colors"
-        >
-          {showCreate ? 'Cancel' : 'Create Team'}
-        </button>
+        />
       </div>
 
       {showCreate && (
-        <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-8">
+        <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-8">
           <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">New Team</h2>
           <div className="grid gap-4 md:grid-cols-3 mb-4">
             <div>
@@ -150,13 +149,11 @@ export default function SwarmPage() {
             </button>
           </div>
 
-          <button
+          <PayButton
+            text={creating ? 'Creating...' : 'Create'}
             onClick={handleCreate}
             disabled={creating || !name || !dailyLimit}
-            className="bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] text-black font-bold px-6 py-2 rounded text-sm disabled:opacity-50"
-          >
-            {creating ? 'Creating...' : 'Create'}
-          </button>
+          />
         </div>
       )}
 
@@ -168,7 +165,7 @@ export default function SwarmPage() {
         <div className="grid gap-4 md:grid-cols-2">
           {teams.map((team) => (
             <Link key={team.id} href={`/swarm/${team.id}`}>
-              <div className="card relative p-6 rounded-xl border border-gray-500/25 hover:border-gray-400/50 transition-colors cursor-pointer">
+              <div className="card relative p-6 rounded-lg border border-gray-500/25 hover:border-gray-400/50 transition-colors cursor-pointer">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-white font-medium">{team.name}</h3>
                   <span className="text-gray-500 text-xs">{team.memberCount} agents</span>

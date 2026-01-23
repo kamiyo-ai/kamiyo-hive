@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import PayButton from '@/components/PayButton';
 import {
   getTeam, addMember, removeMember, fundTeam, updateBudget, getDraws,
   SwarmTeamDetail, SwarmDraw,
@@ -158,7 +159,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Budget Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -200,7 +201,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Members Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Members</h2>
         <div className="space-y-2 mb-4">
           {team.members.map((m) => (
@@ -268,20 +269,18 @@ export default function TeamDetailPage() {
             className="w-24 bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
             placeholder="Limit"
           />
-          <button
+          <PayButton
+            text="Add"
             onClick={handleAddMember}
             disabled={!newAgentId}
-            className="border border-gray-500/50 text-gray-300 px-4 py-2 rounded text-sm hover:border-[#00f0ff] hover:text-[#00f0ff] transition-colors disabled:opacity-50"
-          >
-            Add
-          </button>
+          />
         </div>
       </div>
 
       {/* Fund Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Fund Pool</h2>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <input
             value={fundAmount}
             onChange={(e) => setFundAmount(e.target.value)}
@@ -289,13 +288,11 @@ export default function TeamDetailPage() {
             className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
             placeholder={`Amount (${team.currency})`}
           />
-          <button
+          <PayButton
+            text="Fund"
             onClick={handleFund}
             disabled={!fundAmount || parseFloat(fundAmount) <= 0}
-            className="bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] text-black font-bold px-6 py-3 rounded text-sm disabled:opacity-50"
-          >
-            Fund
-          </button>
+          />
         </div>
         <div className="flex gap-2 mt-2">
           {[1, 5, 10, 50].map((amt) => (
@@ -311,7 +308,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Draw History */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm uppercase tracking-wider text-gray-400">Draw History</h2>
           <span className="text-gray-600 text-xs">{drawsTotal} total</span>

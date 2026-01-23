@@ -86,6 +86,10 @@ export async function addMember(
   });
 }
 
+export async function deleteTeam(teamId: string): Promise<void> {
+  await api(`/api/swarm-teams/${teamId}`, { method: 'DELETE' });
+}
+
 export async function removeMember(teamId: string, memberId: string): Promise<void> {
   await api(`/api/swarm-teams/${teamId}/members/${memberId}`, { method: 'DELETE' });
 }
