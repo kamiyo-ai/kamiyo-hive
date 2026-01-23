@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { ActiveEffect, AgentName } from "@/types/agent-events";
@@ -12,58 +12,60 @@ const AGENT_POSITIONS: Record<AgentName, [number, number, number]> = {
   chaos: [0, 0, 4],
 };
 
-const CENTER: [number, number, number] = [0, 0.5, 0];
-
 interface DebateBeamProps {
   effect: ActiveEffect;
 }
 
 export function DebateBeam({ effect }: DebateBeamProps) {
-  const groupRef = useRef<THREE.Group>(null);
-  const lineObjRef = useRef<THREE.Line | null>(null);
+  const ring1Ref = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
 
-  const { start, end, color } = useMemo(() => {
-    const src = effect.source ? AGENT_POSITIONS[effect.source] : CENTER;
-    return {
-      start: new THREE.Vector3(...src),
-      end: new THREE.Vector3(...CENTER),
-      color: new THREE.Color(effect.color),
-    };
-  }, [effect.source, effect.color]);
-
-  useEffect(() => {
-    if (!groupRef.current) return;
-
-    const mid = new THREE.Vector3()
-      .addVectors(start, end)
-      .multiplyScalar(0.5)
-      .setY(1.5);
-    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-    const points = curve.getPoints(20);
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const material = new THREE.LineBasicMaterial({
-      color,
-      transparent: true,
-      opacity: 1,
-    });
-
-    const line = new THREE.Line(geometry, material);
-    groupRef.current.add(line);
-    lineObjRef.current = line;
-
-    return () => {
-      groupRef.current?.remove(line);
-      geometry.dispose();
-      material.dispose();
-      lineObjRef.current = null;
-    };
-  }, [start, end, color]);
+  const position = effect.source ? AGENT_POSITIONS[effect.source] : [0, 0.5, 0];
+  const color = new THREE.Color(effect.color);
 
   useFrame(() => {
-    if (!lineObjRef.current) return;
-    const mat = lineObjRef.current.material as THREE.LineBasicMaterial;
-    mat.opacity = Math.max(0, 1 - effect.progress);
+    const p = effect.progress;
+
+    if (ring1Ref.current) {
+      const scale1 = 0.5 + p * 3;
+      ring1Ref.current.scale.setScalar(scale1);
+      const mat1 = ring1Ref.current.material as THREE.MeshBasicMaterial;
+      mat1.opacity = Math.max(0, 1 - p);
+    }
+
+    if (ring2Ref.current) {
+      const delayed = Math.max(0, p - 0.15);
+      const scale2 = 0.3 + delayed * 2.5;
+      ring2Ref.current.scale.setScalar(scale2);
+      const mat2 = ring2Ref.current.material as THREE.MeshBasicMaterial;
+      mat2.opacity = Math.max(0, 0.8 - delayed * 1.2);
+    }
   });
 
-  return <group ref={groupRef} />;
+  return (
+    <group position={position as [number, number, number]}>
+      {/* Outer thin ring */}
+      <mesh ref={ring1Ref} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.9, 1.0, 48]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={1}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Inner thicker band, delayed */}
+      <mesh ref={ring2Ref} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.6, 0.85, 48]} />
+        <meshBasicMaterial
+          color={color.clone().lerp(new THREE.Color("#ffffff"), 0.3)}
+          transparent
+          opacity={0.8}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
 }

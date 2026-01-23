@@ -27,7 +27,7 @@ export interface AgentEvent {
 
 export const AGENT_COLORS: Record<AgentName, string> = {
   kamiyo: "#00f0ff",
-  oracle: "#4488ff",
+  oracle: "#9944ff",
   chaos: "#ff44f5",
   sage: "#ffaa22",
 };
@@ -50,7 +50,7 @@ export interface AgentVisualState {
 
 export interface ActiveEffect {
   id: string;
-  type: "beam" | "burst" | "ring" | "spiral" | "incoming";
+  type: "beam" | "burst" | "ring" | "incoming";
   source?: AgentName;
   target?: AgentName;
   color: string;

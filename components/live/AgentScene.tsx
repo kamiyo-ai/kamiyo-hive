@@ -5,10 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { AgentNode } from "./AgentNode";
-import { DebateBeam } from "./DebateBeam";
-import { BurstEffect } from "./BurstEffect";
-import { PaymentRing } from "./PaymentRing";
-import { SpiralEffect } from "./SpiralEffect";
+import { ParticleWeb } from "./ParticleWeb";
 import { HUDOverlay } from "./HUDOverlay";
 import { useAgentStream } from "@/hooks/useAgentStream";
 import { useSceneState } from "@/hooks/useSceneState";
@@ -16,26 +13,6 @@ import type { AgentName, SceneState } from "@/types/agent-events";
 
 const AGENT_NAMES: AgentName[] = ["kamiyo", "oracle", "chaos", "sage"];
 
-function Effects({ state }: { state: SceneState }) {
-  return (
-    <>
-      {state.effects.map((effect) => {
-        switch (effect.type) {
-          case "beam":
-            return <DebateBeam key={effect.id} effect={effect} />;
-          case "burst":
-            return <BurstEffect key={effect.id} effect={effect} />;
-          case "ring":
-            return <PaymentRing key={effect.id} effect={effect} />;
-          case "spiral":
-            return <SpiralEffect key={effect.id} effect={effect} />;
-          default:
-            return null;
-        }
-      })}
-    </>
-  );
-}
 
 const AGENT_POSITIONS: Record<AgentName, [number, number, number]> = {
   kamiyo: [0, 0, -3],
@@ -47,19 +24,22 @@ const AGENT_POSITIONS: Record<AgentName, [number, number, number]> = {
 function AutoOrbit({ target }: { target: AgentName | "center" }) {
   const controlsRef = useRef<any>(null);
   const angleRef = useRef(0);
-  const userInteracted = useRef(false);
+  const dragging = useRef(false);
   const lastInteraction = useRef(0);
 
   useFrame((_, delta) => {
     if (!controlsRef.current) return;
 
-    // Resume auto-orbit after 10s of no interaction
     const now = Date.now();
-    if (userInteracted.current && now - lastInteraction.current > 10000) {
-      userInteracted.current = false;
-    }
+    const idle = now - lastInteraction.current > 3000;
 
-    if (!userInteracted.current) {
+    if (!dragging.current && idle) {
+      // Sync angle from current camera position so it resumes smoothly
+      if (lastInteraction.current > 0 && now - lastInteraction.current < 3200) {
+        const cam = controlsRef.current.object.position;
+        angleRef.current = Math.atan2(cam.x, cam.z);
+      }
+
       angleRef.current += delta * 0.15;
       const radius = target === "center" ? 12 : 8;
       const x = Math.sin(angleRef.current) * radius;
@@ -85,7 +65,11 @@ function AutoOrbit({ target }: { target: AgentName | "center" }) {
       enablePan={false}
       dampingFactor={0.05}
       onStart={() => {
-        userInteracted.current = true;
+        dragging.current = true;
+        lastInteraction.current = Date.now();
+      }}
+      onEnd={() => {
+        dragging.current = false;
         lastInteraction.current = Date.now();
       }}
     />
@@ -100,15 +84,13 @@ function SceneContent({ state }: { state: SceneState }) {
       <pointLight position={[-4, 3, -2]} intensity={0.3} color="#ff44f5" />
       <pointLight position={[4, 3, 2]} intensity={0.2} color="#ffaa22" />
 
+      <ParticleWeb effects={state.effects} />
+
       {AGENT_NAMES.map((name) => (
         <AgentNode key={name} name={name} state={state.agents[name]} />
       ))}
 
-      <Effects state={state} />
       <AutoOrbit target={state.cameraTarget} />
-
-      {/* Ground reference grid */}
-      <gridHelper args={[20, 20, "#111", "#0a0a0a"]} position={[0, -1, 0]} />
     </>
   );
 }

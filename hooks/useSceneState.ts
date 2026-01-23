@@ -22,7 +22,7 @@ const POSITIONS: Record<AgentName, [number, number, number]> = {
 
 const COLORS: Record<AgentName, string> = {
   kamiyo: "#00f0ff",
-  oracle: "#4488ff",
+  oracle: "#9944ff",
   chaos: "#ff44f5",
   sage: "#ffaa22",
 };
@@ -77,7 +77,7 @@ function createEffect(event: AgentEvent): ActiveEffect | null {
     case "payment:verified":
       return { ...base, type: "ring", color: "#00ff88" };
     case "proof:generating":
-      return { ...base, type: "spiral", color: "#ff44f5" };
+      return { ...base, type: "ring", color: "#aa44ff" };
     default:
       return null;
   }
