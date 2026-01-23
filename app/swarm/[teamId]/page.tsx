@@ -1,18 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
   getTeam, addMember, removeMember, fundTeam, updateBudget, getDraws,
   SwarmTeamDetail, SwarmDraw,
 } from '@/lib/swarm-api';
-
-const SwarmBackground = dynamic(
-  () => import('@/components/swarm-viz/SwarmBackground').then(m => m.SwarmBackground),
-  { ssr: false }
-);
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -153,9 +147,7 @@ export default function TeamDetailPage() {
   const spendPct = team.dailyLimit > 0 ? Math.min(100, (team.dailySpend / team.dailyLimit) * 100) : 0;
 
   return (
-    <div className="relative min-h-screen">
-      <SwarmBackground members={team.members} draws={draws} />
-      <div className="relative z-10 py-16 px-5 max-w-[1400px] mx-auto">
+    <div className="min-h-screen py-16 px-5 max-w-[1400px] mx-auto">
       <Link href="/swarm" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-300 mb-8 text-sm transition-colors">
         &larr; Back to teams
       </Link>
@@ -166,7 +158,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Budget Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 bg-black/90 mb-6">
+      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -208,7 +200,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Members Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 bg-black/90 mb-6">
+      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Members</h2>
         <div className="space-y-2 mb-4">
           {team.members.map((m) => (
@@ -287,7 +279,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Fund Section */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 bg-black/90 mb-6">
+      <div className="card relative p-6 rounded-xl border border-gray-500/25 mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Fund Pool</h2>
         <div className="flex gap-2">
           <input
@@ -319,7 +311,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Draw History */}
-      <div className="card relative p-6 rounded-xl border border-gray-500/25 bg-black/90">
+      <div className="card relative p-6 rounded-xl border border-gray-500/25">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm uppercase tracking-wider text-gray-400">Draw History</h2>
           <span className="text-gray-600 text-xs">{drawsTotal} total</span>
@@ -345,7 +337,6 @@ export default function TeamDetailPage() {
             ))}
           </div>
         )}
-      </div>
       </div>
     </div>
   );
