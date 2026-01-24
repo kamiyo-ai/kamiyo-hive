@@ -41,7 +41,7 @@ function AutoOrbit({ target }: { target: AgentName | "center" }) {
       }
 
       angleRef.current += delta * 0.15;
-      const radius = target === "center" ? 9 : 6;
+      const radius = target === "center" ? 7.5 : 5;
       const x = Math.sin(angleRef.current) * radius;
       const z = Math.cos(angleRef.current) * radius;
       const targetPos = target === "center" ? [0, 0, 0] : AGENT_POSITIONS[target];
@@ -61,8 +61,10 @@ function AutoOrbit({ target }: { target: AgentName | "center" }) {
   return (
     <OrbitControls
       ref={controlsRef}
-      enableZoom={false}
+      enableZoom={true}
       enablePan={false}
+      minDistance={4}
+      maxDistance={20}
       dampingFactor={0.05}
       onStart={() => {
         dragging.current = true;
@@ -102,7 +104,7 @@ export function AgentScene() {
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
       <Canvas
-        camera={{ position: [0, 3, 9], fov: 50 }}
+        camera={{ position: [0, 2.5, 7.5], fov: 50 }}
         style={{ background: "#000" }}
         gl={{ antialias: true, alpha: false }}
       >
