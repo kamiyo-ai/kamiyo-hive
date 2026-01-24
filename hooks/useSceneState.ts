@@ -182,7 +182,7 @@ function formatHudMessage(event: AgentEvent): { text: string; timestamp: number;
     case "proof:complete":
       return { text: `proof complete (${event.data.timeMs}ms)`, timestamp: ts, color };
     case "system:heartbeat":
-      return null; // Don't show heartbeats in HUD
+      return { text: `heartbeat — ${event.data.memoryMb}MB | ${Math.floor(event.data.uptime as number / 60)}m uptime | ${event.data.clients} clients`, timestamp: ts, color };
     default:
       return null;
   }
