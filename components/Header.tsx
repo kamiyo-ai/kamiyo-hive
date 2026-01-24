@@ -18,6 +18,7 @@ export function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
+    { href: '/dreams', label: 'Dreams' },
     { href: '/stake', label: 'Stake' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },

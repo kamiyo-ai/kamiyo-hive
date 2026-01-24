@@ -46,73 +46,134 @@ interface AgentNodeProps {
   state: AgentVisualState;
 }
 
-const SWARM_COUNT = 56;
-const SWARM_RADIUS = 0.6;
+const NODE_COUNT = 24;
+const WEB_RADIUS = 0.85;
+const CONNECTION_DIST = 1.0;
 
-function AgentSwarm({ color, active }: { color: string; active: boolean }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const nodesRef = useRef<THREE.Points>(null);
+interface MiniNodeData {
+  position: THREE.Vector3;
+  basePosition: THREE.Vector3;
+  velocity: THREE.Vector3;
+  phase: number;
+  speed: number;
+  drift: THREE.Vector3;
+}
 
-  // Random seeds per node for chaotic movement
-  const seeds = useMemo(() => {
-    return Array.from({ length: SWARM_COUNT }, () => ({
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.5 + Math.random() * 2.5,
-      radiusX: 0.2 + Math.random() * SWARM_RADIUS,
-      radiusY: 0.15 + Math.random() * 0.4,
-      radiusZ: 0.2 + Math.random() * SWARM_RADIUS,
-      offsetX: (Math.random() - 0.5) * 0.3,
-      offsetY: (Math.random() - 0.5) * 0.2,
-      offsetZ: (Math.random() - 0.5) * 0.3,
-      freqX: 0.5 + Math.random() * 2,
-      freqY: 0.3 + Math.random() * 1.5,
-      freqZ: 0.4 + Math.random() * 2,
-    }));
-  }, []);
-
-  const geometry = useMemo(() => {
+function AgentWeb({ color, active }: { color: string; active: boolean }) {
+  const nodesRef = useRef<MiniNodeData[]>(null);
+  const pointsGeo = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    const positions = new Float32Array(SWARM_COUNT * 3);
-    const colors = new Float32Array(SWARM_COUNT * 3);
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(NODE_COUNT * 3), 3));
+    geo.setAttribute("color", new THREE.BufferAttribute(new Float32Array(NODE_COUNT * 3), 3));
     return geo;
   }, []);
 
-  useFrame(() => {
-    const posAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
-    const colorAttr = geometry.getAttribute("color") as THREE.BufferAttribute;
-    const c = new THREE.Color(color);
-    const dim = new THREE.Color("#1a1a2e");
+  const linesGeo = useMemo(() => {
+    const maxLines = (NODE_COUNT * (NODE_COUNT - 1)) / 2;
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(maxLines * 6), 3));
+    geo.setAttribute("color", new THREE.BufferAttribute(new Float32Array(maxLines * 6), 3));
+    geo.setDrawRange(0, 0);
+    return geo;
+  }, []);
+
+  // Initialize nodes in a sphere around origin
+  if (!nodesRef.current) {
+    nodesRef.current = Array.from({ length: NODE_COUNT }, () => {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 0.25 + Math.random() * (WEB_RADIUS - 0.25);
+      const pos = new THREE.Vector3(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.sin(phi) * Math.sin(theta) * 0.6,
+        r * Math.cos(phi)
+      );
+      return {
+        position: pos.clone(),
+        basePosition: pos.clone(),
+        velocity: new THREE.Vector3(),
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.3 + Math.random() * 0.8,
+        drift: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.15,
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.15
+        ),
+      };
+    });
+  }
+
+  // Smoothly interpolate activation for transitions
+  const activation = useRef(0);
+
+  useFrame((_, delta) => {
+    const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
+    const c = new THREE.Color(color);
+    const restColor = new THREE.Color("#1a1a2e");
+    const dimLine = new THREE.Color("#0d0d1a");
 
-    for (let i = 0; i < SWARM_COUNT; i++) {
-      const s = seeds[i];
-      const t = now * s.speed + s.phase;
-      const x = Math.sin(t * s.freqX) * s.radiusX + s.offsetX;
-      const y = Math.cos(t * s.freqY) * s.radiusY + s.offsetY;
-      const z = Math.sin(t * s.freqZ + 1.3) * s.radiusZ + s.offsetZ;
-      posAttr.setXYZ(i, x, y, z);
+    // Smooth activation transition
+    const target_activation = active ? 1 : 0;
+    activation.current += (target_activation - activation.current) * delta * 4;
+    const a = activation.current;
 
-      const nodeColor = active ? c : dim;
+    const posAttr = pointsGeo.getAttribute("position") as THREE.BufferAttribute;
+    const colorAttr = pointsGeo.getAttribute("color") as THREE.BufferAttribute;
+    const linePos = linesGeo.getAttribute("position") as THREE.BufferAttribute;
+    const lineCol = linesGeo.getAttribute("color") as THREE.BufferAttribute;
+
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const node = nodes[i];
+      posAttr.setXYZ(i, node.basePosition.x, node.basePosition.y, node.basePosition.z);
+      const nodeColor = restColor.clone().lerp(c, a);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
     }
     posAttr.needsUpdate = true;
     colorAttr.needsUpdate = true;
+
+    // Draw connections
+    let lineIndex = 0;
+    for (let i = 0; i < NODE_COUNT; i++) {
+      for (let j = i + 1; j < NODE_COUNT; j++) {
+        const dist = nodes[i].position.distanceTo(nodes[j].position);
+        if (dist < CONNECTION_DIST) {
+          const proximity = 1 - dist / CONNECTION_DIST;
+          const lineColor = dimLine.clone().lerp(c, proximity * a * 0.85);
+
+          linePos.setXYZ(lineIndex * 2, nodes[i].position.x, nodes[i].position.y, nodes[i].position.z);
+          linePos.setXYZ(lineIndex * 2 + 1, nodes[j].position.x, nodes[j].position.y, nodes[j].position.z);
+          lineCol.setXYZ(lineIndex * 2, lineColor.r, lineColor.g, lineColor.b);
+          lineCol.setXYZ(lineIndex * 2 + 1, lineColor.r, lineColor.g, lineColor.b);
+          lineIndex++;
+        }
+      }
+    }
+    linePos.needsUpdate = true;
+    lineCol.needsUpdate = true;
+    linesGeo.setDrawRange(0, lineIndex * 2);
   });
 
   return (
-    <group ref={groupRef}>
-      <points ref={nodesRef} geometry={geometry}>
+    <group>
+      <points geometry={pointsGeo}>
         <pointsMaterial
-          size={0.04}
+          size={0.05}
           vertexColors
           transparent
-          opacity={active ? 0.9 : 0.2}
+          opacity={0.85}
           depthWrite={false}
           sizeAttenuation
         />
       </points>
+      <lineSegments geometry={linesGeo}>
+        <lineBasicMaterial
+          vertexColors
+          transparent
+          opacity={0.45}
+          depthWrite={false}
+        />
+      </lineSegments>
     </group>
   );
 }
@@ -124,8 +185,8 @@ export function AgentNode({ name, state }: AgentNodeProps) {
 
   return (
     <group position={state.position}>
-      {/* Swarm nodes around agent */}
-      <AgentSwarm color={state.color} active={state.speaking} />
+      {/* Mini web around agent */}
+      <AgentWeb color={state.color} active={state.speaking} />
 
       {/* Icon sprite */}
       {iconTexture && (

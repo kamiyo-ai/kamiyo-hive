@@ -159,16 +159,11 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
       );
 
       for (const node of nodes) {
-        const distToFront = node.position.distanceTo(waveFront);
+        const distToFront = node.basePosition.distanceTo(waveFront);
         if (distToFront < WAVE_RADIUS) {
           const strength = (1 - distToFront / WAVE_RADIUS) * 0.7;
           node.excitation = Math.min(1, node.excitation + strength * delta * 12);
           node.excitationColor.copy(wave.color);
-
-          // Push along wave direction
-          node.velocity.add(
-            wave.direction.clone().multiplyScalar(strength * 0.04)
-          );
         }
       }
     }
@@ -189,20 +184,10 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
     for (let i = 0; i < nodeCount; i++) {
       const node = nodes[i];
 
-      // Drift back toward base
-      const toBase = node.basePosition.clone().sub(node.position);
-      node.velocity.add(toBase.multiplyScalar(0.005));
-
-      // Damping
-      node.velocity.multiplyScalar(0.94);
-
       // Decay excitation
       node.excitation = Math.max(0, node.excitation - delta * 1.5);
 
-      // Apply velocity
-      node.position.add(node.velocity.clone().multiplyScalar(delta * 60));
-
-      posAttr.setXYZ(i, node.position.x, node.position.y, node.position.z);
+      posAttr.setXYZ(i, node.basePosition.x, node.basePosition.y, node.basePosition.z);
 
       const nodeColor = baseColor.clone().lerp(node.excitationColor, node.excitation);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
@@ -215,7 +200,7 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
 
     for (let i = 0; i < nodeCount; i++) {
       for (let j = i + 1; j < nodeCount; j++) {
-        const dist = nodes[i].position.distanceTo(nodes[j].position);
+        const dist = nodes[i].basePosition.distanceTo(nodes[j].basePosition);
         if (dist < CONNECTION_DISTANCE) {
           const proximity = 1 - dist / CONNECTION_DISTANCE;
           const excitement = Math.max(nodes[i].excitation, nodes[j].excitation);
@@ -225,8 +210,8 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
           const blend = baseOpacity + excitement * (1 - baseOpacity);
           const color = dimColor.clone().lerp(excitedNode.excitationColor, blend * proximity);
 
-          linePositions.setXYZ(lineIndex * 2, nodes[i].position.x, nodes[i].position.y, nodes[i].position.z);
-          linePositions.setXYZ(lineIndex * 2 + 1, nodes[j].position.x, nodes[j].position.y, nodes[j].position.z);
+          linePositions.setXYZ(lineIndex * 2, nodes[i].basePosition.x, nodes[i].basePosition.y, nodes[i].basePosition.z);
+          linePositions.setXYZ(lineIndex * 2 + 1, nodes[j].basePosition.x, nodes[j].basePosition.y, nodes[j].basePosition.z);
 
           lineColors.setXYZ(lineIndex * 2, color.r, color.g, color.b);
           lineColors.setXYZ(lineIndex * 2 + 1, color.r, color.g, color.b);

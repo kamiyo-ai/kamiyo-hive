@@ -7,9 +7,10 @@ interface HUDOverlayProps {
   state: SceneState;
 }
 
+
 export function HUDOverlay({ state }: HUDOverlayProps) {
   const recentMessages = state.hudMessages.slice(-16);
-  const [position, setPosition] = useState({ x: 20, y: window?.innerHeight ? window.innerHeight / 2 - 180 : 200 });
+  const [position, setPosition] = useState<{ x: number; y: number | null }>({ x: 20, y: null });
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
 
@@ -42,8 +43,9 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
     <div
       style={{
         position: "absolute",
-        top: position.y,
+        top: position.y !== null ? position.y : "50%",
         left: position.x,
+        transform: position.y === null ? "translateY(-50%)" : undefined,
         pointerEvents: "auto",
         fontFamily: "'Atkinson Hyperlegible Mono', monospace",
         fontWeight: 300,
@@ -121,13 +123,13 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
               <div
                 key={`${msg.timestamp}-${i}`}
                 style={{
-                  color: msg.color,
                   opacity,
                   transition: "opacity 1s",
                   lineHeight: "1.5",
+                  color: "#888",
                 }}
               >
-                <span style={{ color: "#444", marginRight: 8 }}>
+                <span style={{ color: "#555", marginRight: 8 }}>
                   {new Date(msg.timestamp).toLocaleTimeString("en-US", {
                     hour12: false,
                     hour: "2-digit",
