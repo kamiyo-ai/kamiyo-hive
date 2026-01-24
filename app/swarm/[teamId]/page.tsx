@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import PayButton from '@/components/PayButton';
 import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
-  initiateFunding, confirmFunding, submitTask,
+  initiateFunding, confirmFunding, fundFromCredits, submitTask,
   SwarmTeamDetail, SwarmDraw, FundDeposit, TaskResult,
 } from '@/lib/swarm-api';
 
@@ -51,8 +51,10 @@ export default function TeamDetailPage() {
   const [dailyLimitValue, setDailyLimitValue] = useState('');
 
   // Fund deposit state
+  const [fundMode, setFundMode] = useState<'crypto' | 'credits'>('credits');
   const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
   const [fundError, setFundError] = useState('');
+  const [creditWallet, setCreditWallet] = useState('');
 
   // Task submission state
   const [taskMemberId, setTaskMemberId] = useState('');
@@ -100,13 +102,19 @@ export default function TeamDetailPage() {
     if (!amount || amount <= 0) return;
     setFundError('');
     try {
-      const deposit = await initiateFunding(teamId, amount);
-      if (deposit.status === 'confirmed') {
-        // Dev mode: directly confirmed without Blindfold
+      if (fundMode === 'credits') {
+        if (!creditWallet) { setFundError('Wallet address required'); return; }
+        const result = await fundFromCredits(teamId, creditWallet, amount);
+        setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance } : prev);
         setFundAmount('');
-        fetchTeam();
       } else {
-        setFundingDeposit(deposit);
+        const deposit = await initiateFunding(teamId, amount);
+        if (deposit.status === 'confirmed') {
+          setFundAmount('');
+          fetchTeam();
+        } else {
+          setFundingDeposit(deposit);
+        }
       }
     } catch (err) {
       setFundError(err instanceof Error ? err.message : 'Funding failed');
@@ -350,7 +358,23 @@ export default function TeamDetailPage() {
 
       {/* Fund Section */}
       <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
-        <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Fund Pool</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm uppercase tracking-wider text-gray-400">Fund Pool</h2>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setFundMode('credits')}
+              className={`text-xs px-2 py-1 rounded transition-colors ${fundMode === 'credits' ? 'bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30' : 'text-gray-500 border border-gray-700 hover:text-gray-300'}`}
+            >
+              Credits
+            </button>
+            <button
+              onClick={() => setFundMode('crypto')}
+              className={`text-xs px-2 py-1 rounded transition-colors ${fundMode === 'crypto' ? 'bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30' : 'text-gray-500 border border-gray-700 hover:text-gray-300'}`}
+            >
+              Crypto
+            </button>
+          </div>
+        </div>
         {fundingDeposit ? (
           <div className="space-y-3">
             <div className="text-sm text-gray-300">Send exactly:</div>
@@ -372,18 +396,26 @@ export default function TeamDetailPage() {
           </div>
         ) : (
           <>
+            {fundMode === 'credits' && (
+              <input
+                value={creditWallet}
+                onChange={(e) => setCreditWallet(e.target.value)}
+                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none mb-2 font-mono"
+                placeholder="Your wallet address"
+              />
+            )}
             <div className="flex items-center gap-2">
               <input
                 value={fundAmount}
                 onChange={(e) => setFundAmount(e.target.value)}
                 type="number"
                 className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-                placeholder={`Amount (${team.currency})`}
+                placeholder={fundMode === 'credits' ? 'Amount (USD)' : `Amount (${team.currency})`}
               />
               <PayButton
-                text="Fund"
+                text={fundMode === 'credits' ? 'Use Credits' : 'Fund'}
                 onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !creditWallet)}
               />
             </div>
             <div className="flex gap-2 mt-2">
@@ -393,7 +425,7 @@ export default function TeamDetailPage() {
                   onClick={() => setFundAmount(String(amt))}
                   className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors"
                 >
-                  {amt} {team.currency}
+                  ${amt}
                 </button>
               ))}
             </div>

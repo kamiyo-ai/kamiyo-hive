@@ -149,6 +149,16 @@ export async function confirmFunding(teamId: string, depositId: string): Promise
   return api(`/api/swarm-teams/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
 }
 
+export async function fundFromCredits(teamId: string, wallet: string, amountUsd: number): Promise<{
+  success: boolean;
+  poolBalance: number;
+}> {
+  return api(`/api/swarm-teams/${teamId}/fund-credits`, {
+    method: 'POST',
+    body: JSON.stringify({ wallet, amountUsd }),
+  });
+}
+
 // Task submission
 export interface TaskSubmission {
   memberId: string;
