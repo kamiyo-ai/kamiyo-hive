@@ -60,7 +60,9 @@ export default function RootLayout({
           <main className="flex-1 overflow-auto">
             {children}
           </main>
-          <Footer />
+          <div id="layout-footer-section">
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
