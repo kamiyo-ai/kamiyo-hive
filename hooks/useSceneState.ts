@@ -52,6 +52,20 @@ type Action =
   | { type: "tick"; now: number }
   | { type: "setConnected"; connected: boolean };
 
+// Agent activity patterns that trigger visual effects
+const ACTIVITY_PATTERNS: Array<{ match: RegExp; type: ActiveEffect["type"]; color: string; source: AgentName; duration: number }> = [
+  { match: /^action:start\b|^action:complete\b/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
+  { match: /^model:call:start\b/, type: "beam", color: "#9944ff", source: "oracle", duration: 2000 },
+  { match: /^model:call:complete\b/, type: "burst", color: "#9944ff", source: "oracle", duration: 1500 },
+  { match: /^context:activate\b|^context:create\b/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
+  { match: /graph:add_entity|graph:connect|graph:seed/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
+  { match: /graph:path|graph:explore|graph:insight/, type: "burst", color: "#ff44f5", source: "chaos", duration: 2000 },
+  { match: /introspection:/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
+  { match: /debate:trigger|debate:complete/, type: "burst", color: "#ff44f5", source: "chaos", duration: 2500 },
+  { match: /mood:/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
+  { match: /interest:/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
+];
+
 function createEffect(event: AgentEvent): ActiveEffect | null {
   const duration = event.visual.duration || 2000;
   const base = {
@@ -78,6 +92,23 @@ function createEffect(event: AgentEvent): ActiveEffect | null {
       return { ...base, type: "ring", color: "#00ff88" };
     case "proof:generating":
       return { ...base, type: "ring", color: "#aa44ff" };
+    case "system:log": {
+      // Match agent activity patterns to trigger visual effects
+      const msg = (event.data.message as string) || "";
+      for (const pattern of ACTIVITY_PATTERNS) {
+        if (pattern.match.test(msg)) {
+          return {
+            ...base,
+            id: event.id + "-fx",
+            type: pattern.type,
+            color: pattern.color,
+            source: pattern.source,
+            duration: pattern.duration,
+          };
+        }
+      }
+      return null;
+    }
     default:
       return null;
   }
