@@ -15,10 +15,10 @@ const AGENT_NAMES: AgentName[] = ["kamiyo", "oracle", "chaos", "sage"];
 
 
 const AGENT_POSITIONS: Record<AgentName, [number, number, number]> = {
-  kamiyo: [0, 0, -3],
-  oracle: [-3, 0, 1],
-  sage: [3, 0, 1],
-  chaos: [0, 0, 4],
+  kamiyo: [0, 0, -3.6],
+  oracle: [-3.6, 0, 1.2],
+  sage: [3.6, 0, 1.2],
+  chaos: [0, 0, 4.8],
 };
 
 function AutoOrbit({ target }: { target: AgentName | "center" }) {

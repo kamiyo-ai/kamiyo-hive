@@ -6,9 +6,9 @@ import * as THREE from "three";
 import type { ActiveEffect } from "@/types/agent-events";
 
 const NODES_PER_PATH = 12;
-const CONNECTION_DISTANCE = 2.0;
+const CONNECTION_DISTANCE = 2.4;
 const WAVE_SPEED = 6;
-const WAVE_RADIUS = 1.8;
+const WAVE_RADIUS = 2.16;
 
 interface NodeData {
   position: THREE.Vector3;
@@ -55,9 +55,9 @@ function generateNodes(): NodeData[] {
         const pos = from.clone().lerp(to, t);
         // Add some random offset perpendicular to the path
         const offset = new THREE.Vector3(
-          (Math.random() - 0.5) * 1.2,
-          (Math.random() - 0.5) * 0.8,
-          (Math.random() - 0.5) * 1.2
+          (Math.random() - 0.5) * 1.44,
+          (Math.random() - 0.5) * 0.96,
+          (Math.random() - 0.5) * 1.44
         );
         pos.add(offset);
 
