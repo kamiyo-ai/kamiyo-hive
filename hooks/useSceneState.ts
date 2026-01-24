@@ -183,6 +183,8 @@ function formatHudMessage(event: AgentEvent): { text: string; timestamp: number;
       return { text: `proof complete (${event.data.timeMs}ms)`, timestamp: ts, color };
     case "system:heartbeat":
       return { text: `heartbeat — ${event.data.memoryMb}MB | ${Math.floor(event.data.uptime as number / 60)}m uptime | ${event.data.clients} clients`, timestamp: ts, color };
+    case "system:log":
+      return { text: event.data.message as string, timestamp: ts, color };
     default:
       return null;
   }
