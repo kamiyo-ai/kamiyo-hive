@@ -18,7 +18,7 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
     dragging.current = true;
     dragOffset.current = {
       x: e.clientX - position.x,
-      y: e.clientY - position.y,
+      y: e.clientY - (position.y ?? e.clientY),
     };
 
     const onMouseMove = (ev: MouseEvent) => {
