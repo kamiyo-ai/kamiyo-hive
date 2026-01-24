@@ -79,12 +79,7 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
             userSelect: "none",
           }}
         >
-          <div style={{ display: "flex", gap: 5 }}>
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f56" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ffbd2e" }} />
-            <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#27c93f" }} />
-          </div>
-          <span style={{ color: "#555", marginLeft: 10, fontSize: "11px" }}>
+          <span style={{ color: "#555", fontSize: "11px" }}>
             kamiyo — events
           </span>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
