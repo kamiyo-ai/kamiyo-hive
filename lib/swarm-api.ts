@@ -124,3 +124,49 @@ export async function getDraws(
     `/api/swarm-teams/${teamId}/draws${qs ? `?${qs}` : ''}`
   );
 }
+
+// Fund deposit flow (Blindfold integration)
+export interface FundDeposit {
+  depositId: string;
+  paymentId: string;
+  cryptoAddress: string;
+  cryptoAmount: string;
+  expiresAt: string;
+  status: string;
+}
+
+export async function initiateFunding(teamId: string, amount: number): Promise<FundDeposit> {
+  return api<FundDeposit>(`/api/swarm-teams/${teamId}/fund`, {
+    method: 'POST',
+    body: JSON.stringify({ amount }),
+  });
+}
+
+export async function confirmFunding(teamId: string, depositId: string): Promise<{
+  status: string;
+  poolBalance?: number;
+}> {
+  return api(`/api/swarm-teams/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
+}
+
+// Task submission
+export interface TaskSubmission {
+  memberId: string;
+  description: string;
+  budget?: number;
+}
+
+export interface TaskResult {
+  taskId: string;
+  status: string;
+  output?: { taskType: string; result: string; tokens: { input_tokens: number; output_tokens: number } };
+  amountDrawn?: number;
+  error?: string;
+}
+
+export async function submitTask(teamId: string, task: TaskSubmission): Promise<TaskResult> {
+  return api<TaskResult>(`/api/swarm-teams/${teamId}/tasks`, {
+    method: 'POST',
+    body: JSON.stringify(task),
+  });
+}

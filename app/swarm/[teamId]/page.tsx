@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import PayButton from '@/components/PayButton';
 import {
-  getTeam, addMember, removeMember, fundTeam, updateBudget, getDraws,
-  SwarmTeamDetail, SwarmDraw,
+  getTeam, addMember, removeMember, updateBudget, getDraws,
+  initiateFunding, confirmFunding, submitTask,
+  SwarmTeamDetail, SwarmDraw, FundDeposit, TaskResult,
 } from '@/lib/swarm-api';
 
 const SwarmBackground = dynamic(
@@ -49,6 +50,18 @@ export default function TeamDetailPage() {
   const [editingDailyLimit, setEditingDailyLimit] = useState(false);
   const [dailyLimitValue, setDailyLimitValue] = useState('');
 
+  // Fund deposit state
+  const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
+  const [fundError, setFundError] = useState('');
+
+  // Task submission state
+  const [taskMemberId, setTaskMemberId] = useState('');
+  const [taskDescription, setTaskDescription] = useState('');
+  const [taskBudget, setTaskBudget] = useState('');
+  const [taskSubmitting, setTaskSubmitting] = useState(false);
+  const [taskResult, setTaskResult] = useState<TaskResult | null>(null);
+  const [taskError, setTaskError] = useState('');
+
   const fetchTeam = useCallback(async () => {
     try {
       const data = await getTeam(teamId);
@@ -85,12 +98,62 @@ export default function TeamDetailPage() {
   const handleFund = async () => {
     const amount = parseFloat(fundAmount);
     if (!amount || amount <= 0) return;
+    setFundError('');
     try {
-      const result = await fundTeam(teamId, amount);
-      setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance } : prev);
-      setFundAmount('');
+      const deposit = await initiateFunding(teamId, amount);
+      if (deposit.status === 'confirmed') {
+        // Dev mode: directly confirmed without Blindfold
+        setFundAmount('');
+        fetchTeam();
+      } else {
+        setFundingDeposit(deposit);
+      }
     } catch (err) {
-      console.error('Failed to fund team:', err);
+      setFundError(err instanceof Error ? err.message : 'Funding failed');
+    }
+  };
+
+  // Poll deposit confirmation
+  useEffect(() => {
+    if (!fundingDeposit || fundingDeposit.status === 'confirmed') return;
+    const interval = setInterval(async () => {
+      try {
+        const result = await confirmFunding(teamId, fundingDeposit.depositId);
+        if (result.status === 'confirmed' && result.poolBalance !== undefined) {
+          const balance = result.poolBalance;
+          setTeam((prev) => prev ? { ...prev, poolBalance: balance } : prev);
+          setFundingDeposit(null);
+          setFundAmount('');
+        } else if (result.status === 'expired') {
+          setFundingDeposit(null);
+          setFundError('Payment expired');
+        }
+      } catch {
+        // continue polling
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [fundingDeposit, teamId]);
+
+  const handleSubmitTask = async () => {
+    if (!taskMemberId || !taskDescription) return;
+    setTaskSubmitting(true);
+    setTaskError('');
+    setTaskResult(null);
+    try {
+      const result = await submitTask(teamId, {
+        memberId: taskMemberId,
+        description: taskDescription,
+        budget: taskBudget ? parseFloat(taskBudget) : undefined,
+      });
+      setTaskResult(result);
+      setTaskDescription('');
+      setTaskBudget('');
+      fetchDraws();
+    } catch (err) {
+      setTaskError(err instanceof Error ? err.message : 'Task submission failed');
+    } finally {
+      setTaskSubmitting(false);
     }
   };
 
@@ -288,30 +351,110 @@ export default function TeamDetailPage() {
       {/* Fund Section */}
       <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Fund Pool</h2>
-        <div className="flex items-center gap-2">
-          <input
-            value={fundAmount}
-            onChange={(e) => setFundAmount(e.target.value)}
-            type="number"
-            className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-            placeholder={`Amount (${team.currency})`}
-          />
-          <PayButton
-            text="Fund"
-            onClick={handleFund}
-            disabled={!fundAmount || parseFloat(fundAmount) <= 0}
-          />
-        </div>
-        <div className="flex gap-2 mt-2">
-          {[1, 5, 10, 50].map((amt) => (
+        {fundingDeposit ? (
+          <div className="space-y-3">
+            <div className="text-sm text-gray-300">Send exactly:</div>
+            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {team.currency}</div>
+            <div className="text-sm text-gray-400">To address:</div>
+            <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">
+                Expires: {new Date(fundingDeposit.expiresAt).toLocaleTimeString()}
+              </span>
+              <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
+            </div>
             <button
-              key={amt}
-              onClick={() => setFundAmount(String(amt))}
-              className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors"
+              onClick={() => setFundingDeposit(null)}
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
             >
-              {amt} {team.currency}
+              Cancel
             </button>
-          ))}
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <input
+                value={fundAmount}
+                onChange={(e) => setFundAmount(e.target.value)}
+                type="number"
+                className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+                placeholder={`Amount (${team.currency})`}
+              />
+              <PayButton
+                text="Fund"
+                onClick={handleFund}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0}
+              />
+            </div>
+            <div className="flex gap-2 mt-2">
+              {[1, 5, 10, 50].map((amt) => (
+                <button
+                  key={amt}
+                  onClick={() => setFundAmount(String(amt))}
+                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {amt} {team.currency}
+                </button>
+              ))}
+            </div>
+            {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
+          </>
+        )}
+      </div>
+
+      {/* Submit Task */}
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
+        <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Submit Task</h2>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <select
+              value={taskMemberId}
+              onChange={(e) => setTaskMemberId(e.target.value)}
+              className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+            >
+              <option value="">Select agent</option>
+              {team.members.map((m) => (
+                <option key={m.id} value={m.id}>{m.agentId}</option>
+              ))}
+            </select>
+            <input
+              value={taskBudget}
+              onChange={(e) => setTaskBudget(e.target.value)}
+              type="number"
+              className="w-28 bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              placeholder="Budget"
+            />
+          </div>
+          <textarea
+            value={taskDescription}
+            onChange={(e) => setTaskDescription(e.target.value)}
+            className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none resize-none h-24"
+            placeholder="Describe the task (research, market analysis, wallet lookup...)"
+          />
+          <div className="flex items-center justify-between">
+            <PayButton
+              text={taskSubmitting ? 'Running...' : 'Execute'}
+              onClick={handleSubmitTask}
+              disabled={!taskMemberId || !taskDescription || taskSubmitting}
+            />
+            {taskError && <span className="text-red-400 text-xs">{taskError}</span>}
+          </div>
+          {taskResult && (
+            <div className="mt-3 border border-gray-800 rounded p-3">
+              <div className="flex items-center justify-between mb-2">
+                <StatusBadge status={taskResult.status} />
+                {taskResult.amountDrawn !== undefined && (
+                  <span className="text-gray-400 text-xs">{taskResult.amountDrawn.toFixed(4)} {team.currency} drawn</span>
+                )}
+              </div>
+              {taskResult.output && (
+                <pre className="text-gray-300 text-xs whitespace-pre-wrap max-h-48 overflow-y-auto">{taskResult.output.result}</pre>
+              )}
+              {taskResult.error && (
+                <div className="text-red-400 text-xs">{taskResult.error}</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
