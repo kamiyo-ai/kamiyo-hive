@@ -47,7 +47,7 @@ function AutoOrbit({ target }: { target: AgentName | "center" }) {
       const targetPos = target === "center" ? [0, 0, 0] : AGENT_POSITIONS[target];
 
       controlsRef.current.object.position.lerp(
-        new THREE.Vector3(x, 3, z),
+        new THREE.Vector3(x, 0, z),
         delta * 0.5
       );
       controlsRef.current.target.lerp(
@@ -104,7 +104,7 @@ export function AgentScene() {
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
       <Canvas
-        camera={{ position: [0, 2.5, 7.5], fov: 50 }}
+        camera={{ position: [0, 0, 7.5], fov: 50 }}
         style={{ background: "#000" }}
         gl={{ antialias: true, alpha: false }}
       >
