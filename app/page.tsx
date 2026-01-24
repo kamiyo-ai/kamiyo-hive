@@ -26,7 +26,7 @@ export default function Home() {
       <style>{`
         #layout-footer-section { display: none !important; }
       `}</style>
-      <div className="relative w-full h-[calc(100vh-var(--header-height))] flex flex-col bg-black overflow-hidden">
+      <div className="relative w-full h-screen flex flex-col bg-black overflow-hidden">
         <div className="absolute inset-0">
           <ParticleScene count={200} onReady={() => setSceneReady(true)} />
         </div>
