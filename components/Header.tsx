@@ -178,7 +178,7 @@ export function Header() {
               onClick={() => setMenuOpen(!isMenuOpen)}
               onMouseEnter={() => setMenuHovered(true)}
               onMouseLeave={() => setMenuHovered(false)}
-              className={`focus:outline-none transition-all duration-300 ${isMenuOpen ? 'fixed right-5 top-[18px] z-[60]' : ''}`}
+              className={`cursor-pointer focus:outline-none transition-all duration-300 ${isMenuOpen ? 'fixed right-5 top-[22px] sm:top-[26px] md:top-[30px] z-[60]' : ''}`}
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               <svg
