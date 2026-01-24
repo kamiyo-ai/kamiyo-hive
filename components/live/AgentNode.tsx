@@ -109,7 +109,7 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
   useFrame((_, delta) => {
     const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
-    const c = new THREE.Color(color);
+    const c = new THREE.Color("#ffffff");
     const restColor = new THREE.Color("#1a1a2e");
     const dimLine = new THREE.Color("#0d0d1a");
 
@@ -220,7 +220,7 @@ export function AgentNode({ name, state }: AgentNodeProps) {
           <span style={{ fontWeight: 200, color: "#444", marginRight: 4 }}>
             KAMIYO
           </span>
-          <span style={{ fontWeight: 300, color: state.speaking ? state.color : "#666" }}>
+          <span style={{ fontWeight: 300, color: state.speaking ? "#ffffff" : "#666" }}>
             {name === "kamiyo" ? (state.mood || "creative") : name}
           </span>
         </div>

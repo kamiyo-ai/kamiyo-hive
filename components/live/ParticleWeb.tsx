@@ -129,7 +129,7 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
         target: tgt,
         direction: dir,
         totalDist,
-        color: new THREE.Color(effect.color),
+        color: new THREE.Color("#ffffff"),
         startedAt: now,
         effectId: effect.id,
       });
