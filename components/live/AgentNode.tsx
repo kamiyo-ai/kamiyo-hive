@@ -46,9 +46,9 @@ interface AgentNodeProps {
   state: AgentVisualState;
 }
 
-const NODE_COUNT = 24;
-const WEB_RADIUS = 1.02;
-const CONNECTION_DIST = 1.2;
+const NODE_COUNT = 32;
+const WEB_RADIUS = 1.1;
+const CONNECTION_DIST = 1.4;
 
 interface MiniNodeData {
   position: THREE.Vector3;
@@ -82,10 +82,10 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
     nodesRef.current = Array.from({ length: NODE_COUNT }, () => {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 0.25 + Math.random() * (WEB_RADIUS - 0.25);
+      const r = 0.6 + Math.random() * (WEB_RADIUS - 0.6);
       const pos = new THREE.Vector3(
         r * Math.sin(phi) * Math.cos(theta),
-        r * Math.sin(phi) * Math.sin(theta) * 0.6,
+        r * Math.sin(phi) * Math.sin(theta),
         r * Math.cos(phi)
       );
       return {
@@ -109,9 +109,9 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
   useFrame((_, delta) => {
     const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
-    const c = new THREE.Color("#ffffff");
-    const restColor = new THREE.Color("#1a1a2e");
-    const dimLine = new THREE.Color("#0d0d1a");
+    const c = new THREE.Color(color);
+    const restColor = new THREE.Color("#333344");
+    const dimLine = new THREE.Color("#222233");
 
     // Smooth activation transition
     const target_activation = active ? 1 : 0;
@@ -125,7 +125,11 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
 
     for (let i = 0; i < NODE_COUNT; i++) {
       const node = nodes[i];
-      posAttr.setXYZ(i, node.basePosition.x, node.basePosition.y, node.basePosition.z);
+      const px = node.basePosition.x + a * Math.sin(now * node.speed + node.phase) * node.drift.x * 4;
+      const py = node.basePosition.y + a * Math.cos(now * node.speed * 0.7 + node.phase) * node.drift.y * 4;
+      const pz = node.basePosition.z + a * Math.sin(now * node.speed * 1.3 + node.phase + 1) * node.drift.z * 4;
+      node.position.set(px, py, pz);
+      posAttr.setXYZ(i, px, py, pz);
       const nodeColor = restColor.clone().lerp(c, a);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
     }
@@ -158,10 +162,10 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
     <group>
       <points geometry={pointsGeo}>
         <pointsMaterial
-          size={0.05}
+          size={0.04}
           vertexColors
           transparent
-          opacity={0.85}
+          opacity={0.9}
           depthWrite={false}
           sizeAttenuation
         />
@@ -170,7 +174,7 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
         <lineBasicMaterial
           vertexColors
           transparent
-          opacity={0.45}
+          opacity={0.7}
           depthWrite={false}
         />
       </lineSegments>

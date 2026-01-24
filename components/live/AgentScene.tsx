@@ -102,7 +102,7 @@ export function AgentScene() {
   const state = useSceneState(events, connected);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "calc(100vh - 160px)" }}>
+    <div style={{ position: "absolute", inset: 0 }}>
       <Canvas
         camera={{ position: [0, 1.5, 8.1], fov: 50 }}
         style={{ background: "#000" }}

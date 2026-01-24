@@ -57,7 +57,7 @@ export default function RootLayout({
       <body className="bg-black text-gray-300 min-h-screen flex flex-col overflow-x-hidden">
         <Providers>
           <Header />
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1">
             {children}
           </main>
           <div id="layout-footer-section">
