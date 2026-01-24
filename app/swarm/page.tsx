@@ -69,7 +69,7 @@ export default function SwarmPage() {
   };
 
   return (
-    <div className="min-h-screen py-16 px-5 max-w-[1400px] mx-auto">
+    <div className="min-h-screen py-8 md:py-16 px-5 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-2xl font-bold text-white">SwarmTeams</h1>
         <PayButton
@@ -81,7 +81,7 @@ export default function SwarmPage() {
       {showCreate && (
         <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-8">
           <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">New Team</h2>
-          <div className="grid gap-4 md:grid-cols-3 mb-4">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-4">
             <div>
               <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Name</label>
               <input
@@ -117,7 +117,7 @@ export default function SwarmPage() {
           <div className="mb-4">
             <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Members</label>
             {members.map((m, idx) => (
-              <div key={idx} className="grid grid-cols-3 gap-2 mb-2">
+              <div key={idx} className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
                 <input
                   value={m.agentId}
                   onChange={(e) => updateMember(idx, 'agentId', e.target.value)}

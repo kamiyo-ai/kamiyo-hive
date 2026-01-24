@@ -400,7 +400,7 @@ app.kamiyo.ai/trials?ref=${refCode}
 
   return (
     <div className="bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] py-16">
+      <div className="w-full px-5 mx-auto max-w-[1400px] py-8 md:py-16">
 
         {/* Intro Phase */}
         {phase === 'intro' && (
@@ -412,8 +412,8 @@ app.kamiyo.ai/trials?ref=${refCode}
 
             <CountdownTimer />
 
-            <div className="grid md:grid-cols-2 gap-6 mt-10 mb-12">
-              <div className="bg-black border border-gray-500/25 rounded-lg p-8 text-left">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-10 mb-8 md:mb-12">
+              <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8 text-left">
                 <h2 className="text-xl text-white mb-4">How it works</h2>
                 <div className="space-y-4 text-gray-400">
                   <div className="flex gap-4">
@@ -447,7 +447,7 @@ app.kamiyo.ai/trials?ref=${refCode}
                 </div>
               </div>
 
-              <div className="bg-black border border-gray-500/25 rounded-lg p-8 text-left">
+              <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8 text-left">
                 <h3 className="text-xl text-white mb-4">Prizes</h3>
                 <div className="text-gray-400 space-y-4">
                   <div>
@@ -583,7 +583,7 @@ app.kamiyo.ai/trials?ref=${refCode}
             </div>
 
             {/* Challenge Card */}
-            <div className="bg-black border border-gray-500/25 rounded-lg p-8">
+            <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8">
               <div className="text-xs uppercase tracking-wider mb-2" style={{ color: '#00f0ff' }}>{challenge.title}</div>
               <p className="text-gray-400 text-sm mb-6">{challenge.description}</p>
 

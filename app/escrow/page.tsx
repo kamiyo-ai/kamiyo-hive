@@ -60,8 +60,8 @@ export default function EscrowPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] py-16">
-        <div className="mb-16">
+      <div className="w-full px-5 mx-auto max-w-[1400px] py-8 md:py-16">
+        <div className="mb-8 md:mb-16">
           <h1 className="text-3xl md:text-4xl text-white mb-4">Escrow</h1>
           <p className="text-gray-400 max-w-2xl">
             Create shareable escrow links for trustless payments.
@@ -69,7 +69,7 @@ export default function EscrowPage() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
           {/* Create Escrow */}
           <div className="card relative p-6 rounded-xl border border-gray-500/25">
             <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Create Escrow</h2>

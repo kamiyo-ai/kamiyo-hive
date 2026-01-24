@@ -97,8 +97,8 @@ export default function LinkWalletPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[800px] py-16">
-        <div className="mb-12">
+      <div className="w-full px-5 mx-auto max-w-[800px] py-8 md:py-16">
+        <div className="mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl text-white mb-4">Link Wallet</h1>
           <p className="text-gray-400">
             Link your Solana wallet to your X account to access holder features like image generation.
@@ -106,12 +106,12 @@ export default function LinkWalletPage() {
         </div>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-12">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center mb-8 md:mb-12">
+          <div className="flex items-center gap-2 sm:gap-4">
             {[1, 2, 3, 4].map((num) => (
-              <div key={num} className="flex items-center gap-4">
+              <div key={num} className="flex items-center gap-2 sm:gap-4">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium
                     ${stepNumber === num
                       ? 'bg-black border border-transparent text-white'
                       : stepNumber > num
@@ -125,7 +125,7 @@ export default function LinkWalletPage() {
                   {num}
                 </div>
                 {num < 4 && (
-                  <div className={`w-12 h-0.5 ${stepNumber > num ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
+                  <div className={`w-6 sm:w-12 h-0.5 ${stepNumber > num ? 'bg-gradient-to-r from-cyan to-magenta' : 'bg-gray-800'}`} />
                 )}
               </div>
             ))}
@@ -138,7 +138,7 @@ export default function LinkWalletPage() {
           </div>
         )}
 
-        <div className="card relative p-8 rounded-xl border border-transparent" style={{ background: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #00ffff, #ff00ff) border-box', borderWidth: '1px' }}>
+        <div className="card relative p-5 md:p-8 rounded-xl border border-transparent" style={{ background: 'linear-gradient(black, black) padding-box, linear-gradient(to right, #00ffff, #ff00ff) border-box', borderWidth: '1px' }}>
           {/* Step 1: Sign in with X */}
           {step === 'twitter' && (
             <div className="text-center">

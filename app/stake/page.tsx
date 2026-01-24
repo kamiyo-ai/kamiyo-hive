@@ -482,8 +482,8 @@ function StakeContent() {
                 document.body
             )}
 
-            <div className="w-full px-5 mx-auto max-w-[1400px] py-16">
-                <div className="mb-16">
+            <div className="w-full px-5 mx-auto max-w-[1400px] py-8 md:py-16">
+                <div className="mb-8 md:mb-16">
                     <h1 className="text-3xl md:text-4xl text-white mb-4">Staking</h1>
                     <p className="text-gray-400 max-w-2xl">
                         Stake $KAMIYO and earn up to 24% APY with duration multipliers. No lock period, flexible unstaking.
@@ -491,7 +491,7 @@ function StakeContent() {
                 </div>
 
                 {poolStats && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 md:mb-12">
                         <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
                             <div className="gradient-text text-xs uppercase tracking-wider mb-2">Total Staked</div>
                             <div className="text-white text-2xl font-light mb-1">
@@ -523,7 +523,7 @@ function StakeContent() {
                     </div>
                 )}
                 
-                <div className="grid md:grid-cols-2 gap-8">
+                <div className="grid md:grid-cols-2 gap-4 md:gap-8">
                     <div className="card relative p-6 rounded-xl border border-gray-500/25">
                         <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Your Position</h2>
 

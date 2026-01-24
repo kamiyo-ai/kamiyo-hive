@@ -211,7 +211,7 @@ export default function GovernancePage() {
       {config && (
         <div className="mt-12 p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
           <h3 className="text-white font-medium mb-4">Governance Parameters</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
             <div>
               <div className="text-gray-500 mb-1">Proposal Threshold</div>
               <div className="text-white">

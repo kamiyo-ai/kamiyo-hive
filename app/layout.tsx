@@ -54,7 +54,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@200;300;400&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-black text-gray-300 h-screen overflow-hidden flex flex-col">
+      <body className="bg-black text-gray-300 min-h-screen flex flex-col overflow-x-hidden">
         <Providers>
           <Header />
           <main className="flex-1 overflow-auto">
