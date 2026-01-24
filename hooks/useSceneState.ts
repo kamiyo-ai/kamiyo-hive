@@ -52,28 +52,16 @@ type Action =
   | { type: "tick"; now: number }
   | { type: "setConnected"; connected: boolean };
 
-// Agent activity patterns that trigger visual effects
-const ACTIVITY_PATTERNS: Array<{ match: RegExp; type: ActiveEffect["type"]; color: string; source: AgentName; duration: number }> = [
-  { match: /^action:start\b|^action:complete\b/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
-  { match: /^model:call:start\b/, type: "beam", color: "#9944ff", source: "oracle", duration: 2000 },
-  { match: /^model:call:complete\b/, type: "burst", color: "#9944ff", source: "oracle", duration: 1500 },
-  { match: /^context:activate\b|^context:create\b/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
-  { match: /graph:add_entity|graph:connect|graph:seed/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
-  { match: /graph:path|graph:explore|graph:insight/, type: "burst", color: "#ff44f5", source: "chaos", duration: 2000 },
-  { match: /introspection:/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
-  { match: /debate:trigger|debate:complete/, type: "burst", color: "#ff44f5", source: "chaos", duration: 2500 },
-  { match: /mood:/, type: "beam", color: "#00f0ff", source: "kamiyo", duration: 1500 },
-  { match: /interest:/, type: "beam", color: "#ffaa22", source: "sage", duration: 1200 },
-];
+// Patterns that indicate real agent activity (triggers network light-up)
+const ACTIVITY_RE = /^action:|^model:call:|^context:|graph:|introspection:|debate:|mood:|interest:/;
 
 function createEffect(event: AgentEvent): ActiveEffect | null {
-  const duration = event.visual.duration || 2000;
   const base = {
     id: event.id,
-    color: event.visual.color,
+    color: "#ffffff",
     progress: 0,
     startedAt: Date.now(),
-    duration,
+    duration: 2000,
     data: event.data,
   };
 
@@ -81,31 +69,17 @@ function createEffect(event: AgentEvent): ActiveEffect | null {
     case "debate:message":
       return { ...base, type: "beam", source: event.source };
     case "debate:synthesize":
-      return { ...base, type: "burst", source: event.source };
+      return { ...base, type: "beam", source: event.source };
     case "tweet:posted":
-      return { ...base, type: "burst", source: "kamiyo", color: "#00f0ff" };
+      return { ...base, type: "beam", source: "kamiyo" };
     case "mention:received":
-      return { ...base, type: "incoming", target: "kamiyo" };
-    case "payment:request":
-      return { ...base, type: "ring", color: "#00ff88" };
-    case "payment:verified":
-      return { ...base, type: "ring", color: "#00ff88" };
-    case "proof:generating":
-      return { ...base, type: "ring", color: "#aa44ff" };
+      return { ...base, type: "beam", source: "kamiyo" };
+    case "mood:transition":
+      return { ...base, type: "beam", source: "kamiyo" };
     case "system:log": {
-      // Match agent activity patterns to trigger visual effects
       const msg = (event.data.message as string) || "";
-      for (const pattern of ACTIVITY_PATTERNS) {
-        if (pattern.match.test(msg)) {
-          return {
-            ...base,
-            id: event.id + "-fx",
-            type: pattern.type,
-            color: pattern.color,
-            source: pattern.source,
-            duration: pattern.duration,
-          };
-        }
+      if (ACTIVITY_RE.test(msg)) {
+        return { ...base, id: event.id + "-fx", type: "beam", source: "kamiyo" };
       }
       return null;
     }
