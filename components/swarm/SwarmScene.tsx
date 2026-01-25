@@ -15,15 +15,6 @@ interface SwarmSceneProps {
   members: SwarmMember[];
 }
 
-const MEMBER_COLORS = [
-  "#00f0ff",
-  "#9944ff",
-  "#ff44f5",
-  "#ffaa22",
-  "#44ff88",
-  "#ff4444",
-];
-
 const MEMBER_ICONS = [
   "/icons/icon-settlement.svg",
   "/icons/icon-oracle.svg",
@@ -275,7 +266,7 @@ interface MiniNodeData {
   drift: THREE.Vector3;
 }
 
-function AgentWeb({ color }: { color: string }) {
+function AgentWeb({ active }: { active: boolean }) {
   const nodesRef = useRef<MiniNodeData[] | null>(null);
 
   const pointsGeo = useMemo(() => {
@@ -319,12 +310,20 @@ function AgentWeb({ color }: { color: string }) {
     });
   }
 
-  useFrame(() => {
+  // Smoothly interpolate activation for transitions
+  const activation = useRef(0);
+
+  useFrame((_, delta) => {
     const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
-    const c = new THREE.Color(color);
+    const activeColor = new THREE.Color("#ffffff");
     const restColor = new THREE.Color("#333344");
     const dimLine = new THREE.Color("#222233");
+
+    // Smooth activation transition
+    const targetActivation = active ? 1 : 0;
+    activation.current += (targetActivation - activation.current) * delta * 4;
+    const a = activation.current;
 
     const posAttr = pointsGeo.getAttribute("position") as THREE.BufferAttribute;
     const colorAttr = pointsGeo.getAttribute("color") as THREE.BufferAttribute;
@@ -333,12 +332,12 @@ function AgentWeb({ color }: { color: string }) {
 
     for (let i = 0; i < AGENT_NODE_COUNT; i++) {
       const node = nodes[i];
-      const px = node.basePosition.x + Math.sin(now * node.speed + node.phase) * node.drift.x * 4;
-      const py = node.basePosition.y + Math.cos(now * node.speed * 0.7 + node.phase) * node.drift.y * 4;
-      const pz = node.basePosition.z + Math.sin(now * node.speed * 1.3 + node.phase + 1) * node.drift.z * 4;
+      const px = node.basePosition.x + a * Math.sin(now * node.speed + node.phase) * node.drift.x * 4;
+      const py = node.basePosition.y + a * Math.cos(now * node.speed * 0.7 + node.phase) * node.drift.y * 4;
+      const pz = node.basePosition.z + a * Math.sin(now * node.speed * 1.3 + node.phase + 1) * node.drift.z * 4;
       node.position.set(px, py, pz);
       posAttr.setXYZ(i, px, py, pz);
-      const nodeColor = restColor.clone().lerp(c, 0.6);
+      const nodeColor = restColor.clone().lerp(activeColor, a);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
     }
     posAttr.needsUpdate = true;
@@ -351,7 +350,7 @@ function AgentWeb({ color }: { color: string }) {
         const dist = nodes[i].position.distanceTo(nodes[j].position);
         if (dist < AGENT_CONNECTION_DIST) {
           const proximity = 1 - dist / AGENT_CONNECTION_DIST;
-          const lineColor = dimLine.clone().lerp(c, proximity * 0.5);
+          const lineColor = dimLine.clone().lerp(activeColor, proximity * a * 0.85);
 
           linePos.setXYZ(lineIndex * 2, nodes[i].position.x, nodes[i].position.y, nodes[i].position.z);
           linePos.setXYZ(lineIndex * 2 + 1, nodes[j].position.x, nodes[j].position.y, nodes[j].position.z);
@@ -393,20 +392,20 @@ function AgentWeb({ color }: { color: string }) {
 function MemberNode({
   member,
   position,
-  color,
-  iconIndex
+  iconIndex,
+  isLatest
 }: {
   member: SwarmMember;
   position: [number, number, number];
-  color: string;
   iconIndex: number;
+  isLatest: boolean;
 }) {
   const iconTexture = useSvgTexture(MEMBER_ICONS[iconIndex % MEMBER_ICONS.length]);
 
   return (
     <group position={position}>
       {/* Mini web around agent */}
-      <AgentWeb color={color} />
+      <AgentWeb active={isLatest} />
 
       {/* Icon sprite */}
       {iconTexture && (
@@ -435,12 +434,13 @@ function MemberNode({
             letterSpacing: "-0.5px",
             textTransform: "uppercase",
             whiteSpace: "nowrap",
+            transition: "color 0.3s",
           }}
         >
           <span style={{ fontWeight: 200, color: "#444", marginRight: 4 }}>
             {member.role === "admin" ? "ADMIN" : "AGENT"}
           </span>
-          <span style={{ fontWeight: 300, color: "#666" }}>
+          <span style={{ fontWeight: 300, color: isLatest ? "#ffffff" : "#666" }}>
             {member.agentId.slice(0, 8)}
           </span>
         </div>
@@ -523,8 +523,8 @@ function SceneContent({ members }: { members: SwarmMember[] }) {
           key={member.id}
           member={member}
           position={memberPositions[i]}
-          color={MEMBER_COLORS[i % MEMBER_COLORS.length]}
           iconIndex={i}
+          isLatest={i === members.length - 1}
         />
       ))}
 

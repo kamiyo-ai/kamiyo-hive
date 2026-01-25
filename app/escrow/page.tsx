@@ -60,7 +60,7 @@ export default function EscrowPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] py-8 md:py-16">
+      <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-8 md:pb-16">
         <div className="mb-8 md:mb-16">
           <h1 className="text-3xl md:text-4xl text-white mb-4">Escrow</h1>
           <p className="text-gray-400 max-w-2xl">

@@ -205,9 +205,6 @@ ol li {
     position: relative;
     z-index: 2;
 }
-.card:hover::before{
-    opacity: 1;
-}
 .card.inactive{
     opacity: .5!important;
 }

@@ -400,7 +400,7 @@ app.kamiyo.ai/trials?ref=${refCode}
 
   return (
     <div className="bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] py-8 md:py-16">
+      <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-8 md:pb-16">
 
         {/* Intro Phase */}
         {phase === 'intro' && (
@@ -469,11 +469,14 @@ app.kamiyo.ai/trials?ref=${refCode}
               <p className="text-gray-500 text-sm mb-4">Referred by: {referredBy}</p>
             )}
 
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-4">
               <PayButton
                 text={publicKey ? "Begin Trials" : "Connect Wallet"}
                 onClick={handleStartTrials}
               />
+              <Link href="/trials/leaderboard" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                View Leaderboard
+              </Link>
             </div>
           </div>
         )}

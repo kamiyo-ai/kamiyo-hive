@@ -95,7 +95,7 @@ export default function CreateProposalPage() {
   const meetsThreshold = config ? tokenBalance.gte(config.proposalThreshold) : false;
 
   return (
-    <div className="min-h-screen py-10 px-5 max-w-[1400px] mx-auto">
+    <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
       <Link
         href="/governance"
         className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-300 mb-8 text-sm"

@@ -64,7 +64,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] py-16">
+      <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-16">
         <div className="flex items-center justify-between mb-12">
           <div>
             <h1 className="text-3xl md:text-4xl text-white">Trials Leaderboard</h1>

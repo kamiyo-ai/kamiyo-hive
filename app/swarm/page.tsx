@@ -78,7 +78,7 @@ export default function SwarmPage() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors"
                 placeholder="Trading Squad"
               />
             </div>
@@ -87,7 +87,7 @@ export default function SwarmPage() {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center]"
               >
                 <option value="SOL">SOL</option>
                 <option value="USDC">USDC</option>
@@ -99,7 +99,7 @@ export default function SwarmPage() {
                 value={dailyLimit}
                 onChange={(e) => setDailyLimit(e.target.value)}
                 type="number"
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none transition-colors"
                 placeholder="10.0"
               />
             </div>
@@ -112,13 +112,14 @@ export default function SwarmPage() {
                 <input
                   value={m.agentId}
                   onChange={(e) => updateMember(idx, 'agentId', e.target.value)}
-                  className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+                  onKeyDown={(e) => e.key === 'Enter' && m.agentId && addMemberRow()}
+                  className="bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
                   placeholder="Agent ID"
                 />
                 <select
                   value={m.role}
                   onChange={(e) => updateMember(idx, 'role', e.target.value)}
-                  className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+                  className="bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center]"
                 >
                   <option value="member">Member</option>
                   <option value="admin">Admin</option>
@@ -126,8 +127,9 @@ export default function SwarmPage() {
                 <input
                   value={m.drawLimit}
                   onChange={(e) => updateMember(idx, 'drawLimit', e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && m.agentId && addMemberRow()}
                   type="number"
-                  className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+                  className="bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
                   placeholder="Draw limit"
                 />
               </div>

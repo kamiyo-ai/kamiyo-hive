@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'next/navigation';
+import { useWallet } from '@solana/wallet-adapter-react';
 import PayButton from '@/components/PayButton';
 import { useRouter } from 'next/navigation';
 import {
@@ -30,6 +31,7 @@ function StatusBadge({ status }: { status: string }) {
 export default function TeamDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { publicKey } = useWallet();
   const teamId = params.teamId as string;
 
   const [team, setTeam] = useState<SwarmTeamDetail | null>(null);
@@ -51,7 +53,6 @@ export default function TeamDetailPage() {
   const [fundMode, setFundMode] = useState<'crypto' | 'credits'>('credits');
   const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
   const [fundError, setFundError] = useState('');
-  const [creditWallet, setCreditWallet] = useState('');
 
   // Task submission state
   const [taskMemberId, setTaskMemberId] = useState('');
@@ -104,8 +105,8 @@ export default function TeamDetailPage() {
     setFundError('');
     try {
       if (fundMode === 'credits') {
-        if (!creditWallet) { setFundError('Wallet address required'); return; }
-        const result = await fundFromCredits(teamId, creditWallet, amount);
+        if (!publicKey) { setFundError('Connect wallet first'); return; }
+        const result = await fundFromCredits(teamId, publicKey.toBase58(), amount);
         setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance } : prev);
         setFundAmount('');
       } else {
@@ -344,7 +345,7 @@ export default function TeamDetailPage() {
             <select
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
             >
               <option value="member">Member</option>
               <option value="admin">Admin</option>
@@ -367,25 +368,31 @@ export default function TeamDetailPage() {
         </div>
       </div>
 
+      </div>
+      {/* End Left Column */}
+
+      {/* Right Column */}
+      <div className="space-y-6">
+
       {/* Fund Section */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm uppercase tracking-wider text-gray-400">Fund Pool</h2>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setFundMode('credits')}
-              className={`text-xs px-2 py-1 rounded transition-colors ${fundMode === 'credits' ? 'bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30' : 'text-gray-500 border border-gray-700 hover:text-gray-300'}`}
-            >
-              Credits
-            </button>
-            <button
-              onClick={() => setFundMode('crypto')}
-              className={`text-xs px-2 py-1 rounded transition-colors ${fundMode === 'crypto' ? 'bg-[#00f0ff]/10 text-[#00f0ff] border border-[#00f0ff]/30' : 'text-gray-500 border border-gray-700 hover:text-gray-300'}`}
-            >
-              Crypto
-            </button>
-          </div>
+      <div className="card relative rounded-lg border border-gray-500/25 bg-black/20 overflow-hidden">
+        <div className="flex border-b border-gray-500/25">
+          <button
+            onClick={() => setFundMode('credits')}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${fundMode === 'credits' ? 'text-[#00f0ff] border-b-2 border-[#00f0ff]' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
+            Fund with $KAMIYO
+          </button>
+          <button
+            onClick={() => setFundMode('crypto')}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${fundMode === 'crypto' ? 'text-[#00f0ff] border-b-2 border-[#00f0ff]' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
+            Blindfold Card
+          </button>
         </div>
+        <div className="p-6">
         {fundingDeposit ? (
           <div className="space-y-3">
             <div className="text-sm text-gray-300">Send exactly:</div>
@@ -394,7 +401,7 @@ export default function TeamDetailPage() {
             <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500">
-                Expires: {new Date(fundingDeposit.expiresAt).toLocaleTimeString()}
+                {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
               </span>
               <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
             </div>
@@ -407,14 +414,6 @@ export default function TeamDetailPage() {
           </div>
         ) : (
           <>
-            {fundMode === 'credits' && (
-              <input
-                value={creditWallet}
-                onChange={(e) => setCreditWallet(e.target.value)}
-                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none mb-2 font-mono"
-                placeholder="Your wallet address"
-              />
-            )}
             <input
               value={fundAmount}
               onChange={(e) => setFundAmount(e.target.value)}
@@ -437,19 +436,14 @@ export default function TeamDetailPage() {
               <PayButton
                 text={fundMode === 'credits' ? 'Use Credits' : 'Fund'}
                 onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !creditWallet)}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !publicKey)}
               />
             </div>
             {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
           </>
         )}
+        </div>
       </div>
-
-      </div>
-      {/* End Left Column */}
-
-      {/* Right Column */}
-      <div className="space-y-6">
 
       {/* Submit Task */}
       <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
@@ -459,7 +453,7 @@ export default function TeamDetailPage() {
             <select
               value={taskMemberId}
               onChange={(e) => setTaskMemberId(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
             >
               <option value="">Select agent</option>
               {team.members.map((m) => (

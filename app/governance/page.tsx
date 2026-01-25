@@ -149,7 +149,7 @@ export default function GovernancePage() {
   const activeCount = proposals.filter(p => p.state === ProposalState.Voting).length;
 
   return (
-    <div className="min-h-screen py-10 px-5 max-w-[1400px] mx-auto">
+    <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
       <div className="subheading-border mb-10 pb-6">
         <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
           — Governance ガバナンス
