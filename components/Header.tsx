@@ -42,7 +42,6 @@ export function Header() {
     { href: '/stake', label: 'Stake' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
-    { href: '/roadmap', label: 'Roadmap' },
   ];
 
   useEffect(() => { setMounted(true); }, []);
@@ -308,6 +307,15 @@ export function Header() {
 
               {/* Secondary links */}
               <nav className="flex flex-col items-center space-y-4 py-6">
+                <Link
+                  href="/roadmap"
+                  onClick={closeMenu}
+                  className={`transition-colors duration-300 text-xs ${
+                    pathname === '/roadmap' ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  Roadmap
+                </Link>
                 <a
                   href="https://kamiyo.ai"
                   target="_blank"
