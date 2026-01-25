@@ -340,7 +340,7 @@ export function Header() {
                     onClick={() => { setVisible(true); closeMenu(); }}
                     className="transition-colors duration-300 text-sm text-gray-500 hover:text-gray-300"
                   >
-                    Connect Wallet
+                    Connect
                   </button>
                 </div>
               )}

@@ -209,6 +209,7 @@ export function AgentNode({ name, state }: AgentNodeProps) {
         position={[0, -0.3, 0]}
         center
         distanceFactor={8}
+        zIndexRange={[1, 5]}
         style={{ pointerEvents: "none" }}
       >
         <div
