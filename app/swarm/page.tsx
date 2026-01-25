@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import PayButton from '@/components/PayButton';
-import { listTeams, createTeam, SwarmTeam } from '@/lib/swarm-api';
+import { createTeam } from '@/lib/swarm-api';
+
+const SwarmScene = dynamic(() => import('@/components/swarm/SwarmScene').then(m => m.SwarmScene), {
+  ssr: false,
+});
 
 export default function SwarmPage() {
-  const [teams, setTeams] = useState<SwarmTeam[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreate, setShowCreate] = useState(false);
+  const router = useRouter();
   const [creating, setCreating] = useState(false);
 
   // Create form state
@@ -17,24 +20,11 @@ export default function SwarmPage() {
   const [dailyLimit, setDailyLimit] = useState('');
   const [members, setMembers] = useState([{ agentId: '', role: 'member', drawLimit: '' }]);
 
-  const fetchTeams = useCallback(async () => {
-    try {
-      const data = await listTeams();
-      setTeams(data);
-    } catch (err) {
-      console.error('Failed to fetch teams:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchTeams(); }, [fetchTeams]);
-
   const handleCreate = async () => {
     if (!name || !dailyLimit) return;
     setCreating(true);
     try {
-      await createTeam({
+      const team = await createTeam({
         name,
         currency,
         dailyLimit: parseFloat(dailyLimit),
@@ -46,14 +36,9 @@ export default function SwarmPage() {
             drawLimit: m.drawLimit ? parseFloat(m.drawLimit) : 0,
           })),
       });
-      setName('');
-      setDailyLimit('');
-      setMembers([{ agentId: '', role: 'member', drawLimit: '' }]);
-      setShowCreate(false);
-      fetchTeams();
+      router.push(`/swarm/${team.id}`);
     } catch (err) {
       console.error('Failed to create team:', err);
-    } finally {
       setCreating(false);
     }
   };
@@ -68,19 +53,25 @@ export default function SwarmPage() {
     setMembers(updated);
   };
 
-  return (
-    <div className="min-h-screen py-8 md:py-16 px-5 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-between mb-10">
-        <h1 className="text-2xl font-bold text-white">SwarmTeams</h1>
-        <PayButton
-          text={showCreate ? 'Cancel' : 'Create Team'}
-          onClick={() => setShowCreate(!showCreate)}
-        />
-      </div>
+  // Live update scene with members as they're added
+  const sceneMembers = members
+    .filter((m) => m.agentId)
+    .map((m, i) => ({
+      id: `new-${i}`,
+      agentId: m.agentId,
+      role: m.role,
+    }));
 
-      {showCreate && (
-        <div className="card relative p-6 rounded-lg border border-gray-500/25 mb-8">
-          <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">New Team</h2>
+  return (
+    <div className="relative h-screen w-full overflow-hidden">
+      {/* 3D Scene Background */}
+      <SwarmScene members={sceneMembers} />
+
+      {/* Create Form Overlay */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <div className="w-full px-5 mx-auto" style={{ maxWidth: '1400px' }}>
+          <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20 pointer-events-auto">
+          <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">New SwarmTeam</h2>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-4">
             <div>
               <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Name</label>
@@ -149,45 +140,16 @@ export default function SwarmPage() {
             </button>
           </div>
 
-          <PayButton
-            text={creating ? 'Creating...' : 'Create'}
-            onClick={handleCreate}
-            disabled={creating || !name || !dailyLimit}
-          />
+          <div className="flex justify-center">
+            <PayButton
+              text={creating ? 'Creating...' : 'Create Swarm'}
+              onClick={handleCreate}
+              disabled={creating || !name || !dailyLimit}
+            />
+          </div>
+          </div>
         </div>
-      )}
-
-      {loading ? (
-        <div className="text-gray-500 text-sm">Loading teams...</div>
-      ) : teams.length === 0 ? (
-        <div className="text-gray-500 text-sm">No teams yet. Create one to get started.</div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {teams.map((team) => (
-            <Link key={team.id} href={`/swarm/${team.id}`}>
-              <div className="card relative p-6 rounded-lg border border-gray-500/25 hover:border-gray-400/50 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-white font-medium">{team.name}</h3>
-                  <span className="text-gray-500 text-xs">{team.memberCount} agents</span>
-                </div>
-                <div className="text-2xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent mb-3">
-                  {team.poolBalance.toFixed(2)} {team.currency}
-                </div>
-                <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
-                  <div
-                    className="h-1.5 rounded-full bg-[#00f0ff]"
-                    style={{ width: `${Math.min(100, (team.dailySpend / team.dailyLimit) * 100)}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>{team.dailySpend.toFixed(2)} spent today</span>
-                  <span>{team.dailyLimit.toFixed(2)} limit</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }

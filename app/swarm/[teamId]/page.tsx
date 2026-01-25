@@ -1,20 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
+import { createPortal } from 'react-dom';
 import { useParams } from 'next/navigation';
 import PayButton from '@/components/PayButton';
+import { useRouter } from 'next/navigation';
 import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
-  initiateFunding, confirmFunding, fundFromCredits, submitTask,
+  initiateFunding, confirmFunding, fundFromCredits, submitTask, deleteTeam,
   SwarmTeamDetail, SwarmDraw, FundDeposit, TaskResult,
 } from '@/lib/swarm-api';
 
-const SwarmBackground = dynamic(
-  () => import('@/components/swarm-viz/SwarmBackground').then((m) => m.SwarmBackground),
-  { ssr: false }
-);
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
@@ -33,6 +29,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function TeamDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const teamId = params.teamId as string;
 
   const [team, setTeam] = useState<SwarmTeamDetail | null>(null);
@@ -63,6 +60,10 @@ export default function TeamDetailPage() {
   const [taskSubmitting, setTaskSubmitting] = useState(false);
   const [taskResult, setTaskResult] = useState<TaskResult | null>(null);
   const [taskError, setTaskError] = useState('');
+
+  // Delete confirmation
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchTeam = useCallback(async () => {
     try {
@@ -215,30 +216,36 @@ export default function TeamDetailPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen py-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Loading...</div>;
+    return <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Loading...</div>;
   }
 
   if (!team) {
-    return <div className="min-h-screen py-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Team not found.</div>;
+    return <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Team not found.</div>;
   }
 
   const spendPct = team.dailyLimit > 0 ? Math.min(100, (team.dailySpend / team.dailyLimit) * 100) : 0;
 
   return (
-    <div className="relative min-h-screen">
-      <SwarmBackground members={team.members} draws={draws} />
-      <div className="relative z-10 py-16 px-5 max-w-[1400px] mx-auto">
-      <Link href="/swarm" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-300 mb-8 text-sm transition-colors">
-        &larr; Back to teams
-      </Link>
+    <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold text-white">{team.name}</h1>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-500 text-sm">{team.currency}</span>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="text-gray-600 hover:text-red-400 text-xs transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
 
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">{team.name}</h1>
-        <span className="text-gray-500 text-sm">{team.currency}</span>
-      </div>
+        <div className="grid lg:grid-cols-2 gap-6">
+      {/* Left Column */}
+      <div className="space-y-6">
 
       {/* Budget Section */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -280,7 +287,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Members Section */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Members</h2>
         <div className="space-y-2 mb-4">
           {team.members.map((m) => (
@@ -326,38 +333,42 @@ export default function TeamDetailPage() {
           ))}
         </div>
 
-        <div className="flex gap-2">
-          <input
-            value={newAgentId}
-            onChange={(e) => setNewAgentId(e.target.value)}
-            className="flex-1 bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-            placeholder="Agent ID"
-          />
-          <select
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-            className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-          >
-            <option value="member">Member</option>
-            <option value="admin">Admin</option>
-          </select>
-          <input
-            value={newDrawLimit}
-            onChange={(e) => setNewDrawLimit(e.target.value)}
-            type="number"
-            className="w-24 bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-            placeholder="Limit"
-          />
-          <PayButton
-            text="Add"
-            onClick={handleAddMember}
-            disabled={!newAgentId}
-          />
+        <div>
+          <div className="flex gap-2">
+            <input
+              value={newAgentId}
+              onChange={(e) => setNewAgentId(e.target.value)}
+              className="flex-1 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              placeholder="Agent ID"
+            />
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+            >
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
+            <input
+              value={newDrawLimit}
+              onChange={(e) => setNewDrawLimit(e.target.value)}
+              type="number"
+              className="w-24 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              placeholder="Limit"
+            />
+          </div>
+          <div className="ml-8 mt-5">
+            <PayButton
+              text="Add"
+              onClick={handleAddMember}
+              disabled={!newAgentId}
+            />
+          </div>
         </div>
       </div>
 
       {/* Fund Section */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm uppercase tracking-wider text-gray-400">Fund Pool</h2>
           <div className="flex gap-1">
@@ -400,25 +411,18 @@ export default function TeamDetailPage() {
               <input
                 value={creditWallet}
                 onChange={(e) => setCreditWallet(e.target.value)}
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none mb-2 font-mono"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none mb-2 font-mono"
                 placeholder="Your wallet address"
               />
             )}
-            <div className="flex items-center gap-2">
-              <input
-                value={fundAmount}
-                onChange={(e) => setFundAmount(e.target.value)}
-                type="number"
-                className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-                placeholder={fundMode === 'credits' ? 'Amount (USD)' : `Amount (${team.currency})`}
-              />
-              <PayButton
-                text={fundMode === 'credits' ? 'Use Credits' : 'Fund'}
-                onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !creditWallet)}
-              />
-            </div>
-            <div className="flex gap-2 mt-2">
+            <input
+              value={fundAmount}
+              onChange={(e) => setFundAmount(e.target.value)}
+              type="number"
+              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              placeholder={fundMode === 'credits' ? 'Amount (USD)' : `Amount (${team.currency})`}
+            />
+            <div className="flex items-center gap-2 mt-2">
               {[1, 5, 10, 50].map((amt) => (
                 <button
                   key={amt}
@@ -429,20 +433,33 @@ export default function TeamDetailPage() {
                 </button>
               ))}
             </div>
+            <div className="ml-8 mt-5">
+              <PayButton
+                text={fundMode === 'credits' ? 'Use Credits' : 'Fund'}
+                onClick={handleFund}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !creditWallet)}
+              />
+            </div>
             {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
           </>
         )}
       </div>
 
+      </div>
+      {/* End Left Column */}
+
+      {/* Right Column */}
+      <div className="space-y-6">
+
       {/* Submit Task */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm mb-6">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Submit Task</h2>
         <div className="space-y-3">
           <div className="flex gap-2">
             <select
               value={taskMemberId}
               onChange={(e) => setTaskMemberId(e.target.value)}
-              className="bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
             >
               <option value="">Select agent</option>
               {team.members.map((m) => (
@@ -453,22 +470,24 @@ export default function TeamDetailPage() {
               value={taskBudget}
               onChange={(e) => setTaskBudget(e.target.value)}
               type="number"
-              className="w-28 bg-black border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="w-28 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
               placeholder="Budget"
             />
           </div>
           <textarea
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-            className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none resize-none h-24"
+            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none resize-none h-24"
             placeholder="Describe the task (research, market analysis, wallet lookup...)"
           />
           <div className="flex items-center justify-between">
-            <PayButton
-              text={taskSubmitting ? 'Running...' : 'Execute'}
-              onClick={handleSubmitTask}
-              disabled={!taskMemberId || !taskDescription || taskSubmitting}
-            />
+            <div className="ml-8">
+              <PayButton
+                text={taskSubmitting ? 'Running...' : 'Execute'}
+                onClick={handleSubmitTask}
+                disabled={!taskMemberId || !taskDescription || taskSubmitting}
+              />
+            </div>
             {taskError && <span className="text-red-400 text-xs">{taskError}</span>}
           </div>
           {taskResult && (
@@ -491,7 +510,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Draw History */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/90 backdrop-blur-sm">
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm uppercase tracking-wider text-gray-400">Draw History</h2>
           <span className="text-gray-600 text-xs">{drawsTotal} total</span>
@@ -518,7 +537,47 @@ export default function TeamDetailPage() {
           </div>
         )}
       </div>
+
       </div>
+      {/* End Right Column */}
+      </div>
+      {/* End Two Column Grid */}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-black border border-gray-500/25 rounded-lg p-8 max-w-md w-full mx-4">
+            <h3 className="text-xl text-white mb-2">Delete Team</h3>
+            <p className="text-gray-400 mb-6">Are you sure you want to delete "{team.name}"? This cannot be undone.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setDeleting(true);
+                  try {
+                    await deleteTeam(teamId);
+                    router.push('/swarm');
+                  } catch (err) {
+                    console.error('Failed to delete team:', err);
+                    setDeleting(false);
+                  }
+                }}
+                disabled={deleting}
+                className="px-4 py-2 text-sm bg-red-500/10 text-red-400 border border-red-500/30 rounded hover:bg-red-500/20 transition-colors disabled:opacity-50"
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

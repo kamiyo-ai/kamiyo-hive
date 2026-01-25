@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -8,6 +8,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { createPortal } from 'react-dom';
 import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
+import { listTeams, SwarmTeam } from '@/lib/swarm-api';
 
 export function Header() {
   const pathname = usePathname();
@@ -19,8 +20,22 @@ export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isMenuHovered, setMenuHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [teams, setTeams] = useState<SwarmTeam[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const fetchTeams = useCallback(async () => {
+    try {
+      const data = await listTeams();
+      setTeams(data);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    if (connected) fetchTeams();
+  }, [connected, fetchTeams]);
 
   const navItems = [
     { href: '/dreams', label: 'Dreams' },
@@ -127,13 +142,39 @@ export function Header() {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-black border border-gray-500/50 rounded-lg shadow-xl overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-56 bg-black border border-gray-500/50 rounded-lg shadow-xl overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-500/25">
                       <p className="text-xs text-gray-500 uppercase tracking-wider">Connected</p>
                       <p className="text-[0.8rem] text-white font-mono mt-1">
                         {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-8)}
                       </p>
                     </div>
+
+                    {/* SwarmTeams */}
+                    {teams.length > 0 && (
+                      <div className="py-2 border-b border-gray-500/25">
+                        <p className="px-4 text-[0.65rem] text-gray-600 uppercase tracking-wider mb-1">SwarmTeams</p>
+                        {teams.map((team) => (
+                          <Link
+                            key={team.id}
+                            href={`/swarm/${team.id}`}
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="flex items-center justify-between px-4 py-1.5 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
+                          >
+                            <span>{team.name}</span>
+                            <span className="text-[0.65rem] text-gray-600">{team.poolBalance.toFixed(1)} {team.currency}</span>
+                          </Link>
+                        ))}
+                        <Link
+                          href="/swarm"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center gap-1 px-4 py-1.5 text-[0.7rem] text-gray-600 hover:text-gray-400 transition-colors"
+                        >
+                          <span>+</span> New Team
+                        </Link>
+                      </div>
+                    )}
+
                     <div className="py-1">
                       <Link
                         href="/link-wallet"
