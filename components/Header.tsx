@@ -42,6 +42,7 @@ export function Header() {
     { href: '/stake', label: 'Stake' },
     { href: '/governance', label: 'Governance' },
     { href: '/escrow', label: 'Escrow' },
+    { href: '/roadmap', label: 'Roadmap' },
   ];
 
   useEffect(() => { setMounted(true); }, []);
