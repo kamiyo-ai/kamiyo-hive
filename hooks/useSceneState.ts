@@ -134,7 +134,10 @@ function reducer(state: SceneState, action: Action): SceneState {
           intensity: event.visual.intensity,
           scale: event.category === "debate" ? 1.2 : 1,
         };
-        if (event.category === "debate") {
+        // Camera follows speaking agents (debate agents or kamiyo during activity)
+        if (isSpeaking && source !== "kamiyo") {
+          cameraTarget = source;
+        } else if (event.category === "debate" || event.category === "tweet") {
           cameraTarget = source;
         }
       }
