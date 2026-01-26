@@ -121,11 +121,14 @@ function reducer(state: SceneState, action: Action): SceneState {
       let cameraTarget = state.cameraTarget;
 
       // Update agent state based on event
+      // Agent lights up for debate, tweet, mood, and mention events
+      const speakingCategories = ["debate", "tweet", "mood", "mention"];
       if (event.source && agents[event.source]) {
         const agent = agents[event.source];
+        const isSpeaking = speakingCategories.includes(event.category);
         agents[event.source] = {
           ...agent,
-          speaking: event.category === "debate",
+          speaking: isSpeaking,
           intensity: event.visual.intensity,
           scale: event.category === "debate" ? 1.2 : 1,
         };
