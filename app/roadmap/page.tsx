@@ -292,8 +292,8 @@ export default function RoadmapPage() {
       </div>
 
       {/* Stats summary */}
-      <div className="mt-16 p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
-        <h3 className="text-white font-medium mb-4">Progress Overview</h3>
+      <div className="mt-16 p-6 bg-gray-900/50 border border-gray-800 rounded-lg max-w-2xl mx-auto">
+        <h3 className="text-white font-medium mb-4 text-center">Progress Overview</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <div className="text-2xl font-medium gradient-text">
