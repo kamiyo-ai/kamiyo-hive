@@ -368,38 +368,6 @@ export function Header() {
               </nav>
             </div>
 
-            {/* Wallet section at bottom of menu */}
-            <div className="py-6 border-t border-gray-500/25">
-              {connected && publicKey ? (
-                <div className="flex flex-col items-center space-y-4">
-                  <p className="text-xs text-gray-500 font-mono">
-                    {publicKey.toBase58().slice(0, 6)}...{publicKey.toBase58().slice(-6)}
-                  </p>
-                  <Link
-                    href="/link-wallet"
-                    onClick={closeMenu}
-                    className="transition-colors duration-300 text-sm text-gray-500 hover:text-gray-300"
-                  >
-                    Link X Account
-                  </Link>
-                  <button
-                    onClick={() => { disconnect(); closeMenu(); }}
-                    className="transition-colors duration-300 text-xs text-gray-500 hover:text-gray-300"
-                  >
-                    Disconnect
-                  </button>
-                </div>
-              ) : (
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => { setMobileWalletModalOpen(true); closeMenu(); }}
-                    className="transition-colors duration-300 text-sm text-gray-500 hover:text-gray-300"
-                  >
-                    Connect
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </div>,
         document.body
