@@ -46,9 +46,9 @@ interface AgentNodeProps {
   state: AgentVisualState;
 }
 
-const NODE_COUNT = 32;
+const NODE_COUNT = 16;
 const WEB_RADIUS = 1.1;
-const CONNECTION_DIST = 1.4;
+const CONNECTION_DIST = 1.2;
 
 interface MiniNodeData {
   position: THREE.Vector3;
