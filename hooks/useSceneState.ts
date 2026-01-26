@@ -79,9 +79,10 @@ function createEffect(event: AgentEvent): ActiveEffect | null {
     case "system:log": {
       const msg = (event.data.message as string) || "";
       if (ACTIVITY_RE.test(msg)) {
-        return { ...base, id: event.id + "-fx", type: "beam", source: "kamiyo" };
+        return { ...base, id: event.id + "-fx", type: "beam", source: event.source || "kamiyo" };
       }
-      return null;
+      // Still create effect for any system log to show activity
+      return { ...base, id: event.id + "-fx", type: "beam", source: event.source || "kamiyo", duration: 1000 };
     }
     default:
       return null;
@@ -121,19 +122,20 @@ function reducer(state: SceneState, action: Action): SceneState {
       let cameraTarget = state.cameraTarget;
 
       // Update agent state based on event
-      // Agent lights up for debate, tweet, mood, and mention events
-      const speakingCategories = ["debate", "tweet", "mood", "mention"];
-      if (event.source && agents[event.source]) {
-        const agent = agents[event.source];
+      // Agent lights up for debate, tweet, mood, mention, and system (introspection) events
+      const speakingCategories = ["debate", "tweet", "mood", "mention", "system"];
+      const source = event.source || "kamiyo"; // Default to kamiyo if no source
+      if (agents[source]) {
+        const agent = agents[source];
         const isSpeaking = speakingCategories.includes(event.category);
-        agents[event.source] = {
+        agents[source] = {
           ...agent,
           speaking: isSpeaking,
           intensity: event.visual.intensity,
           scale: event.category === "debate" ? 1.2 : 1,
         };
         if (event.category === "debate") {
-          cameraTarget = event.source;
+          cameraTarget = source;
         }
       }
 
