@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
 
     const refCode = generateRefCode(wallet);
 
+    // Store referredBy but don't increment referrer's count yet
+    // Referral only counts when this user shares on X (in PUT handler)
     let validReferrer: string | null = null;
     if (referredBy && referredBy !== refCode) {
       const referrer = await prisma.trialsCompletion.findUnique({
@@ -72,10 +74,6 @@ export async function POST(request: NextRequest) {
       });
       if (referrer && referrer.wallet !== wallet && referrer.shared) {
         validReferrer = referredBy;
-        await prisma.trialsCompletion.update({
-          where: { refCode: referredBy },
-          data: { referralCount: { increment: 1 } },
-        });
       }
     }
 
@@ -137,10 +135,29 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
+    // If already shared, just return current state
+    if (completion.shared) {
+      return NextResponse.json({
+        success: true,
+        refCode: completion.refCode,
+        referralCount: completion.referralCount,
+        entries: Math.min(1 + completion.referralCount, 11),
+      });
+    }
+
+    // Mark as shared and increment referrer's count if applicable
     const updated = await prisma.trialsCompletion.update({
       where: { wallet },
       data: { shared: true },
     });
+
+    // Now that user has shared, credit the referrer
+    if (updated.referredBy) {
+      await prisma.trialsCompletion.update({
+        where: { refCode: updated.referredBy },
+        data: { referralCount: { increment: 1 } },
+      });
+    }
 
     return NextResponse.json({
       success: true,
