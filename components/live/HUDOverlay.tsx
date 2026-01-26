@@ -29,11 +29,6 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Track if any agent is currently speaking
-  useEffect(() => {
-    const anyActive = Object.values(state.agents).some((agent) => agent.speaking);
-    setIsActive(anyActive);
-  }, [state.agents]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -148,13 +143,8 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
             userSelect: "none",
           }}
         >
-          <span style={{ color: "#555", fontSize: "11px", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ color: "#555", fontSize: "11px" }}>
             kamiyo — events
-            {isActive && (
-              <span style={{ color: "#555", fontFamily: "monospace" }}>
-                {BRAILLE_FRAMES[animFrame % BRAILLE_FRAMES.length]}
-              </span>
-            )}
           </span>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
             <div
@@ -223,6 +213,11 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
                     second: "2-digit",
                   })}
                 </span>
+                {msg.spinner && (
+                  <span style={{ color: "#555", marginRight: 4 }}>
+                    {BRAILLE_FRAMES[animFrame % BRAILLE_FRAMES.length]}
+                  </span>
+                )}
                 {msg.text}
               </div>
             );

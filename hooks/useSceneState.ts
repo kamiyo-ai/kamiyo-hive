@@ -166,7 +166,7 @@ function reducer(state: SceneState, action: Action): SceneState {
   }
 }
 
-function formatHudMessage(event: AgentEvent): { text: string; timestamp: number; color: string } | null {
+function formatHudMessage(event: AgentEvent): { text: string; timestamp: number; color: string; spinner?: boolean } | null {
   const ts = event.timestamp;
   const color = event.visual.color;
 
@@ -188,13 +188,13 @@ function formatHudMessage(event: AgentEvent): { text: string; timestamp: number;
     case "payment:verified":
       return { text: `paid: ${event.data.service}`, timestamp: ts, color };
     case "proof:generating":
-      return { text: `proving: ${event.data.type}`, timestamp: ts, color };
+      return { text: `proving: ${event.data.type}`, timestamp: ts, color, spinner: true };
     case "proof:complete":
       return { text: `proof complete (${event.data.timeMs}ms)`, timestamp: ts, color };
     case "system:heartbeat":
       return { text: `heartbeat — ${event.data.memoryMb}MB | ${Math.floor(event.data.uptime as number / 60)}m uptime | ${event.data.clients} clients`, timestamp: ts, color };
     case "system:log":
-      return { text: event.data.message as string, timestamp: ts, color };
+      return { text: event.data.message as string, timestamp: ts, color, spinner: !!event.data.spinner };
     default:
       return null;
   }

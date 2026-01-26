@@ -64,6 +64,6 @@ export interface SceneState {
   agents: Record<AgentName, AgentVisualState>;
   effects: ActiveEffect[];
   cameraTarget: AgentName | "center";
-  hudMessages: Array<{ text: string; timestamp: number; color: string }>;
+  hudMessages: Array<{ text: string; timestamp: number; color: string; spinner?: boolean }>;
   connected: boolean;
 }
