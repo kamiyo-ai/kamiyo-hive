@@ -57,7 +57,7 @@ const roadmapData: PhaseData[] = [
     id: 'expansion',
     name: 'Phase 2',
     subtitle: 'Expansion',
-    period: 'Q2 - Q4 2025 (Complete)',
+    period: 'Q2 2025 - Q1 2026',
     milestones: [
       {
         title: 'Governance System',
