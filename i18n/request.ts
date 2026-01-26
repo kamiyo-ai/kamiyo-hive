@@ -20,7 +20,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages: {
-      ...common,
+      common,
       home,
       trials,
       governance,
