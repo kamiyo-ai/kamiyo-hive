@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useTranslations } from 'next-intl';
 import CtaButton from '@/components/CtaButton';
 import CountdownTimer from '@/components/CountdownTimer';
 
@@ -16,6 +17,7 @@ interface LeaderboardEntry {
 
 
 export default function LeaderboardPage() {
+  const t = useTranslations('trials.leaderboard');
   const { publicKey } = useWallet();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,9 +50,9 @@ export default function LeaderboardPage() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    return 'Just now';
+    if (days > 0) return t('daysAgo', { days });
+    if (hours > 0) return t('hoursAgo', { hours });
+    return t('justNow');
   };
 
   const successfulEntries = entries.filter((e) => !e.failed);
@@ -66,24 +68,24 @@ export default function LeaderboardPage() {
     <div className="min-h-screen bg-black text-white">
       <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-16">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-12">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">Trials Leaderboard</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">{t('title')}</h1>
           <div className="ml-8 sm:mr-8">
-            <CtaButton text="Enter the Trials" href="/trials" />
+            <CtaButton text={t('enterTrials')} href="/trials" />
           </div>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Participants</div>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">{t('participants')}</div>
             <div className="text-white text-2xl font-light">{entries.length}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Total Entries</div>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">{t('totalEntries')}</div>
             <div className="text-white text-2xl font-light">{totalEntries}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Referrals</div>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">{t('referrals')}</div>
             <div className="text-white text-2xl font-light">{totalReferrals}</div>
           </div>
           <div className="bg-black border border-gray-500/25 rounded-lg p-5">
@@ -100,13 +102,13 @@ export default function LeaderboardPage() {
                   #{successfulEntries.findIndex((e) => e.wallet === userEntry.wallet) + 1}
                 </div>
                 <div>
-                  <p className="text-white">Your Position</p>
+                  <p className="text-white">{t('yourPosition')}</p>
                   <p className="text-gray-400 text-sm font-mono">{formatWallet(userEntry.wallet)}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-2xl" style={{ color: '#00f0ff' }}>{userEntry.entries} entries</p>
-                <p className="text-gray-500 text-sm">{userEntry.referralCount} referrals</p>
+                <p className="text-2xl" style={{ color: '#00f0ff' }}>{userEntry.entries} {t('entries')}</p>
+                <p className="text-gray-500 text-sm">{userEntry.referralCount} {t('referrals').toLowerCase()}</p>
               </div>
             </div>
           </div>
@@ -117,24 +119,24 @@ export default function LeaderboardPage() {
           <table className="w-full">
             <thead className="bg-gray-900/50">
               <tr>
-                <th className="text-left p-4 text-gray-400 font-light text-sm">Rank</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm">Wallet</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm">Entries</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">Referrals</th>
-                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">Completed</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm">{t('rank')}</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm">{t('wallet')}</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm">{t('entries')}</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">{t('referrals')}</th>
+                <th className="text-left p-4 text-gray-400 font-light text-sm hidden md:table-cell">{t('completed')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800">
               {loading ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-gray-500">
-                    Loading...
+                    {t('loading')}
                   </td>
                 </tr>
               ) : successfulEntries.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center text-gray-500">
-                    No participants yet. Be the first!
+                    {t('noParticipants')}
                   </td>
                 </tr>
               ) : (
@@ -188,14 +190,14 @@ export default function LeaderboardPage() {
         {/* Failed Entries Section */}
         {failedEntries.length > 0 && (
           <div className="mt-8">
-            <h3 className="text-lg text-gray-400 mb-4">Failed Attempts ({failedEntries.length})</h3>
+            <h3 className="text-lg text-gray-400 mb-4">{t('failedAttempts')} ({failedEntries.length})</h3>
             <div className="border border-gray-700/50 rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-900/30">
                   <tr>
-                    <th className="text-left p-4 text-gray-500 font-light text-sm">Wallet</th>
-                    <th className="text-left p-4 text-gray-500 font-light text-sm">Score</th>
-                    <th className="text-left p-4 text-gray-500 font-light text-sm hidden md:table-cell">Attempted</th>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm">{t('wallet')}</th>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm">{t('score')}</th>
+                    <th className="text-left p-4 text-gray-500 font-light text-sm hidden md:table-cell">{t('attempted')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800/50">
@@ -220,28 +222,28 @@ export default function LeaderboardPage() {
 
         {/* Prize Breakdown */}
         <div className="mt-12 border-t border-gray-800 pt-12">
-          <h2 className="text-xl text-white mb-6 text-center">Prize Distribution</h2>
+          <h2 className="text-xl text-white mb-6 text-center">{t('prizeDistribution')}</h2>
           <div className="max-w-md mx-auto space-y-4">
             <div className="flex justify-between items-center p-4 border border-gray-500/25 rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="gradient-text text-lg">1st</span>
-                <span className="text-white">Grand Prize</span>
+                <span className="text-white">{t('grandPrize')}</span>
               </div>
               <span className="gradient-text">1,000,000 $KAMIYO</span>
             </div>
             <div className="flex justify-between items-center p-4 border border-gray-500/25 rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="gradient-text">2nd-11th</span>
-                <span className="text-white">Runner-up (10x)</span>
+                <span className="text-white">{t('runnerUp')} (10x)</span>
               </div>
               <span className="text-white">400,000 $KAMIYO each</span>
             </div>
             <p className="text-gray-500 text-sm text-center pt-4">
-              Winners drawn weighted by entries.
+              {t('prizeNote')}
               <br />
-              More referrals = better odds.
+              {t('moreReferrals')}
               <br />
-              Must score 5/5 and share on X to qualify.
+              {t('mustScore')}
             </p>
           </div>
         </div>

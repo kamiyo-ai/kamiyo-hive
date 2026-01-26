@@ -1,6 +1,32 @@
 {
   "subtitle": "ガバナンス",
   "title": "提案",
+  "create": {
+    "title": "提案を作成",
+    "backToProposals": "提案一覧に戻る",
+    "requiredToPropose": "提案に必要",
+    "yourBalance": "あなたの残高",
+    "connectPrompt": "提案を作成するにはウォレットを接続してください",
+    "connectWallet": "ウォレットを接続",
+    "insufficientTokens": "提案を作成するにはトークンが不足しています",
+    "needAtLeast": "最低 {amount} KAMIYO が必要です",
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "提案の概要",
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "提案の詳細な説明、理由、期待される影響",
+    "votingPeriod": "投票期間：",
+    "quorumRequired": "必要定足数：",
+    "approvalThreshold": "承認閾値：",
+    "submitting": "提案を作成中...",
+    "submit": "提案を作成",
+    "errors": {
+      "titleDescriptionRequired": "タイトルと説明は必須です",
+      "titleTooLong": "タイトルは 128 文字以下にしてください",
+      "descriptionTooLong": "説明は 1024 文字以下にしてください",
+      "insufficientTokens": "提案を作成するには最低 {amount} KAMIYO が必要です",
+      "failed": "提案の作成に失敗しました"
+    }
+  },
   "filters": {
     "all": "すべて",
     "active": "アクティブ",

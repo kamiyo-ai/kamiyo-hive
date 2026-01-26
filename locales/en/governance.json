@@ -1,6 +1,32 @@
 {
   "subtitle": "Governance",
   "title": "Proposals",
+  "create": {
+    "title": "Create Proposal",
+    "backToProposals": "Back to proposals",
+    "requiredToPropose": "Required to propose",
+    "yourBalance": "Your balance",
+    "connectPrompt": "Connect your wallet to create a proposal",
+    "connectWallet": "Connect Wallet",
+    "insufficientTokens": "Insufficient tokens to create a proposal",
+    "needAtLeast": "You need at least {amount} KAMIYO",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Brief summary of your proposal",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Detailed explanation of the proposal, its rationale, and expected impact",
+    "votingPeriod": "Voting period:",
+    "quorumRequired": "Quorum required:",
+    "approvalThreshold": "Approval threshold:",
+    "submitting": "Creating Proposal...",
+    "submit": "Create Proposal",
+    "errors": {
+      "titleDescriptionRequired": "Title and description are required",
+      "titleTooLong": "Title must be 128 characters or less",
+      "descriptionTooLong": "Description must be 1024 characters or less",
+      "insufficientTokens": "You need at least {amount} KAMIYO to create a proposal",
+      "failed": "Failed to create proposal"
+    }
+  },
   "filters": {
     "all": "All",
     "active": "Active",

@@ -1,6 +1,32 @@
 {
   "subtitle": "治理",
   "title": "提案",
+  "create": {
+    "title": "创建提案",
+    "backToProposals": "返回提案列表",
+    "requiredToPropose": "提案所需",
+    "yourBalance": "您的余额",
+    "connectPrompt": "连接钱包以创建提案",
+    "connectWallet": "连接钱包",
+    "insufficientTokens": "代币不足，无法创建提案",
+    "needAtLeast": "您需要至少 {amount} KAMIYO",
+    "titleLabel": "标题",
+    "titlePlaceholder": "提案简要概述",
+    "descriptionLabel": "描述",
+    "descriptionPlaceholder": "提案的详细说明、理由和预期影响",
+    "votingPeriod": "投票期限：",
+    "quorumRequired": "法定人数：",
+    "approvalThreshold": "通过门槛：",
+    "submitting": "创建提案中...",
+    "submit": "创建提案",
+    "errors": {
+      "titleDescriptionRequired": "标题和描述为必填项",
+      "titleTooLong": "标题不能超过 128 个字符",
+      "descriptionTooLong": "描述不能超过 1024 个字符",
+      "insufficientTokens": "创建提案需要至少 {amount} KAMIYO",
+      "failed": "创建提案失败"
+    }
+  },
   "filters": {
     "all": "全部",
     "active": "进行中",
