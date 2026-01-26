@@ -65,11 +65,9 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-16">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h1 className="text-3xl md:text-4xl text-white">Trials Leaderboard</h1>
-          </div>
-          <div style={{ transform: 'translateX(-32px)' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">Trials Leaderboard</h1>
+          <div className="sm:mr-8">
             <CtaButton text="Enter the Trials" href="/trials" />
           </div>
         </div>

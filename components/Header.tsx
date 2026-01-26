@@ -8,6 +8,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { createPortal } from 'react-dom';
 import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
+import { MobileWalletModal } from '@/components/MobileWalletModal';
 import { listTeams, SwarmTeam } from '@/lib/swarm-api';
 
 export function Header() {
@@ -21,6 +22,7 @@ export function Header() {
   const [isMenuHovered, setMenuHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [teams, setTeams] = useState<SwarmTeam[]>([]);
+  const [isMobileWalletModalOpen, setMobileWalletModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -105,6 +107,27 @@ export function Header() {
           <div className="flex items-center gap-3 md:gap-4">
             {connected && publicKey ? (
               <div className="relative" ref={dropdownRef}>
+                {/* Mobile connected indicator */}
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="md:hidden flex items-center gap-1.5 text-sm text-gray-400 border border-gray-500/50 rounded px-2 py-1 hover:border-gray-400 transition-colors"
+                >
+                  <svg className="w-4 h-4 brightness-150 flex-shrink-0" viewBox="0 0 21 18">
+                    <defs>
+                      <linearGradient id="connectedIconGradientMobile" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#00f0ff" />
+                        <stop offset="100%" stopColor="#ff44f5" />
+                      </linearGradient>
+                    </defs>
+                    <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
+                    <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
+                    <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
+                  </svg>
+                  <span className="font-mono text-[10px]">
+                    {publicKey.toBase58().slice(0, 4)}..
+                  </span>
+                </button>
+                {/* Desktop connected button */}
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="hidden md:flex items-center gap-2 text-sm text-gray-400 border border-gray-500/50 rounded px-3 py-1.5 hover:border-gray-400 transition-colors w-[192px]"
@@ -203,15 +226,25 @@ export function Header() {
                 )}
               </div>
             ) : (
-              <button
-                onClick={() => setVisible(true)}
-                onMouseEnter={() => { setConnectHovering(true); setIsConnectHovered(true); }}
-                onMouseLeave={() => { setConnectHovering(false); setIsConnectHovered(false); }}
-                className="hidden md:flex items-center gap-2 text-sm text-white tracking-wider group cursor-pointer"
-              >
-                <MorphingIcon size={22} paused={!isConnectHovered} />
-                {connectText}
-              </button>
+              <>
+                {/* Mobile connect button */}
+                <button
+                  onClick={() => setMobileWalletModalOpen(true)}
+                  className="md:hidden flex items-center gap-2 text-sm text-white tracking-wider"
+                >
+                  <MorphingIcon size={20} paused={false} />
+                </button>
+                {/* Desktop connect button */}
+                <button
+                  onClick={() => setMobileWalletModalOpen(true)}
+                  onMouseEnter={() => { setConnectHovering(true); setIsConnectHovered(true); }}
+                  onMouseLeave={() => { setConnectHovering(false); setIsConnectHovered(false); }}
+                  className="hidden md:flex items-center gap-2 text-sm text-white tracking-wider group cursor-pointer"
+                >
+                  <MorphingIcon size={22} paused={!isConnectHovered} />
+                  {connectText}
+                </button>
+              </>
             )}
 
             {/* Hamburger */}
@@ -387,7 +420,7 @@ export function Header() {
               ) : (
                 <div className="flex justify-center">
                   <button
-                    onClick={() => { setVisible(true); closeMenu(); }}
+                    onClick={() => { setMobileWalletModalOpen(true); closeMenu(); }}
                     className="transition-colors duration-300 text-sm text-gray-500 hover:text-gray-300"
                   >
                     Connect
@@ -399,6 +432,13 @@ export function Header() {
         </div>,
         document.body
       )}
+
+      {/* Mobile wallet connection modal */}
+      <MobileWalletModal
+        isOpen={isMobileWalletModalOpen}
+        onClose={() => setMobileWalletModalOpen(false)}
+        onDesktopConnect={() => setVisible(true)}
+      />
     </>
   );
 }

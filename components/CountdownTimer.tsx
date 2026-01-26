@@ -46,9 +46,9 @@ export default function CountdownTimer() {
   if (!mounted || !timeLeft) {
     return (
       <div className="text-center">
-        <div className="gradient-text text-xs uppercase tracking-wider mb-2">Trials end in</div>
-        <div className="text-2xl font-mono text-white mb-1 tracking-wider">--:--:--:--</div>
-        <div className="flex justify-center gap-6 text-xs text-gray-500">
+        <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-2">Trials end in</div>
+        <div className="text-lg sm:text-2xl font-mono text-white mb-1 tracking-wider">--:--:--:--</div>
+        <div className="flex justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-gray-500">
           <span>days</span>
           <span>hrs</span>
           <span>min</span>
@@ -72,9 +72,9 @@ export default function CountdownTimer() {
 
   return (
     <div className="text-center">
-      <div className="gradient-text text-xs uppercase tracking-wider mb-2">Trials end in</div>
-      <div className="text-2xl font-mono text-white mb-1 tracking-wider">{timeString}</div>
-      <div className="flex justify-center gap-6 text-xs text-gray-500">
+      <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-2">Trials end in</div>
+      <div className="text-lg sm:text-2xl font-mono text-white mb-1 tracking-wider">{timeString}</div>
+      <div className="flex justify-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-gray-500">
         <span>days</span>
         <span>hrs</span>
         <span>min</span>
