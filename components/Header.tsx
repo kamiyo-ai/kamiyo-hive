@@ -204,7 +204,7 @@ export function Header() {
                   onClick={() => setMobileWalletModalOpen(true)}
                   className="md:hidden flex items-center gap-2 text-sm text-white tracking-wider"
                 >
-                  <MorphingIcon size={20} paused={false} />
+                  <img src="/icons/icon-settlement.svg" alt="" className="w-5 h-5" />
                 </button>
                 {/* Desktop connect button */}
                 <button
