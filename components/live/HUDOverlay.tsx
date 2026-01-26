@@ -3,24 +3,8 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import type { SceneState } from "@/types/agent-events";
 
-// Subtle ASCII animations that appear occasionally
-const ANIMATIONS = {
-  thinking: ["◜", "◠", "◝", "◞", "◡", "◟"],
-  pulse: ["∙", "•", "●", "•", "∙", " "],
-  wave: ["≋", "≈", "∼", "−", "∼", "≈"],
-  neural: ["⋮", "⋰", "⋯", "⋱", "⋮", "⋰"],
-  signal: ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃", "▂"],
-  dots: ["   ", ".  ", ".. ", "...", " ..", "  .", "   "],
-  orbit: ["◐", "◓", "◑", "◒"],
-  data: ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"],
-};
-
-const AGENT_ANIMATIONS: Record<string, keyof typeof ANIMATIONS> = {
-  kamiyo: "thinking",
-  oracle: "signal",
-  chaos: "data",
-  sage: "orbit",
-};
+// Braille spinner animation
+const BRAILLE_FRAMES = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
 
 interface HUDOverlayProps {
   state: SceneState;
@@ -32,7 +16,7 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [animFrame, setAnimFrame] = useState(0);
-  const [activeAgent, setActiveAgent] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState(false);
   const dragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const dragStartPos = useRef({ x: 0, y: 0 });
@@ -41,16 +25,14 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setAnimFrame((f) => f + 1);
-    }, 120);
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
-  // Track which agent is currently speaking
+  // Track if any agent is currently speaking
   useEffect(() => {
-    const speakingAgents = Object.entries(state.agents)
-      .filter(([_, agent]) => agent.speaking)
-      .map(([name]) => name);
-    setActiveAgent(speakingAgents[0] || null);
+    const anyActive = Object.values(state.agents).some((agent) => agent.speaking);
+    setIsActive(anyActive);
   }, [state.agents]);
 
   useEffect(() => {
@@ -168,16 +150,9 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
         >
           <span style={{ color: "#555", fontSize: "11px", display: "flex", alignItems: "center", gap: 8 }}>
             kamiyo — events
-            {activeAgent && (
-              <span style={{
-                color: state.agents[activeAgent as keyof typeof state.agents]?.color || "#00f0ff",
-                fontFamily: "monospace",
-                minWidth: 16,
-                textAlign: "center",
-              }}>
-                {ANIMATIONS[AGENT_ANIMATIONS[activeAgent] || "thinking"][
-                  animFrame % ANIMATIONS[AGENT_ANIMATIONS[activeAgent] || "thinking"].length
-                ]}
+            {isActive && (
+              <span style={{ color: "#555", fontFamily: "monospace" }}>
+                {BRAILLE_FRAMES[animFrame % BRAILLE_FRAMES.length]}
               </span>
             )}
           </span>
@@ -215,29 +190,6 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
           </div>
         </div>
 
-        {/* Neural activity bar - shows when agents are thinking */}
-        {activeAgent && !collapsed && (
-          <div
-            style={{
-              padding: "4px 12px",
-              borderBottom: "1px solid #1a1a1f",
-              color: "#333",
-              fontSize: "9px",
-              fontFamily: "monospace",
-              letterSpacing: "1px",
-              overflow: "hidden",
-            }}
-          >
-            <span style={{ color: state.agents[activeAgent as keyof typeof state.agents]?.color || "#00f0ff", opacity: 0.6 }}>
-              {Array.from({ length: 40 }, (_, i) => {
-                const chars = "·∙•○◦⦁⊙◎";
-                const idx = (animFrame + i * 3) % chars.length;
-                return chars[idx];
-              }).join("")}
-            </span>
-          </div>
-        )}
-
         {/* Log content */}
         <div
           style={{
@@ -253,11 +205,6 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
           {recentMessages.map((msg, i) => {
             const age = Date.now() - msg.timestamp;
             const opacity = age < 5000 ? 0.9 : Math.max(0.2, 1 - age / 30000);
-            // Check if this message is from a specific agent for coloring
-            const agentMatch = msg.text.match(/^(kamiyo|oracle|chaos|sage):/i);
-            const msgColor = agentMatch
-              ? state.agents[agentMatch[1].toLowerCase() as keyof typeof state.agents]?.color || "#888"
-              : "#888";
             return (
               <div
                 key={`${msg.timestamp}-${i}`}
@@ -276,14 +223,7 @@ export function HUDOverlay({ state }: HUDOverlayProps) {
                     second: "2-digit",
                   })}
                 </span>
-                {agentMatch ? (
-                  <>
-                    <span style={{ color: msgColor }}>{agentMatch[1]}:</span>
-                    {msg.text.slice(agentMatch[0].length)}
-                  </>
-                ) : (
-                  msg.text
-                )}
+                {msg.text}
               </div>
             );
           })}
