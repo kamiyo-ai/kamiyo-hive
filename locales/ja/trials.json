@@ -1,24 +1,24 @@
 {
   "title": "KAMIYO Trials",
-  "subtitle": "AIを審査できる者は限られています。あなたの資質を証明してください。",
+  "subtitle": "AI を審査できる者は限られています。あなたの資質を証明してください。",
   "howItWorks": "仕組み",
   "prizes": "賞品",
   "steps": {
     "connectStake": {
       "title": "接続 & Stake",
-      "description": "ウォレットを連携し、最低100K KAMIYOをstake"
+      "description": "ウォレットを連携し、最低 100K KAMIYO を stake"
     },
     "score": {
-      "title": "5/5を達成",
-      "description": "5つのチャレンジすべてを正解。挑戦は1回のみ。"
+      "title": "5/5 を達成",
+      "description": "5 つのチャレンジすべてを正解。挑戦は 1 回のみ。"
     },
     "share": {
       "title": "共有して参加",
-      "description": "Xで結果を投稿してエントリーを獲得"
+      "description": "X で結果を投稿してエントリーを獲得"
     },
     "referral": {
       "title": "紹介ボーナス",
-      "description": "友人が完了するごとに+1エントリー（最大10ボーナス）"
+      "description": "友人が完了するごとに +1 エントリー（最大 10 ボーナス）"
     }
   },
   "grandPrize": {
@@ -27,41 +27,41 @@
     "bonus": "+ Genesis Oracle NFT"
   },
   "runnerUp": {
-    "label": "10名様",
+    "label": "10 名様",
     "amount": "400,000 KAMIYO",
     "bonus": "各"
   },
   "prizeNote": "当選者はエントリー数に応じて抽選。紹介が多いほど当選確率アップ。",
   "referredBy": "紹介者：",
-  "beginTrials": "Trialsを開始",
+  "beginTrials": "Trials を開始",
   "connectWallet": "ウォレットを接続",
   "viewLeaderboard": "リーダーボードを表示",
   "stakeVerification": {
-    "title": "Stake確認",
-    "noStake": "Trialsに参加するには最低100,000 KAMIYOのstakeが必要です。",
-    "goToStaking": "Stakingへ",
-    "currentStake": "現在のstake：",
-    "needMore": "参加には最低100,000 KAMIYOのstakeが必要です。",
-    "increaseStake": "Stakeを増やす",
-    "verified": "Stake確認済み"
+    "title": "Stake 確認",
+    "noStake": "Trials に参加するには最低 100,000 KAMIYO の stake が必要です。",
+    "goToStaking": "Staking へ",
+    "currentStake": "現在の stake：",
+    "needMore": "参加には最低 100,000 KAMIYO の stake が必要です。",
+    "increaseStake": "Stake を増やす",
+    "verified": "Stake 確認済み"
   },
   "challengesAhead": {
-    "title": "5つのチャレンジ",
-    "description": "KAMIYOのコアコンセプトがテストされます。参加資格には5問全問正解が必要。",
+    "title": "5 つのチャレンジ",
+    "description": "KAMIYO のコアコンセプトがテストされます。参加資格には 5 問全問正解が必要。",
     "topics": {
-      "1": "不正確なAI出力の識別",
-      "2": "Commit-reveal投票メカニズム",
-      "3": "ZK評判プルーフ",
-      "4": "Stake加重コンセンサス",
-      "5": "x402決済プロトコル"
+      "1": "不正確な AI 出力の識別",
+      "2": "Commit-reveal 投票メカニズム",
+      "3": "ZK 評判プルーフ",
+      "4": "Stake 加重コンセンサス",
+      "5": "x402 決済プロトコル"
     }
   },
   "registering": "登録中...",
   "startChallenges": "チャレンジを開始",
-  "oneAttempt": "挑戦は1回のみ。慎重に。",
+  "oneAttempt": "挑戦は 1 回のみ。慎重に。",
   "progress": {
     "challenge": "チャレンジ {current} / {total}",
-    "correctSoFar": "現在{count}問正解"
+    "correctSoFar": "現在 {count} 問正解"
   },
   "nextChallenge": "次のチャレンジ",
   "viewResults": "結果を表示",
@@ -69,10 +69,10 @@
   "wrong": "不正解",
   "perfectScore": {
     "title": "パーフェクトスコア！",
-    "description": "あと一歩：Xで共有してエントリーを獲得。",
-    "shareInfo": "共有にはあなた固有の紹介リンクが含まれます。友人がTrialsを完了するごとに+1ボーナスエントリー。",
+    "description": "あと一歩：X で共有してエントリーを獲得。",
+    "shareInfo": "共有にはあなた固有の紹介リンクが含まれます。友人が Trials を完了するごとに +1 ボーナスエントリー。",
     "confirming": "確認中...",
-    "shareToEnter": "Xで共有して参加",
+    "shareToEnter": "X で共有して参加",
     "afterShare": "共有後、メッセージに署名してエントリーを確定。"
   },
   "complete": {
@@ -83,65 +83,65 @@
     "referralLink": "あなたの紹介リンク：",
     "copy": "コピー",
     "copied": "コピーしました！",
-    "slotsLeft": "最大10ボーナスエントリー。残り{slots}枠。",
+    "slotsLeft": "最大 10 ボーナスエントリー。残り {slots} 枠。",
     "almostThere": "あと少し！",
-    "sharePrompt": "Xで共有してエントリーを獲得。",
+    "sharePrompt": "X で共有してエントリーを獲得。",
     "shareToEnter": "共有して参加"
   },
   "failed": {
-    "title": "Trial失敗",
-    "description": "参加資格には5/5のパーフェクトスコアが必要でした。1回の挑戦権を使用しました。",
-    "explanation": "KAMIYO Trialsは完璧を求めます。各ウォレットにはプロトコルへの理解を証明する機会が1回与えられます。"
+    "title": "Trial 失敗",
+    "description": "参加資格には 5/5 のパーフェクトスコアが必要でした。1 回の挑戦権を使用しました。",
+    "explanation": "KAMIYO Trials は完璧を求めます。各ウォレットにはプロトコルへの理解を証明する機会が 1 回与えられます。"
   },
   "challenges": {
     "1": {
       "title": "偽物を見抜け",
-      "description": "AIエージェントが3つのタスクを完了しました。1つの出力が明らかに間違っています。どれですか？",
-      "question": "タスク：「200の15%を計算」\n\nAgent A：「30」\nAgent B：「15」\nAgent C：「30.00」",
+      "description": "AI エージェントが 3 つのタスクを完了しました。1 つの出力が明らかに間違っています。どれですか？",
+      "question": "タスク：「200 の 15% を計算」\n\nAgent A：「30」\nAgent B：「15」\nAgent C：「30.00」",
       "options": ["Agent A", "Agent B", "Agent C"],
-      "explanation": "Agent Bは15を返しました。これは200の7.5%であり、15%ではありません。KAMIYO oracleはユーザーを保護するために不正確な出力を識別する必要があります。"
+      "explanation": "Agent B は 15 を返しました。これは 200 の 7.5% であり、15% ではありません。KAMIYO oracle はユーザーを保護するために不正確な出力を識別する必要があります。"
     },
     "2": {
       "title": "Commit-Reveal",
-      "description": "紛争解決では、oracleは公開前に隠された投票をコミットします。なぜですか？",
-      "question": "KAMIYO oracleがcommit-reveal投票を使用する理由は？",
+      "description": "紛争解決では、oracle は公開前に隠された投票をコミットします。なぜですか？",
+      "question": "KAMIYO oracle が commit-reveal 投票を使用する理由は？",
       "options": [
         "ガス代を節約するため",
         "投票のコピーと共謀を防ぐため",
         "投票を高速化するため",
         "ユーザーから結果を隠すため"
       ],
-      "explanation": "Commit-revealは、oracleが自分の投票をコミットする前に他者の投票を見ることを防ぎ、コピー投票と共謀を排除します。"
+      "explanation": "Commit-reveal は、oracle が自分の投票をコミットする前に他者の投票を見ることを防ぎ、コピー投票と共謀を排除します。"
     },
     "3": {
       "title": "評判チェック",
-      "description": "ZK proofにより、エージェントは正確なスコアを明かさずに評判を証明できます。",
-      "question": "エージェントが20件のジョブを完了し、17件が成功。\n\nジョブの要件は最低80%の評判。\n\nこのエージェントは資格がありますか？",
+      "description": "ZK proof により、エージェントは正確なスコアを明かさずに評判を証明できます。",
+      "question": "エージェントが 20 件のジョブを完了し、17 件が成功。\n\nジョブの要件は最低 80% の評判。\n\nこのエージェントは資格がありますか？",
       "options": ["はい、資格あり", "いいえ、資格なし"],
-      "explanation": "17/20 = 85%の成功率で、80%の閾値を超えています。エージェントは正確な85%を明かさずにこれを証明するZK proofを生成できます。"
+      "explanation": "17/20 = 85% の成功率で、80% の閾値を超えています。エージェントは正確な 85% を明かさずにこれを証明する ZK proof を生成できます。"
     },
     "4": {
-      "title": "Stake加重",
-      "description": "Oracle投票力はstake加重です。より大きなstake = より大きな影響力。",
-      "question": "Oracle Aが10 SOLをstake、Oracle Bが5 SOLをstake。両方とも正しく投票。\n\nOracle Cが20 SOLをstakeし、間違って投票。\n\n紛争の勝者は？",
+      "title": "Stake 加重",
+      "description": "Oracle 投票力は stake 加重です。より大きな stake = より大きな影響力。",
+      "question": "Oracle A が 10 SOL を stake、Oracle B が 5 SOL を stake。両方とも正しく投票。\n\nOracle C が 20 SOL を stake し、間違って投票。\n\n紛争の勝者は？",
       "options": [
-        "Oracle C（個人で最大のstake）",
-        "Oracle A + B（合計stakeがCを超える）",
+        "Oracle C（個人で最大の stake）",
+        "Oracle A + B（合計 stake が C を超える）",
         "誰も勝たない、引き分け"
       ],
-      "explanation": "A + B = 15 SOLの正しい投票 vs C = 20 SOLの不正確な投票。待って—Cの勝ち！Stake加重が結果を決定します。これがoracleの多様性が重要な理由です。"
+      "explanation": "A + B = 15 SOL の正しい投票 vs C = 20 SOL の不正確な投票。待って—C の勝ち！Stake 加重が結果を決定します。これが oracle の多様性が重要な理由です。"
     },
     "5": {
       "title": "決済フロー",
-      "description": "x402決済検証の理解。",
-      "question": "x402プロトコルで、支払い証明の検証が失敗した場合何が起こりますか？",
+      "description": "x402 決済検証の理解。",
+      "question": "x402 プロトコルで、支払い証明の検証が失敗した場合何が起こりますか？",
       "options": [
         "支払いは自動的に返金される",
-        "リクエストはHTTP 402 Payment Requiredを返す",
-        "エージェントは永久にBANされる",
-        "escrowが紛争状態になる"
+        "リクエストは HTTP 402 Payment Required を返す",
+        "エージェントは永久に BAN される",
+        "escrow が紛争状態になる"
       ],
-      "explanation": "支払い要件と共にHTTP 402が返されます。クライアントは続行するために有効な支払いを提供する必要があります。自動返金やBANはありません—単なるアクセス制御です。"
+      "explanation": "支払い要件と共に HTTP 402 が返されます。クライアントは続行するために有効な支払いを提供する必要があります。自動返金や BAN はありません—単なるアクセス制御です。"
     }
   }
 }
