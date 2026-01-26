@@ -110,8 +110,8 @@ function AgentWeb({ color, active }: { color: string; active: boolean }) {
     const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
     const c = new THREE.Color(color);
-    const restColor = new THREE.Color("#333344");
-    const dimLine = new THREE.Color("#222233");
+    const restColor = new THREE.Color("#0a3040");
+    const dimLine = new THREE.Color("#082830");
 
     // Smooth activation transition
     const target_activation = active ? 1 : 0;
