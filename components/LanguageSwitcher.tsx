@@ -5,10 +5,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { locales, Locale } from '@/i18n/index';
 
-const localeLabels: Record<Locale, string> = {
-  en: 'EN',
-  ja: 'JA',
-  zh: 'ZH'
+const localeNames: Record<Locale, string> = {
+  en: 'English',
+  ja: '日本語',
+  zh: '中文'
 };
 
 export function LanguageSwitcher() {
@@ -24,9 +24,15 @@ export function LanguageSwitcher() {
         setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const switchLocale = (newLocale: Locale) => {
     const segments = pathname.split('/');
@@ -44,30 +50,35 @@ export function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors border border-gray-500/25 rounded px-2 py-1"
+        className="flex items-center p-1 text-gray-500 hover:text-gray-300 transition-colors duration-300"
+        aria-label="Change language"
       >
-        <span className="font-mono">{localeLabels[locale]}</span>
         <svg
-          className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className="w-5 h-5"
           fill="none"
           stroke="currentColor"
+          strokeWidth={1}
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-1 bg-black border border-gray-500/25 rounded overflow-hidden z-50">
+        <div className="absolute left-0 mt-1 py-1 bg-black border border-gray-500/25 rounded shadow-lg min-w-[100px] z-50">
           {locales.map((l) => (
             <button
               key={l}
               onClick={() => switchLocale(l)}
-              className={`block w-full px-3 py-1.5 text-xs font-mono text-left transition-colors ${
-                l === locale ? 'text-white bg-gray-500/10' : 'text-gray-500 hover:text-gray-300 hover:bg-gray-500/10'
+              className={`w-full px-3 py-1.5 text-left text-xs transition-colors duration-200 ${
+                l === locale
+                  ? 'text-magenta'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              {localeLabels[l]}
+              {localeNames[l]}
             </button>
           ))}
         </div>
