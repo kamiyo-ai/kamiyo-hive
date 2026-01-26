@@ -53,7 +53,12 @@ export default function SwarmPage() {
       router.push(`/swarm/${team.id}`);
     } catch (err) {
       console.error('Failed to create team:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create team');
+      const message = err instanceof Error
+        ? err.message
+        : typeof err === 'string'
+          ? err
+          : 'Failed to create team';
+      setError(message);
       setCreating(false);
     }
   };

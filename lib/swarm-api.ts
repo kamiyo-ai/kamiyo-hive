@@ -54,8 +54,18 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `API error: ${res.status}`);
+    const err = await res.json().catch(() => ({}));
+    let message = `API error: ${res.status}`;
+    if (typeof err.error === 'string') {
+      message = err.error;
+    } else if (typeof err.message === 'string') {
+      message = err.message;
+    } else if (res.status === 401) {
+      message = 'Authentication required';
+    } else if (res.status === 403) {
+      message = 'Access denied';
+    }
+    throw new Error(message);
   }
   return res.json();
 }
