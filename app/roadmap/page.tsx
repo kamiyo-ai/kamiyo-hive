@@ -292,30 +292,34 @@ export default function RoadmapPage() {
       </div>
 
       {/* Stats summary */}
-      <div className="mt-16 p-6 bg-gray-900/50 border border-gray-800 rounded-lg max-w-2xl mx-auto">
-        <h3 className="text-white font-medium mb-4 text-center">Progress Overview</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-medium gradient-text">
+      <div className="mt-16">
+        <h3 className="text-xl font-light text-white mb-6">Progress Overview</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Completed</div>
+            <div className="text-white text-2xl font-light">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'complete').length, 0)}
             </div>
-            <div className="text-xs text-gray-500 mt-1">Completed</div>
+            <div className="text-gray-500 text-xs mt-1">milestones</div>
           </div>
-          <div>
-            <div className="text-2xl font-medium gradient-text">
+          <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">In Progress</div>
+            <div className="text-white text-2xl font-light">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'in-progress').length, 0)}
             </div>
-            <div className="text-xs text-gray-500 mt-1">In Progress</div>
+            <div className="text-gray-500 text-xs mt-1">milestones</div>
           </div>
-          <div>
-            <div className="text-2xl font-medium gradient-text">
+          <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Upcoming</div>
+            <div className="text-white text-2xl font-light">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'upcoming').length, 0)}
             </div>
-            <div className="text-xs text-gray-500 mt-1">Upcoming</div>
+            <div className="text-gray-500 text-xs mt-1">milestones</div>
           </div>
-          <div>
-            <div className="text-2xl font-medium gradient-text">4</div>
-            <div className="text-xs text-gray-500 mt-1">Chains</div>
+          <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Chains</div>
+            <div className="text-white text-2xl font-light">4</div>
+            <div className="text-gray-500 text-xs mt-1">supported</div>
           </div>
         </div>
       </div>
