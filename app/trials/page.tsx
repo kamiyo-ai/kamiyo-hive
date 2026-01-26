@@ -328,8 +328,33 @@ function TrialsContent() {
   const handleShare = async () => {
     if (!publicKey || !signMessage || !refCode) return;
 
-    // Open X share intent
-    const shareText = `I passed The KAMIYO Trials with a perfect score.
+    try {
+      setLoading(true);
+
+      // Sign the confirmation message FIRST, before opening Twitter
+      const message = `KAMIYO Trials Share Confirmation\nWallet: ${publicKey.toBase58()}\nTimestamp: ${Date.now()}`;
+      const messageBytes = new TextEncoder().encode(message);
+      const signature = await signMessage(messageBytes);
+
+      // Confirm share on backend
+      const response = await fetch('/api/trials/complete', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet: publicKey.toBase58(),
+          signature: bs58.encode(signature),
+          message,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setShared(true);
+        setReferralCount(data.referralCount || 0);
+        setEntries(data.entries || 0);
+
+        // Build share URL
+        const shareText = `I passed The KAMIYO Trials with a perfect score.
 
 5M $KAMIYO prize pool. Think you can do it?
 
@@ -337,43 +362,25 @@ app.kamiyo.ai/trials?ref=${refCode}
 
 @KamiyoAI`;
 
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
-      '_blank'
-    );
+        const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
 
-    // After a short delay, prompt to confirm share
-    setTimeout(async () => {
-      try {
-        setLoading(true);
-        const message = `KAMIYO Trials Share Confirmation\nWallet: ${publicKey.toBase58()}\nTimestamp: ${Date.now()}`;
-
-        const messageBytes = new TextEncoder().encode(message);
-        const signature = await signMessage(messageBytes);
-
-        const response = await fetch('/api/trials/complete', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            wallet: publicKey.toBase58(),
-            signature: bs58.encode(signature),
-            message,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setShared(true);
-          setReferralCount(data.referralCount || 0);
-          setEntries(data.entries || 0);
-          setPhase('complete');
+        // Try to open Twitter share - use location.href as fallback for in-app browsers
+        const newWindow = window.open(shareUrl, '_blank');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Popup blocked or in-app browser - use direct navigation
+          window.location.href = shareUrl;
         }
-      } catch (error) {
-        console.error('Failed to confirm share:', error);
-      } finally {
-        setLoading(false);
+
+        // Move to complete phase after a short delay to ensure state updates
+        setTimeout(() => {
+          setPhase('complete');
+        }, 100);
       }
-    }, 2000);
+    } catch (error) {
+      console.error('Failed to confirm share:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyRefLink = () => {
