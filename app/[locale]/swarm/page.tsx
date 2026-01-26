@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import PayButton from '@/components/PayButton';
 import { createTeam } from '@/lib/swarm-api';
 
@@ -12,7 +14,10 @@ const SwarmScene = dynamic(() => import('@/components/swarm/SwarmScene').then(m 
 
 export default function SwarmPage() {
   const router = useRouter();
+  const wallet = useWallet();
+  const { setVisible } = useWalletModal();
   const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Create form state
   const [name, setName] = useState('');
@@ -21,6 +26,13 @@ export default function SwarmPage() {
   const [members, setMembers] = useState([{ agentId: '', role: 'member', drawLimit: '' }]);
 
   const handleCreate = async () => {
+    setError(null);
+
+    if (!wallet.publicKey) {
+      setVisible(true);
+      return;
+    }
+
     if (!name || !dailyLimit) return;
     setCreating(true);
     try {
@@ -39,6 +51,7 @@ export default function SwarmPage() {
       router.push(`/swarm/${team.id}`);
     } catch (err) {
       console.error('Failed to create team:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create team');
       setCreating(false);
     }
   };
@@ -71,7 +84,22 @@ export default function SwarmPage() {
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
         <div className="w-full px-5 mx-auto" style={{ maxWidth: '1400px' }}>
           <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20 pointer-events-auto">
-          <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">New SwarmTeam</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-sm uppercase tracking-wider text-gray-400">New SwarmTeam</h2>
+            {!wallet.publicKey && (
+              <button
+                onClick={() => setVisible(true)}
+                className="text-xs text-[#00f0ff] hover:text-white transition-colors"
+              >
+                Connect Wallet
+              </button>
+            )}
+          </div>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded mb-4 text-sm">
+              {error}
+            </div>
+          )}
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-4">
             <div>
               <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Name</label>
@@ -144,7 +172,7 @@ export default function SwarmPage() {
 
           <div className="flex justify-center">
             <PayButton
-              text={creating ? 'Creating...' : 'Create Swarm'}
+              text={creating ? 'Creating...' : !wallet.publicKey ? 'Connect Wallet to Create' : 'Create Swarm'}
               onClick={handleCreate}
               disabled={creating || !name || !dailyLimit}
             />
