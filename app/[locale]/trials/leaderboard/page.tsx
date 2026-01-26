@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useTranslations } from 'next-intl';
 import CtaButton from '@/components/CtaButton';
-import CountdownTimer from '@/components/CountdownTimer';
 
 interface LeaderboardEntry {
   wallet: string;
@@ -67,15 +66,20 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-16">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">{t('title')}</h1>
           <div className="ml-8 sm:mr-8">
             <CtaButton text={t('enterTrials')} href="/trials" />
           </div>
         </div>
 
+        {/* Concluded Banner */}
+        <div className="bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 border border-gray-500/25 rounded-lg p-4 mb-12 text-center">
+          <p className="text-white">{t('concluded')}</p>
+        </div>
+
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-3 gap-4 mb-12">
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">{t('participants')}</div>
             <div className="text-white text-2xl font-light">{entries.length}</div>
@@ -87,9 +91,6 @@ export default function LeaderboardPage() {
           <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">{t('referrals')}</div>
             <div className="text-white text-2xl font-light">{totalReferrals}</div>
-          </div>
-          <div className="bg-black border border-gray-500/25 rounded-lg p-5">
-            <CountdownTimer />
           </div>
         </div>
 
