@@ -145,6 +145,21 @@ const roadmapData: PhaseData[] = [
         description: 'Move from Groth16 to Halo2-based proofs for trustless setup and faster verification.',
         status: 'upcoming',
       },
+      {
+        title: 'Agent Liability Insurance',
+        description: 'Decentralized insurance pools for autonomous agent failures. Stake-backed coverage with reputation-weighted premiums.',
+        status: 'upcoming',
+      },
+      {
+        title: 'Sybil-Resistant Identity',
+        description: 'Hardware attestation combined with behavioral fingerprinting to prove agent uniqueness without centralized verification.',
+        status: 'upcoming',
+      },
+      {
+        title: 'Decentralized Arbitration Court',
+        description: 'On-chain dispute resolution with ZK-anonymous juries. Staked arbiters earn fees for honest rulings.',
+        status: 'upcoming',
+      },
     ],
   },
 ];
