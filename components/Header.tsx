@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
@@ -13,10 +14,11 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { listTeams, SwarmTeam } from '@/lib/swarm-api';
 
 export function Header() {
+  const t = useTranslations('common');
   const pathname = usePathname();
   const { publicKey, disconnect, connected } = useWallet();
   const { setVisible } = useWalletModal();
-  const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText('Connect', true);
+  const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText(t('buttons.connect'), true);
   const [isConnectHovered, setIsConnectHovered] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -41,10 +43,10 @@ export function Header() {
   }, [connected, fetchTeams]);
 
   const navItems = [
-    { href: '/dreams', label: 'Dreams' },
-    { href: '/stake', label: 'Stake' },
-    { href: '/governance', label: 'Governance' },
-    { href: '/escrow', label: 'Escrow' },
+    { href: '/dreams', label: t('nav.dreams') },
+    { href: '/stake', label: t('nav.stake') },
+    { href: '/governance', label: t('nav.governance') },
+    { href: '/escrow', label: t('nav.escrow') },
   ];
 
   useEffect(() => { setMounted(true); }, []);
@@ -100,7 +102,7 @@ export function Header() {
                 rel="noopener noreferrer"
                 className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300 uppercase tracking-wider"
               >
-                Website
+                {t('nav.website')}
               </a>
             </nav>
           </div>
@@ -143,7 +145,7 @@ export function Header() {
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-black border border-gray-500/50 rounded-lg shadow-xl overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-500/25">
-                      <p className="text-xs text-gray-500 uppercase tracking-wider">Connected</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">{t('buttons.connected')}</p>
                       <p className="text-[0.8rem] text-white font-mono mt-1">
                         {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-8)}
                       </p>
@@ -169,7 +171,7 @@ export function Header() {
                           onClick={() => setIsDropdownOpen(false)}
                           className="flex items-center gap-1 px-4 py-1.5 text-[0.7rem] text-gray-600 hover:text-gray-400 transition-colors"
                         >
-                          <span>+</span> New Team
+                          <span>+</span> {t('buttons.newTeam')}
                         </Link>
                       </div>
                     )}
@@ -183,7 +185,7 @@ export function Header() {
                         <svg className="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
-                        Link X Account
+                        {t('buttons.linkXAccount')}
                       </Link>
                       <button
                         onClick={() => {
@@ -195,7 +197,7 @@ export function Header() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        Disconnect
+                        {t('buttons.disconnect')}
                       </button>
                     </div>
                   </div>
@@ -323,7 +325,7 @@ export function Header() {
                     pathname === '/roadmap' ? 'text-white' : 'text-gray-500 hover:text-gray-300'
                   }`}
                 >
-                  Roadmap
+                  {t('nav.roadmap')}
                 </Link>
                 <a
                   href="https://kamiyo.ai"
@@ -332,7 +334,7 @@ export function Header() {
                   onClick={closeMenu}
                   className="transition-colors duration-300 text-xs text-gray-500 hover:text-gray-300"
                 >
-                  Website
+                  {t('nav.website')}
                 </a>
                 <a
                   href="https://kamiyo.ai/docs"
@@ -341,7 +343,7 @@ export function Header() {
                   onClick={closeMenu}
                   className="transition-colors duration-300 text-xs text-gray-500 hover:text-gray-300"
                 >
-                  Docs
+                  {t('nav.docs')}
                 </a>
                 <a
                   href="https://kamiyo.ai/privacy-policy"
@@ -350,7 +352,7 @@ export function Header() {
                   onClick={closeMenu}
                   className="transition-colors duration-300 text-xs text-gray-500 hover:text-gray-300"
                 >
-                  Privacy Policy
+                  {t('nav.privacyPolicy')}
                 </a>
                 <a
                   href="https://kamiyo.ai/terms-of-service"
@@ -359,7 +361,7 @@ export function Header() {
                   onClick={closeMenu}
                   className="transition-colors duration-300 text-xs text-gray-500 hover:text-gray-300"
                 >
-                  Terms of Service
+                  {t('nav.termsOfService')}
                 </a>
               </nav>
 
