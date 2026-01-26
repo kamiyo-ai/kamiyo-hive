@@ -27,9 +27,9 @@ export default function CtaButton({ text, href, variant = 'default' }: CtaButton
         setIsHovering(false);
         setIsHovered(false);
       }}
-      className="group transition-all duration-300 relative px-4 sm:px-6 py-2 sm:py-3 text-white text-[10px] sm:text-xs uppercase overflow-visible -ml-4 sm:-ml-8"
+      className="group transition-all duration-300 relative px-5 sm:px-6 py-2.5 sm:py-3 text-white text-xs uppercase overflow-visible -ml-6 sm:-ml-8"
     >
-      <span className="relative z-10 ml-4 sm:ml-8 tracking-wider transition-all duration-300 ease-out inline-block whitespace-nowrap">
+      <span className="relative z-10 ml-6 sm:ml-8 tracking-wider transition-all duration-300 ease-out inline-block whitespace-nowrap">
         {scrambledText}
       </span>
 
