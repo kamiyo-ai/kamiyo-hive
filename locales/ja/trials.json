@@ -57,7 +57,7 @@
     "amount": "400,000 KAMIYO",
     "bonus": "各"
   },
-  "prizeNote": "当選者はエントリー数に応じて抽選。紹介が多いほど当選確率アップ。",
+  "prizeNote": "当選者はランダム抽選。各エントリー = 抽選券 1 枚。紹介が多いほど抽選券が増え、当選確率アップ。",
   "referredBy": "紹介者：",
   "beginTrials": "Trials を開始",
   "connectWallet": "ウォレットを接続",

@@ -57,7 +57,7 @@
     "amount": "400,000 KAMIYO",
     "bonus": "每人"
   },
-  "prizeNote": "中奖者按参赛名额加权抽取。推荐越多，中奖几率越高。",
+  "prizeNote": "中奖者随机抽取。每个名额 = 1 张抽奖券。推荐越多，抽奖券越多，中奖几率越高。",
   "referredBy": "推荐人：",
   "beginTrials": "开始试炼",
   "connectWallet": "连接钱包",

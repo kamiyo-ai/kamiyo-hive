@@ -57,7 +57,7 @@
     "amount": "400,000 KAMIYO",
     "bonus": "each"
   },
-  "prizeNote": "Winners drawn weighted by entries. More referrals = better odds.",
+  "prizeNote": "Winners randomly drawn. Each entry = 1 ticket in the lottery. More referrals = more tickets = better odds.",
   "referredBy": "Referred by:",
   "beginTrials": "Begin Trials",
   "connectWallet": "Connect Wallet",
