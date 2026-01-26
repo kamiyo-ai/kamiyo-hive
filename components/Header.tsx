@@ -112,17 +112,7 @@ export function Header() {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="md:hidden flex items-center gap-1.5 text-sm text-gray-400 border border-gray-500/50 rounded px-2 py-1 hover:border-gray-400 transition-colors"
                 >
-                  <svg className="w-4 h-4 brightness-150 flex-shrink-0" viewBox="0 0 21 18">
-                    <defs>
-                      <linearGradient id="connectedIconGradientMobile" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#00f0ff" />
-                        <stop offset="100%" stopColor="#ff44f5" />
-                      </linearGradient>
-                    </defs>
-                    <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
-                    <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
-                    <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradientMobile)" />
-                  </svg>
+                  <img src="/icons/icon-settlement.svg" alt="" className="w-4 h-4 flex-shrink-0" />
                   <span className="font-mono text-[10px]">
                     {publicKey.toBase58().slice(0, 4)}..
                   </span>
@@ -132,25 +122,7 @@ export function Header() {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="hidden md:flex items-center gap-2 text-sm text-gray-400 border border-gray-500/50 rounded px-3 py-1.5 hover:border-gray-400 transition-colors w-[192px]"
                 >
-                  <svg className="w-[18px] h-[18px] brightness-150 flex-shrink-0" viewBox="0 0 21 18">
-                    <defs>
-                      <linearGradient id="connectedIconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#00f0ff" />
-                        <stop offset="100%" stopColor="#ff44f5" />
-                      </linearGradient>
-                    </defs>
-                    <rect x="3.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="7.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="7.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="11.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="15.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="3.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="15.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="5.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="1.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="1.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="9.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="17.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="19.4" y="7.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="19.4" y="9.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="3.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="3.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="5.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="7.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="7.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="9.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="11.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="11.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="13.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                    <rect x="15.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="11.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="15.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" /><rect x="17.4" y="13.4" width="1.2" height="1.2" fill="url(#connectedIconGradient)" />
-                  </svg>
+                  <img src="/icons/icon-settlement.svg" alt="" className="w-[18px] h-[18px] flex-shrink-0" />
                   <span className="font-mono text-xs flex-1 text-left">
                     {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
                   </span>
