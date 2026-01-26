@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "dreams": "Dreams",
+    "stake": "Stake",
+    "governance": "Governance",
+    "escrow": "Escrow",
+    "website": "Website",
+    "roadmap": "Roadmap",
+    "docs": "Docs",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "footer": {
+    "copyright": "Copyright",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "xTwitter": "X/Twitter",
+    "discord": "Discord",
+    "telegram": "Telegram",
+    "github": "GitHub"
+  },
+  "buttons": {
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connected": "Connected",
+    "linkXAccount": "Link X Account",
+    "newTeam": "New Team",
+    "enterTrials": "Enter Trials"
+  }
+}

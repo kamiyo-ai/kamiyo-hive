@@ -9,6 +9,7 @@ import { createPortal } from 'react-dom';
 import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
 import { MobileWalletModal } from '@/components/MobileWalletModal';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { listTeams, SwarmTeam } from '@/lib/swarm-api';
 
 export function Header() {
@@ -105,6 +106,9 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-3 md:gap-4">
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
             {connected && publicKey ? (
               <div className="relative" ref={dropdownRef}>
                 {/* Mobile connected indicator */}
