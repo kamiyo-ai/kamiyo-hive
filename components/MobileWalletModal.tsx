@@ -69,11 +69,11 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
             onClick={() => openMobileWallet('phantom')}
             className="w-full flex items-center gap-4 p-4 bg-gray-900/50 border border-gray-500/30 rounded-lg hover:border-purple-500/50 hover:bg-gray-900 transition-all"
           >
-            <div className="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
-              <svg className="w-6 h-6" viewBox="0 0 128 128" fill="white">
-                <path d="M110.6 46.6c-1.3-4.8-4.2-9-8.3-11.7-4.1-2.7-9-3.8-13.8-3.1-4.8.7-9.2 3.1-12.3 6.7l-12.2 14c-1.6 1.9-4.1 2.9-6.6 2.7-2.5-.2-4.8-1.5-6.1-3.6L38.8 31c-3.3-5.2-8.7-8.7-14.8-9.5-6.1-.8-12.2 1.2-16.8 5.4-4.6 4.2-7.2 10.2-7 16.4.2 6.2 3.2 12 8.2 15.8l42.8 32.8c2.2 1.7 3.5 4.3 3.5 7.1v14.9c0 4.4 2.6 8.4 6.7 10.1 4.1 1.7 8.8.8 11.9-2.3l8.5-8.5c2.1-2.1 3.3-5 3.3-8V86.7c0-2.8 1.3-5.4 3.5-7.1l18.4-14.1c5-3.8 8-9.6 8.2-15.8.2-3.1-.4-6.2-1.6-9z"/>
-              </svg>
-            </div>
+            <img
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzUxMUNBOCIgcng9IjI2Ii8+PHBhdGggZmlsbD0idXJsKCNhKSIgZD0iTTExMC42IDQ2LjZjLTEuMy00LjgtNC4yLTktOC4zLTExLjctNC4xLTIuNy05LTMuOC0xMy44LTMuMS00LjguNy05LjIgMy4xLTEyLjMgNi43bC0xMi4yIDE0Yy0xLjYgMS45LTQuMSAyLjktNi42IDIuNy0yLjUtLjItNC44LTEuNS02LjEtMy42TDM4LjggMzFjLTMuMy01LjItOC43LTguNy0xNC44LTkuNS02LjEtLjgtMTIuMiAxLjItMTYuOCA1LjQtNC42IDQuMi03LjIgMTAuMi03IDE2LjQuMiA2LjIgMy4yIDEyIDguMiAxNS44bDQyLjggMzIuOGMyLjIgMS43IDMuNSA0LjMgMy41IDcuMXYxNC45YzAgNC40IDIuNiA4LjQgNi43IDEwLjEgNC4xIDEuNyA4LjguOCAxMS45LTIuM2w4LjUtOC41YzIuMS0yLjEgMy4zLTUgMy4zLTh2LTE4LjVjMC0yLjggMS4zLTUuNCAzLjUtNy4xbDE4LjQtMTQuMWM1LTMuOCA4LTkuNiA4LjItMTUuOC4yLTMuMS0uNC02LjItMS42LTkuMXoiLz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSI2NCIgeDI9IjY0IiB5MT0iMjAiIHkyPSIxMjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii43OCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg=="
+              alt="Phantom"
+              className="w-10 h-10 rounded-lg"
+            />
             <div className="flex-1 text-left">
               <div className="text-white font-medium">Phantom</div>
               <div className="text-xs text-gray-500">Popular Solana wallet</div>
@@ -88,11 +88,11 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
             onClick={() => openMobileWallet('solflare')}
             className="w-full flex items-center gap-4 p-4 bg-gray-900/50 border border-gray-500/30 rounded-lg hover:border-orange-500/50 hover:bg-gray-900 transition-all"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center">
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
-            </div>
+            <img
+              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iI0ZDNTMxRCIgcng9IjI2Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTk4LjUgNTguMmwtMjktMTYuN2MtNC41LTIuNi0xMC0yLjYtMTQuNSAwbC0yOSAxNi43Yy00LjUgMi42LTcuMiA3LjQtNy4yIDEyLjZ2MzMuNWMwIDUuMiAyLjcgMTAgNy4yIDEyLjZsMjkgMTYuN2M0LjUgMi42IDEwIDIuNiAxNC41IDBsMjktMTYuN2M0LjUtMi42IDcuMi03LjQgNy4yLTEyLjZWNzAuOGMwLTUuMi0yLjctMTAtNy4yLTEyLjZ6bS0zNS41IDU0LjVjLTEwLjggMC0xOS41LTguNy0xOS41LTE5LjVzOC43LTE5LjUgMTkuNS0xOS41IDE5LjUgOC43IDE5LjUgMTkuNS04LjcgMTkuNS0xOS41IDE5LjV6Ii8+PC9zdmc+"
+              alt="Solflare"
+              className="w-10 h-10 rounded-lg"
+            />
             <div className="flex-1 text-left">
               <div className="text-white font-medium">Solflare</div>
               <div className="text-xs text-gray-500">Web & mobile wallet</div>
