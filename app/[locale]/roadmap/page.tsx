@@ -24,7 +24,7 @@ const roadmapData: PhaseData[] = [
     id: 'foundation',
     name: 'Phase 1',
     subtitle: 'Foundation',
-    period: 'Q4 2024 - Jan 2025 (Complete)',
+    period: 'Q4 2024 - Jan 2026 (Complete)',
     milestones: [
       {
         title: 'Core Protocol Launch',
