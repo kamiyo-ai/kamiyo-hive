@@ -24,7 +24,7 @@ const roadmapData: PhaseData[] = [
     id: 'foundation',
     name: 'Phase 1',
     subtitle: 'Foundation',
-    period: 'Q4 2024 - Q1 2025',
+    period: 'Q4 2024 - Q1 2025 (Complete)',
     milestones: [
       {
         title: 'Core Protocol Launch',
@@ -57,7 +57,7 @@ const roadmapData: PhaseData[] = [
     id: 'expansion',
     name: 'Phase 2',
     subtitle: 'Expansion',
-    period: 'Q2 2025',
+    period: 'Q2 - Q4 2025 (Complete)',
     milestones: [
       {
         title: 'Governance System',
@@ -75,11 +75,6 @@ const roadmapData: PhaseData[] = [
         status: 'in-progress',
       },
       {
-        title: 'SwarmTeams',
-        description: 'Multi-agent coordination with shared budgets, task proposals, and ZK-private voting.',
-        status: 'in-progress',
-      },
-      {
         title: 'Base Mainnet',
         description: 'ZKReputation contract deployment on Base with Groth16 verifier.',
         status: 'complete',
@@ -90,8 +85,13 @@ const roadmapData: PhaseData[] = [
     id: 'scale',
     name: 'Phase 3',
     subtitle: 'Scale',
-    period: 'Q3-Q4 2025',
+    period: 'Q1 - Q2 2026',
     milestones: [
+      {
+        title: 'SwarmTeams',
+        description: 'Multi-agent coordination with shared budgets, task proposals, and ZK-private voting.',
+        status: 'in-progress',
+      },
       {
         title: 'Monad Integration',
         description: 'Parallel execution, PDA emulation, agent proxy, and reputation mirror contracts.',
@@ -103,19 +103,19 @@ const roadmapData: PhaseData[] = [
         status: 'upcoming',
       },
       {
-        title: 'Private Payments',
-        description: 'ShadowWire integration via Radr for shielded transfers with escrow protection.',
+        title: 'ShadowWire Payments',
+        description: 'Private Payments via Radr Labs ShadowWire for shielded transfers with escrow protection.',
         status: 'upcoming',
       },
       {
         title: 'Quality Oracle Network',
-        description: 'Decentralized quality scoring via Switchboard and OriginTrail DKG oracles.',
+        description: 'Decentralized quality scoring via added OriginTrail DKG oracles.',
         status: 'upcoming',
       },
       {
         title: 'Blindfold Card Issuance',
         description: 'ZK reputation-gated card issuance for agent spending in the physical world.',
-        status: 'upcoming',
+        status: 'in-progress',
       },
     ],
   },
@@ -123,7 +123,7 @@ const roadmapData: PhaseData[] = [
     id: 'future',
     name: 'Phase 4',
     subtitle: 'Future',
-    period: '2026+',
+    period: 'Q3 2026+',
     milestones: [
       {
         title: 'Cross-Chain Settlement',
@@ -150,20 +150,23 @@ const roadmapData: PhaseData[] = [
 ];
 
 function StatusBadge({ status }: { status: Milestone['status'] }) {
-  const styles = {
-    complete: 'bg-green-500/20 text-green-400 border-green-500/30',
-    'in-progress': 'bg-cyan/20 text-cyan border-cyan/30',
-    upcoming: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-  };
-
   const labels = {
     complete: 'Complete',
     'in-progress': 'In Progress',
     upcoming: 'Upcoming',
   };
 
+  const inlineStyles: Record<Milestone['status'], React.CSSProperties> = {
+    complete: { backgroundColor: 'rgba(0, 240, 255, 0.2)', color: '#00f0ff', borderColor: 'rgba(0, 240, 255, 0.3)' },
+    'in-progress': { backgroundColor: 'rgba(255, 68, 245, 0.2)', color: '#ff44f5', borderColor: 'rgba(255, 68, 245, 0.3)' },
+    upcoming: { backgroundColor: 'rgba(107, 114, 128, 0.2)', color: '#9ca3af', borderColor: 'rgba(107, 114, 128, 0.3)' },
+  };
+
   return (
-    <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${styles[status]}`}>
+    <span
+      className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border"
+      style={inlineStyles[status]}
+    >
       {labels[status]}
     </span>
   );
@@ -171,7 +174,7 @@ function StatusBadge({ status }: { status: Milestone['status'] }) {
 
 function MilestoneCard({ milestone }: { milestone: Milestone }) {
   return (
-    <div className="card bg-black border border-gray-800 rounded-lg p-5 hover:border-transparent transition-all">
+    <div className="bg-black border border-gray-800 rounded-lg p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <h4 className="text-white font-medium">{milestone.title}</h4>
         <StatusBadge status={milestone.status} />
@@ -198,10 +201,13 @@ function PhaseSection({ phase, isActive }: { phase: PhaseData; isActive: boolean
             <h3 className="text-xl text-white font-medium">{phase.subtitle}</h3>
             <span className="text-xs text-gray-600">{phase.period}</span>
           </div>
-          <div className="mt-2 h-1 bg-gray-800 rounded-full overflow-hidden">
+          <div className="mt-2 h-px bg-gray-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-cyan to-magenta transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
+              className="h-px transition-all duration-500"
+              style={{
+                width: `${progressPercent}%`,
+                background: 'linear-gradient(90deg, #00f0ff, #ff44f5)'
+              }}
             />
           </div>
           <div className="mt-1 text-xs text-gray-600">
@@ -228,7 +234,7 @@ export default function RoadmapPage() {
 
   return (
     <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
-      <div className="subheading-border mb-10 pb-6">
+      <div className="mb-10 pb-6">
         <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
           — Roadmap
         </p>
@@ -275,25 +281,25 @@ export default function RoadmapPage() {
         <h3 className="text-white font-medium mb-4">Progress Overview</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl text-white font-medium">
+            <div className="text-2xl font-medium gradient-text">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'complete').length, 0)}
             </div>
             <div className="text-xs text-gray-500 mt-1">Completed</div>
           </div>
           <div>
-            <div className="text-2xl text-cyan font-medium">
+            <div className="text-2xl font-medium gradient-text">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'in-progress').length, 0)}
             </div>
             <div className="text-xs text-gray-500 mt-1">In Progress</div>
           </div>
           <div>
-            <div className="text-2xl text-gray-400 font-medium">
+            <div className="text-2xl font-medium gradient-text">
               {roadmapData.reduce((acc, p) => acc + p.milestones.filter(m => m.status === 'upcoming').length, 0)}
             </div>
             <div className="text-xs text-gray-500 mt-1">Upcoming</div>
           </div>
           <div>
-            <div className="text-2xl text-white font-medium">4</div>
+            <div className="text-2xl font-medium gradient-text">4</div>
             <div className="text-xs text-gray-500 mt-1">Chains</div>
           </div>
         </div>
