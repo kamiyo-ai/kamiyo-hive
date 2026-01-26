@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -18,6 +18,7 @@ export default function SwarmPage() {
   const { setVisible } = useWalletModal();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const pendingCreate = useRef(false);
 
   // Create form state
   const [name, setName] = useState('');
@@ -25,14 +26,15 @@ export default function SwarmPage() {
   const [dailyLimit, setDailyLimit] = useState('');
   const [members, setMembers] = useState([{ agentId: '', role: 'member', drawLimit: '' }]);
 
-  const handleCreate = async () => {
-    setError(null);
-
-    if (!wallet.publicKey) {
-      setVisible(true);
-      return;
+  // When wallet connects after user clicked create, proceed with creation
+  useEffect(() => {
+    if (wallet.publicKey && pendingCreate.current) {
+      pendingCreate.current = false;
+      doCreate();
     }
+  }, [wallet.publicKey]);
 
+  const doCreate = async () => {
     if (!name || !dailyLimit) return;
     setCreating(true);
     try {
@@ -54,6 +56,18 @@ export default function SwarmPage() {
       setError(err instanceof Error ? err.message : 'Failed to create team');
       setCreating(false);
     }
+  };
+
+  const handleCreate = async () => {
+    setError(null);
+
+    if (!wallet.publicKey) {
+      pendingCreate.current = true;
+      setVisible(true);
+      return;
+    }
+
+    doCreate();
   };
 
   const addMemberRow = () => {
