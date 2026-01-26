@@ -5,7 +5,13 @@ import { prisma } from '@/lib/prisma';
 // DELETE this endpoint after running
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
+  const expectedSecret = process.env.ADMIN_SECRET;
+
+  if (!expectedSecret) {
+    return NextResponse.json({ error: 'ADMIN_SECRET not configured' }, { status: 500 });
+  }
+
+  if (authHeader !== `Bearer ${expectedSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
