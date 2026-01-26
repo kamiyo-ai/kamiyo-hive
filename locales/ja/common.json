@@ -2,29 +2,29 @@
   "nav": {
     "dreams": "Dreams",
     "stake": "Stake",
-    "governance": "Governance",
+    "governance": "ガバナンス",
     "escrow": "Escrow",
-    "website": "Website",
-    "roadmap": "Roadmap",
-    "docs": "Docs",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "website": "ウェブサイト",
+    "roadmap": "ロードマップ",
+    "docs": "ドキュメント",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約"
   },
   "footer": {
-    "copyright": "Copyright",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
+    "copyright": "著作権",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約",
     "xTwitter": "X/Twitter",
     "discord": "Discord",
     "telegram": "Telegram",
     "github": "GitHub"
   },
   "buttons": {
-    "connect": "Connect",
-    "disconnect": "Disconnect",
-    "connected": "Connected",
-    "linkXAccount": "Link X Account",
-    "newTeam": "New Team",
-    "enterTrials": "Enter Trials"
+    "connect": "接続",
+    "disconnect": "切断",
+    "connected": "接続済み",
+    "linkXAccount": "Xアカウントを連携",
+    "newTeam": "新規チーム",
+    "enterTrials": "Trialsに参加"
   }
 }

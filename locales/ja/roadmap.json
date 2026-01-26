@@ -1,0 +1,137 @@
+{
+  "subtitle": "ロードマップ",
+  "title": "開発タイムライン",
+  "description": "自律型エージェントのための信頼インフラを構築。Solanaからマルチチェーンへ、escrowからクロスチェーン決済へ。",
+  "filters": {
+    "all": "全フェーズ"
+  },
+  "phases": {
+    "foundation": {
+      "name": "フェーズ 1",
+      "subtitle": "基盤",
+      "period": "2024年Q4 - 2025年1月（完了）"
+    },
+    "expansion": {
+      "name": "フェーズ 2",
+      "subtitle": "拡張",
+      "period": "2025年Q2 - 2026年Q1"
+    },
+    "scale": {
+      "name": "フェーズ 3",
+      "subtitle": "スケール",
+      "period": "2026年Q1 - Q2"
+    },
+    "future": {
+      "name": "フェーズ 4",
+      "subtitle": "将来",
+      "period": "2026年Q3以降"
+    }
+  },
+  "status": {
+    "complete": "完了",
+    "inProgress": "進行中",
+    "upcoming": "予定"
+  },
+  "progress": {
+    "complete": "完了"
+  },
+  "milestones": {
+    "coreProtocol": {
+      "title": "コアプロトコルローンチ",
+      "description": "エージェントID、escrow契約、紛争解決を備えたSolanaメインネットデプロイ。"
+    },
+    "zkReputation": {
+      "title": "ZK評判プルーフ",
+      "description": "正確なスコアを明かさずに評判閾値を証明するGroth16検証。"
+    },
+    "oracleConsensus": {
+      "title": "Oracleコンセンサスシステム",
+      "description": "プライベートな紛争解決のためのZK proof付きマルチoracle commit-reveal投票。"
+    },
+    "x402Integration": {
+      "title": "x402決済統合",
+      "description": "自動escrow保護とSLA強制を備えたHTTP 402決済プロトコル。"
+    },
+    "tokenLaunch": {
+      "title": "トークンローンチ",
+      "description": "MEV保護用transfer hookとガバナンス権を持つ$KAMIYOトークン。"
+    },
+    "governance": {
+      "title": "ガバナンスシステム",
+      "description": "staking乗数付きトークン加重投票。提案作成、定足数追跡、タイムロック実行。"
+    },
+    "staking": {
+      "title": "Stakingプロトコル",
+      "description": "期間ベースの乗数（180日で1x-2x）付き片側staking。"
+    },
+    "agentFrameworks": {
+      "title": "エージェントフレームワーク統合",
+      "description": "ElizaOS、Daydreams、LangChain、Vercel AI SDK、MCPサーバープラグイン。"
+    },
+    "baseMainnet": {
+      "title": "Baseメインネット",
+      "description": "Groth16検証器を備えたBase上のZKReputationコントラクトデプロイ。"
+    },
+    "swarmTeams": {
+      "title": "SwarmTeams",
+      "description": "共有予算、タスク提案、ZKプライベート投票によるマルチエージェント連携。"
+    },
+    "monad": {
+      "title": "Monad統合",
+      "description": "並列実行、PDAエミュレーション、エージェントプロキシ、評判ミラーコントラクト。"
+    },
+    "hyperliquid": {
+      "title": "Hyperliquid統合",
+      "description": "自律型取引エージェント向けエージェントレジストリ、vault統合、コピートレード。"
+    },
+    "shadowWire": {
+      "title": "ShadowWire決済",
+      "description": "escrow保護付きシールド送金のためのRadr Labs ShadowWireによるプライベート決済。"
+    },
+    "qualityOracle": {
+      "title": "品質Oracleネットワーク",
+      "description": "追加のOriginTrail DKG oracleによる分散型品質スコアリング。"
+    },
+    "blindfold": {
+      "title": "Blindfoldカード発行",
+      "description": "エージェントの現実世界での支出のためのZK評判ゲート付きカード発行。"
+    },
+    "crossChain": {
+      "title": "クロスチェーン決済",
+      "description": "Solana、Base、Monad、Hyperliquid間の統一escrowと紛争解決。"
+    },
+    "reputationPortability": {
+      "title": "エージェント評判ポータビリティ",
+      "description": "履歴を明かさずにチェーン間で評判を移転するZK proof。"
+    },
+    "agentMesh": {
+      "title": "自律型エージェントメッシュ",
+      "description": "人間の介入なしのトラストレスなエージェント間決済とサービス契約。"
+    },
+    "halo2": {
+      "title": "Halo2移行",
+      "description": "トラストレスセットアップと高速検証のためのGroth16からHalo2ベースproofへの移行。"
+    },
+    "insurance": {
+      "title": "エージェント賠償保険",
+      "description": "自律型エージェント障害のための分散型保険プール。評判加重プレミアム付きstake裏付けカバレッジ。"
+    },
+    "sybilResistant": {
+      "title": "Sybil耐性ID",
+      "description": "中央集権的検証なしでエージェントの一意性を証明するハードウェア証明と行動フィンガープリントの組み合わせ。"
+    },
+    "arbitrationCourt": {
+      "title": "分散型仲裁裁判所",
+      "description": "ZK匿名陪審によるオンチェーン紛争解決。stake裏付け仲裁者が誠実な判定で手数料を獲得。"
+    }
+  },
+  "overview": {
+    "title": "進捗概要",
+    "completed": "完了",
+    "inProgress": "進行中",
+    "upcoming": "予定",
+    "chains": "チェーン",
+    "milestones": "マイルストーン",
+    "supported": "対応"
+  }
+}

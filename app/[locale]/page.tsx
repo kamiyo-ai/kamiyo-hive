@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 import CtaButton from '@/components/CtaButton';
 import Footer from '@/components/Footer';
 import Typewriter from '@/components/Typewriter';
@@ -11,6 +12,7 @@ const ParticleScene = dynamic(() => import('@/components/ParticleScene'), {
 });
 
 export default function Home() {
+  const t = useTranslations('home');
   const [sceneReady, setSceneReady] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
@@ -50,9 +52,9 @@ export default function Home() {
 
         <div className="flex-1 flex flex-col items-center justify-center z-10 gap-6">
           <h1 className="text-[1.75rem] md:text-[2.25rem] text-white tracking-wider text-center leading-snug pb-4">
-            <Typewriter text="The Trials have begun..." speed={50} />
+            <Typewriter text={t('typewriter')} speed={50} />
           </h1>
-          <CtaButton text="Enter Trials" href="/trials" variant="hero" />
+          <CtaButton text={t('enterTrials')} href="/trials" variant="hero" />
         </div>
 
         <div className="relative z-10">

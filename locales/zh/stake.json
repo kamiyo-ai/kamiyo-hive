@@ -1,0 +1,86 @@
+{
+  "title": "质押",
+  "description": "质押 $KAMIYO 可获得最高 24% 年化收益，带时长乘数。无锁定期，可随时取出。",
+  "stats": {
+    "totalStaked": "总质押量",
+    "baseApy": "基础年化",
+    "maxApy": "最高年化",
+    "minimum": "最低质押",
+    "annual": "年化",
+    "with2xMultiplier": "2x 乘数"
+  },
+  "position": {
+    "title": "我的仓位",
+    "connectPrompt": "连接钱包进行质押",
+    "walletBalance": "钱包余额",
+    "stakedAmount": "已质押数量",
+    "multiplier": "乘数",
+    "duration": "质押时长",
+    "effectiveApy": "实际年化",
+    "noActiveStake": "暂无质押",
+    "disconnect": "断开连接"
+  },
+  "stake": {
+    "title": "质押",
+    "connectPrompt": "连接钱包进行质押",
+    "amountLabel": "数量（最低 100,000）",
+    "max": "最大",
+    "processing": "处理中...",
+    "button": "质押 KAMIYO",
+    "minError": "最低质押数量为 {amount} KAMIYO"
+  },
+  "unstake": {
+    "title": "取消质押",
+    "connectPrompt": "连接钱包取消质押",
+    "amountLabel": "数量",
+    "max": "最大",
+    "warning": "取消质押将重置您的时长乘数。待领取奖励将自动发放。",
+    "processing": "处理中...",
+    "button": "取消质押",
+    "invalidAmount": "取消质押数量无效"
+  },
+  "claim": {
+    "title": "领取奖励",
+    "connectPrompt": "连接钱包领取奖励",
+    "description": "领取您累积的质押奖励。奖励从奖励金库分发。",
+    "processing": "处理中...",
+    "button": "领取奖励",
+    "success": "奖励已领取"
+  },
+  "multipliers": {
+    "title": "时长乘数",
+    "description": "您的乘数根据质押时长自动增加",
+    "tableHeaders": {
+      "duration": "时长",
+      "multiplier": "乘数",
+      "effectiveApy": "实际年化"
+    },
+    "durations": {
+      "0-30": "0-30 天",
+      "30-90": "30-90 天",
+      "90-180": "90-180 天",
+      "180+": "180+ 天"
+    },
+    "labels": {
+      "180+": "180+ 天",
+      "90+": "90+ 天",
+      "30+": "30+ 天",
+      "<30": "< 30 天"
+    }
+  },
+  "tx": {
+    "confirmed": "交易已确认",
+    "continue": "继续",
+    "signing": "等待签名...",
+    "sending": "发送交易中...",
+    "confirming": "确认交易中...",
+    "sign": "签名",
+    "send": "发送",
+    "confirm": "确认",
+    "viewSolscan": "在 Solscan 上查看",
+    "confirmationTimeout": "交易确认超时。请在 Solscan 上查看状态。",
+    "staked": "已质押 {amount} KAMIYO",
+    "unstaked": "已取消质押 {amount} KAMIYO"
+  },
+  "connectWallet": "连接钱包"
+}

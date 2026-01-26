@@ -1,0 +1,36 @@
+{
+  "subtitle": "治理",
+  "title": "提案",
+  "filters": {
+    "all": "全部",
+    "active": "进行中",
+    "closed": "已结束"
+  },
+  "createProposal": "创建提案",
+  "loading": "加载提案中...",
+  "noProposals": "暂无提案",
+  "noActiveProposals": "暂无进行中的提案",
+  "noClosedProposals": "暂无已结束的提案",
+  "remaining": "剩余",
+  "ended": "已结束",
+  "approval": "支持率",
+  "quorum": "法定人数",
+  "voters": "投票人",
+  "votes": "票",
+  "states": {
+    "active": "进行中",
+    "queued": "排队中",
+    "executed": "已执行",
+    "defeated": "未通过",
+    "expired": "已过期",
+    "cancelled": "已取消"
+  },
+  "parameters": {
+    "title": "治理参数",
+    "proposalThreshold": "提案门槛",
+    "quorum": "法定人数",
+    "approvalThreshold": "通过门槛",
+    "votingPeriod": "投票期限",
+    "days": "天"
+  }
+}

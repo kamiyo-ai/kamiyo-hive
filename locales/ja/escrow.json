@@ -1,0 +1,46 @@
+{
+  "title": "Escrow",
+  "description": "トラストレス決済のための共有可能なescrowリンクを作成。タイムロック保護付きでSOLをロックし、提供後にリリース、または紛争申立てでoracle仲裁。",
+  "createEscrow": {
+    "title": "Escrowを作成",
+    "providerAddress": "プロバイダーアドレス",
+    "providerPlaceholder": "Solanaウォレットアドレス",
+    "quickAmount": "クイック金額",
+    "customAmount": "カスタム金額 (SOL)",
+    "timelock": "タイムロック",
+    "escrowUrl": "Escrow URL",
+    "generateLink": "リンクを生成",
+    "copy": "コピー",
+    "copied": "コピーしました"
+  },
+  "timelockOptions": {
+    "1h": "1時間",
+    "24h": "24時間",
+    "7d": "7日",
+    "30d": "30日"
+  },
+  "reputation": {
+    "title": "評判を確認",
+    "walletAddress": "ウォレットアドレス",
+    "walletPlaceholder": "Solanaウォレットアドレス",
+    "checking": "確認中...",
+    "checkButton": "信頼スコアを確認",
+    "trustScore": "信頼スコア",
+    "fetchError": "評判の取得に失敗しました"
+  },
+  "manage": {
+    "title": "Escrowを管理",
+    "escrowId": "Escrow ID",
+    "escrowIdPlaceholder": "escrow_abc123...",
+    "releaseFunds": "資金をリリース",
+    "fileDispute": "紛争を申立て"
+  },
+  "howItWorks": {
+    "title": "仕組み",
+    "step1": "プロバイダーアドレス、金額、タイムロック期間でescrowを作成。",
+    "step2": "Escrow URLを共有。Xまたは対応ウォレット経由で誰でも取引を実行可能。",
+    "step3": "提供後に資金をリリース、または紛争を申立ててoracle仲裁へ。",
+    "step4": "紛争はSwitchboard oracleにより24-48時間以内に解決。",
+    "readDocs": "ドキュメントを読む"
+  }
+}

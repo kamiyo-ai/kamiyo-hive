@@ -1,0 +1,36 @@
+{
+  "subtitle": "ガバナンス",
+  "title": "提案",
+  "filters": {
+    "all": "すべて",
+    "active": "アクティブ",
+    "closed": "終了"
+  },
+  "createProposal": "提案を作成",
+  "loading": "提案を読み込み中...",
+  "noProposals": "提案がありません",
+  "noActiveProposals": "アクティブな提案がありません",
+  "noClosedProposals": "終了した提案がありません",
+  "remaining": "残り",
+  "ended": "終了",
+  "approval": "承認",
+  "quorum": "定足数",
+  "voters": "投票者",
+  "votes": "投票",
+  "states": {
+    "active": "アクティブ",
+    "queued": "キュー中",
+    "executed": "実行済み",
+    "defeated": "否決",
+    "expired": "期限切れ",
+    "cancelled": "キャンセル"
+  },
+  "parameters": {
+    "title": "ガバナンスパラメータ",
+    "proposalThreshold": "提案閾値",
+    "quorum": "定足数",
+    "approvalThreshold": "承認閾値",
+    "votingPeriod": "投票期間",
+    "days": "日"
+  }
+}

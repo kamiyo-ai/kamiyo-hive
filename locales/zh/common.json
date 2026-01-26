@@ -1,30 +1,30 @@
 {
   "nav": {
     "dreams": "Dreams",
-    "stake": "Stake",
-    "governance": "Governance",
-    "escrow": "Escrow",
-    "website": "Website",
-    "roadmap": "Roadmap",
-    "docs": "Docs",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "stake": "质押",
+    "governance": "治理",
+    "escrow": "托管",
+    "website": "官网",
+    "roadmap": "路线图",
+    "docs": "文档",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款"
   },
   "footer": {
-    "copyright": "Copyright",
-    "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service",
+    "copyright": "版权所有",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款",
     "xTwitter": "X/Twitter",
     "discord": "Discord",
     "telegram": "Telegram",
     "github": "GitHub"
   },
   "buttons": {
-    "connect": "Connect",
-    "disconnect": "Disconnect",
-    "connected": "Connected",
-    "linkXAccount": "Link X Account",
-    "newTeam": "New Team",
-    "enterTrials": "Enter Trials"
+    "connect": "连接",
+    "disconnect": "断开连接",
+    "connected": "已连接",
+    "linkXAccount": "关联 X 账户",
+    "newTeam": "新建团队",
+    "enterTrials": "进入试炼"
   }
 }

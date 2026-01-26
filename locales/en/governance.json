@@ -1,0 +1,36 @@
+{
+  "subtitle": "Governance",
+  "title": "Proposals",
+  "filters": {
+    "all": "All",
+    "active": "Active",
+    "closed": "Closed"
+  },
+  "createProposal": "Create Proposal",
+  "loading": "Loading proposals...",
+  "noProposals": "No proposals yet",
+  "noActiveProposals": "No active proposals",
+  "noClosedProposals": "No closed proposals",
+  "remaining": "remaining",
+  "ended": "Ended",
+  "approval": "Approval",
+  "quorum": "Quorum",
+  "voters": "voters",
+  "votes": "votes",
+  "states": {
+    "active": "Active",
+    "queued": "Queued",
+    "executed": "Executed",
+    "defeated": "Defeated",
+    "expired": "Expired",
+    "cancelled": "Cancelled"
+  },
+  "parameters": {
+    "title": "Governance Parameters",
+    "proposalThreshold": "Proposal Threshold",
+    "quorum": "Quorum",
+    "approvalThreshold": "Approval Threshold",
+    "votingPeriod": "Voting Period",
+    "days": "days"
+  }
+}

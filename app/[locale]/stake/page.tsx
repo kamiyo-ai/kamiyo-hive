@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useTranslations } from 'next-intl';
 import { PublicKey, Transaction, TransactionInstruction, SystemProgram, SYSVAR_RENT_PUBKEY } from '@solana/web3.js';
 import { TOKEN_2022_PROGRAM_ID, getAssociatedTokenAddressSync, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import PayButton from '@/components/PayButton';
@@ -52,6 +53,7 @@ interface TxStatus {
 }
 
 function StakeContent() {
+    const t = useTranslations('stake');
     const { publicKey, signTransaction, disconnect } = useWallet();
     const { connection } = useConnection();
     const { setVisible } = useWalletModal();
@@ -147,10 +149,10 @@ function StakeContent() {
     }
 
     function getMultiplierLabel(multiplier: number): string {
-        if (multiplier >= 2.0) return '180+ days';
-        if (multiplier >= 1.5) return '90+ days';
-        if (multiplier >= 1.2) return '30+ days';
-        return '< 30 days';
+        if (multiplier >= 2.0) return t('multipliers.labels.180+');
+        if (multiplier >= 1.5) return t('multipliers.labels.90+');
+        if (multiplier >= 1.2) return t('multipliers.labels.30+');
+        return t('multipliers.labels.<30');
     }
 
     async function handleStake() {
@@ -158,7 +160,7 @@ function StakeContent() {
 
         const amount = parseFloat(stakeAmount);
         if (isNaN(amount) || amount < MIN_STAKE) {
-            setError(`Minimum stake is ${MIN_STAKE.toLocaleString()} KAMIYO`);
+            setError(t('stake.minError', { amount: MIN_STAKE.toLocaleString() }));
             return;
         }
 
@@ -231,10 +233,10 @@ function StakeContent() {
             }
 
             if (!confirmed) {
-                throw new Error('Transaction confirmation timeout. Check Solscan for status.');
+                throw new Error(t('tx.confirmationTimeout'));
             }
 
-            setSuccess(`Staked ${amount.toLocaleString()} KAMIYO`);
+            setSuccess(t('tx.staked', { amount: amount.toLocaleString() }));
             setStakeAmount('');
             fetchData();
         } catch (err: any) {
@@ -251,7 +253,7 @@ function StakeContent() {
 
         const amount = parseFloat(unstakeAmount);
         if (isNaN(amount) || amount <= 0 || amount > position.stakedAmount) {
-            setError('Invalid unstake amount');
+            setError(t('unstake.invalidAmount'));
             return;
         }
 

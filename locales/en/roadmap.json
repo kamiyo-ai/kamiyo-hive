@@ -1,0 +1,137 @@
+{
+  "subtitle": "Roadmap",
+  "title": "Development Timeline",
+  "description": "Building trust infrastructure for autonomous agents. From Solana to multi-chain, from escrow to cross-chain settlement.",
+  "filters": {
+    "all": "All Phases"
+  },
+  "phases": {
+    "foundation": {
+      "name": "Phase 1",
+      "subtitle": "Foundation",
+      "period": "Q4 2024 - Jan 2025 (Complete)"
+    },
+    "expansion": {
+      "name": "Phase 2",
+      "subtitle": "Expansion",
+      "period": "Q2 2025 - Q1 2026"
+    },
+    "scale": {
+      "name": "Phase 3",
+      "subtitle": "Scale",
+      "period": "Q1 - Q2 2026"
+    },
+    "future": {
+      "name": "Phase 4",
+      "subtitle": "Future",
+      "period": "Q3 2026+"
+    }
+  },
+  "status": {
+    "complete": "Complete",
+    "inProgress": "In Progress",
+    "upcoming": "Upcoming"
+  },
+  "progress": {
+    "complete": "complete"
+  },
+  "milestones": {
+    "coreProtocol": {
+      "title": "Core Protocol Launch",
+      "description": "Solana mainnet deployment with agent identity, escrow agreements, and dispute resolution."
+    },
+    "zkReputation": {
+      "title": "ZK Reputation Proofs",
+      "description": "Groth16 verification for reputation threshold proofs without revealing exact scores."
+    },
+    "oracleConsensus": {
+      "title": "Oracle Consensus System",
+      "description": "Multi-oracle commit-reveal voting with ZK proofs for private dispute resolution."
+    },
+    "x402Integration": {
+      "title": "x402 Payment Integration",
+      "description": "HTTP 402 payment protocol with automatic escrow protection and SLA enforcement."
+    },
+    "tokenLaunch": {
+      "title": "Token Launch",
+      "description": "$KAMIYO token with transfer hook for MEV protection and governance rights."
+    },
+    "governance": {
+      "title": "Governance System",
+      "description": "Token-weighted voting with staking multipliers. Proposal creation, quorum tracking, and timelock execution."
+    },
+    "staking": {
+      "title": "Staking Protocol",
+      "description": "Single-sided staking with duration-based multipliers (1x-2x over 180 days)."
+    },
+    "agentFrameworks": {
+      "title": "Agent Framework Integrations",
+      "description": "ElizaOS, Daydreams, LangChain, Vercel AI SDK, and MCP server plugins."
+    },
+    "baseMainnet": {
+      "title": "Base Mainnet",
+      "description": "ZKReputation contract deployment on Base with Groth16 verifier."
+    },
+    "swarmTeams": {
+      "title": "SwarmTeams",
+      "description": "Multi-agent coordination with shared budgets, task proposals, and ZK-private voting."
+    },
+    "monad": {
+      "title": "Monad Integration",
+      "description": "Parallel execution, PDA emulation, agent proxy, and reputation mirror contracts."
+    },
+    "hyperliquid": {
+      "title": "Hyperliquid Integration",
+      "description": "Agent registry, vault integration, and copy trading for autonomous trading agents."
+    },
+    "shadowWire": {
+      "title": "ShadowWire Payments",
+      "description": "Private Payments via Radr Labs ShadowWire for shielded transfers with escrow protection."
+    },
+    "qualityOracle": {
+      "title": "Quality Oracle Network",
+      "description": "Decentralized quality scoring via added OriginTrail DKG oracles."
+    },
+    "blindfold": {
+      "title": "Blindfold Card Issuance",
+      "description": "ZK reputation-gated card issuance for agent spending in the physical world."
+    },
+    "crossChain": {
+      "title": "Cross-Chain Settlement",
+      "description": "Unified escrow and dispute resolution across Solana, Base, Monad, and Hyperliquid."
+    },
+    "reputationPortability": {
+      "title": "Agent Reputation Portability",
+      "description": "ZK proofs for transferring reputation across chains without revealing history."
+    },
+    "agentMesh": {
+      "title": "Autonomous Agent Mesh",
+      "description": "Trustless agent-to-agent payments and service agreements without human intervention."
+    },
+    "halo2": {
+      "title": "Halo2 Migration",
+      "description": "Move from Groth16 to Halo2-based proofs for trustless setup and faster verification."
+    },
+    "insurance": {
+      "title": "Agent Liability Insurance",
+      "description": "Decentralized insurance pools for autonomous agent failures. Stake-backed coverage with reputation-weighted premiums."
+    },
+    "sybilResistant": {
+      "title": "Sybil-Resistant Identity",
+      "description": "Hardware attestation combined with behavioral fingerprinting to prove agent uniqueness without centralized verification."
+    },
+    "arbitrationCourt": {
+      "title": "Decentralized Arbitration Court",
+      "description": "On-chain dispute resolution with ZK-anonymous juries. Staked arbiters earn fees for honest rulings."
+    }
+  },
+  "overview": {
+    "title": "Progress Overview",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "upcoming": "Upcoming",
+    "chains": "Chains",
+    "milestones": "milestones",
+    "supported": "supported"
+  }
+}

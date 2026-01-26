@@ -5,6 +5,7 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import PayButton from '@/components/PayButton';
 import CountdownTimer from '@/components/CountdownTimer';
 import Link from 'next/link';
@@ -111,6 +112,7 @@ function fromRawAmount(raw: bigint): number {
 }
 
 function TrialsContent() {
+  const t = useTranslations('trials');
   const { publicKey, signMessage } = useWallet();
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
@@ -412,77 +414,77 @@ app.kamiyo.ai/trials?ref=${refCode}
         {/* Intro Phase */}
         {phase === 'intro' && (
           <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center text-center">
-            <h1 className="text-3xl md:text-4xl font-medium mb-4">The KAMIYO Trials</h1>
+            <h1 className="text-3xl md:text-4xl font-medium mb-4">{t('title')}</h1>
             <span className="text-gray-400 text-sm md:text-lg block mb-8">
-              Not everyone can judge an AI. Prove you can.
+              {t('subtitle')}
             </span>
 
             <CountdownTimer />
 
             <div className="grid md:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-10 mb-8 md:mb-12">
               <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8 text-left">
-                <h2 className="text-xl text-white mb-4">How it works</h2>
+                <h2 className="text-xl text-white mb-4">{t('howItWorks')}</h2>
                 <div className="space-y-4 text-gray-400">
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full border flex items-center justify-center text-white text-sm flex-shrink-0" style={{ borderColor: '#00f0ff' }}>1</div>
                     <div>
-                      <p className="text-white">Connect & Stake</p>
-                      <p className="text-sm">Link your wallet and stake minimum 100K KAMIYO</p>
+                      <p className="text-white">{t('steps.connectStake.title')}</p>
+                      <p className="text-sm">{t('steps.connectStake.description')}</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full border flex items-center justify-center text-white text-sm flex-shrink-0" style={{ borderColor: '#00f0ff' }}>2</div>
                     <div>
-                      <p className="text-white">Score 5/5</p>
-                      <p className="text-sm">Complete all 5 challenges correctly. One attempt only.</p>
+                      <p className="text-white">{t('steps.score.title')}</p>
+                      <p className="text-sm">{t('steps.score.description')}</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full border flex items-center justify-center text-white text-sm flex-shrink-0" style={{ borderColor: '#00f0ff' }}>3</div>
                     <div>
-                      <p className="text-white">Share to Enter</p>
-                      <p className="text-sm">Post your result on X to claim your entry</p>
+                      <p className="text-white">{t('steps.share.title')}</p>
+                      <p className="text-sm">{t('steps.share.description')}</p>
                     </div>
                   </div>
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full border flex items-center justify-center text-white text-sm flex-shrink-0" style={{ borderColor: '#00f0ff' }}>+</div>
                     <div>
-                      <p className="text-white">Referral Bonus</p>
-                      <p className="text-sm">Each friend who completes = +1 entry (max 10 bonus)</p>
+                      <p className="text-white">{t('steps.referral.title')}</p>
+                      <p className="text-sm">{t('steps.referral.description')}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8 text-left">
-                <h3 className="text-xl text-white mb-4">Prizes</h3>
+                <h3 className="text-xl text-white mb-4">{t('prizes')}</h3>
                 <div className="text-gray-400 space-y-4">
                   <div>
-                    <p className="text-sm uppercase tracking-wider mb-1 gradient-text">Grand Prize</p>
-                    <p className="text-white text-2xl">1,000,000 KAMIYO</p>
-                    <p className="text-gray-500 text-sm">+ Genesis Oracle NFT</p>
+                    <p className="text-sm uppercase tracking-wider mb-1 gradient-text">{t('grandPrize.label')}</p>
+                    <p className="text-white text-2xl">{t('grandPrize.amount')}</p>
+                    <p className="text-gray-500 text-sm">{t('grandPrize.bonus')}</p>
                   </div>
                   <div>
-                    <p className="text-sm uppercase tracking-wider mb-1 gradient-text">10x Runner-up</p>
-                    <p className="text-white text-2xl">400,000 KAMIYO</p>
-                    <p className="text-gray-500 text-sm">each</p>
+                    <p className="text-sm uppercase tracking-wider mb-1 gradient-text">{t('runnerUp.label')}</p>
+                    <p className="text-white text-2xl">{t('runnerUp.amount')}</p>
+                    <p className="text-gray-500 text-sm">{t('runnerUp.bonus')}</p>
                   </div>
-                  <p className="text-gray-500 text-xs pt-2">Winners drawn weighted by entries. More referrals = better odds.</p>
+                  <p className="text-gray-500 text-xs pt-2">{t('prizeNote')}</p>
                 </div>
               </div>
             </div>
 
             {referredBy && (
-              <p className="text-gray-500 text-sm mb-4">Referred by: {referredBy}</p>
+              <p className="text-gray-500 text-sm mb-4">{t('referredBy')} {referredBy}</p>
             )}
 
             <div className="flex flex-col items-center gap-4">
               <PayButton
-                text={publicKey ? "Begin Trials" : "Connect Wallet"}
+                text={publicKey ? t('beginTrials') : t('connectWallet')}
                 onClick={handleStartTrials}
               />
               <Link href="/trials/leaderboard" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-                View Leaderboard
+                {t('viewLeaderboard')}
               </Link>
             </div>
           </div>
@@ -491,27 +493,27 @@ app.kamiyo.ai/trials?ref=${refCode}
         {/* Stake Check Phase */}
         {phase === 'stake-check' && (
           <div className="max-w-xl mx-auto text-center min-h-[calc(100vh-200px)] flex flex-col justify-center">
-            <h2 className="text-3xl text-white mb-6">Stake Verification</h2>
+            <h2 className="text-3xl text-white mb-6">{t('stakeVerification.title')}</h2>
 
             {stakePosition === null ? (
               <div className="bg-black border border-gray-500/25 rounded-lg p-8">
                 <p className="text-gray-400 mb-6">
-                  You need to stake at least 100,000 KAMIYO to participate in the trials.
+                  {t('stakeVerification.noStake')}
                 </p>
                 <Link href="/stake">
-                  <PayButton text="Go to Staking" onClick={() => {}} />
+                  <PayButton text={t('stakeVerification.goToStaking')} onClick={() => {}} />
                 </Link>
               </div>
             ) : stakePosition.stakedAmount < 100000 ? (
               <div className="bg-black border border-gray-500/25 rounded-lg p-8">
                 <p className="text-gray-400 mb-4">
-                  Current stake: <span className="text-white">{stakePosition.stakedAmount.toLocaleString()} KAMIYO</span>
+                  {t('stakeVerification.currentStake')} <span className="text-white">{stakePosition.stakedAmount.toLocaleString()} KAMIYO</span>
                 </p>
                 <p className="text-gray-400 mb-6">
-                  You need at least 100,000 KAMIYO staked to participate.
+                  {t('stakeVerification.needMore')}
                 </p>
                 <Link href="/stake">
-                  <PayButton text="Increase Stake" onClick={() => {}} />
+                  <PayButton text={t('stakeVerification.increaseStake')} onClick={() => {}} />
                 </Link>
               </div>
             ) : (
@@ -522,39 +524,39 @@ app.kamiyo.ai/trials?ref=${refCode}
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="mb-1" style={{ color: '#00f0ff' }}>Stake Verified</p>
+                  <p className="mb-1" style={{ color: '#00f0ff' }}>{t('stakeVerification.verified')}</p>
                   <p className="text-gray-500 text-sm">
                     {stakePosition.stakedAmount.toLocaleString()} KAMIYO
                   </p>
                 </div>
 
                 <div className="bg-black border border-gray-500/25 rounded-lg p-6">
-                  <h3 className="text-white text-lg mb-4">5 Challenges Ahead</h3>
+                  <h3 className="text-white text-lg mb-4">{t('challengesAhead.title')}</h3>
                   <p className="text-gray-400 text-sm mb-4">
-                    You'll be tested on core KAMIYO concepts. Must get all 5 correct to qualify.
+                    {t('challengesAhead.description')}
                   </p>
                   <div className="space-y-2 text-sm text-gray-500">
                     <div className="flex items-center gap-2">
-                      <span className="text-white">1.</span> Identifying faulty AI outputs
+                      <span className="text-white">1.</span> {t('challengesAhead.topics.1')}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-white">2.</span> Commit-reveal voting mechanics
+                      <span className="text-white">2.</span> {t('challengesAhead.topics.2')}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-white">3.</span> ZK reputation proofs
+                      <span className="text-white">3.</span> {t('challengesAhead.topics.3')}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-white">4.</span> Stake-weighted consensus
+                      <span className="text-white">4.</span> {t('challengesAhead.topics.4')}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-white">5.</span> x402 payment protocol
+                      <span className="text-white">5.</span> {t('challengesAhead.topics.5')}
                     </div>
                   </div>
                 </div>
 
                 <div className="text-center">
                   <PayButton
-                    text={loading ? "Registering..." : "Start Challenges"}
+                    text={loading ? t('registering') : t('startChallenges')}
                     onClick={async () => {
                       const success = await startAttempt();
                       if (success) {
@@ -564,7 +566,7 @@ app.kamiyo.ai/trials?ref=${refCode}
                     disabled={loading}
                   />
                   <p className="text-gray-500 text-xs mt-4">
-                    You have one attempt. Make it count.
+                    {t('oneAttempt')}
                   </p>
                 </div>
               </div>
@@ -578,8 +580,8 @@ app.kamiyo.ai/trials?ref=${refCode}
             {/* Progress */}
             <div className="mb-8">
               <div className="flex justify-between text-sm text-gray-500 mb-2">
-                <span>Challenge {currentChallenge + 1} of {CHALLENGES.length}</span>
-                <span>{getScore()} correct so far</span>
+                <span>{t('progress.challenge', { current: currentChallenge + 1, total: CHALLENGES.length })}</span>
+                <span>{t('progress.correctSoFar', { count: getScore() })}</span>
               </div>
               <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
                 <div
@@ -594,11 +596,11 @@ app.kamiyo.ai/trials?ref=${refCode}
 
             {/* Challenge Card */}
             <div className="bg-black border border-gray-500/25 rounded-lg p-5 md:p-8">
-              <div className="text-xs uppercase tracking-wider mb-2" style={{ color: '#00f0ff' }}>{challenge.title}</div>
-              <p className="text-gray-400 text-sm mb-6">{challenge.description}</p>
+              <div className="text-xs uppercase tracking-wider mb-2" style={{ color: '#00f0ff' }}>{t(`challenges.${challenge.id}.title`)}</div>
+              <p className="text-gray-400 text-sm mb-6">{t(`challenges.${challenge.id}.description`)}</p>
 
               <div className="bg-gray-900/50 rounded-lg p-4 mb-6 font-mono text-sm whitespace-pre-wrap">
-                {challenge.question}
+                {t(`challenges.${challenge.id}.question`)}
               </div>
 
               {!showExplanation ? (
@@ -609,7 +611,7 @@ app.kamiyo.ai/trials?ref=${refCode}
                       onClick={() => handleAnswer(idx)}
                       className="w-full text-left p-4 rounded-lg border border-gray-500/50 hover:border-gray-300 transition-colors text-gray-300 hover:text-white"
                     >
-                      {option}
+                      {t(`challenges.${challenge.id}.options.${idx}`)}
                     </button>
                   ))}
                 </div>
@@ -640,9 +642,9 @@ app.kamiyo.ai/trials?ref=${refCode}
                           className="p-4 rounded-lg border"
                           style={{ ...borderStyle, ...textStyle }}
                         >
-                          {option}
-                          {isCorrect && <span className="ml-2 text-xs">(correct)</span>}
-                          {isSelected && !isCorrect && <span className="ml-2 text-xs">(wrong)</span>}
+                          {t(`challenges.${challenge.id}.options.${idx}`)}
+                          {isCorrect && <span className="ml-2 text-xs">({t('correct')})</span>}
+                          {isSelected && !isCorrect && <span className="ml-2 text-xs">({t('wrong')})</span>}
                         </div>
                       );
                     })}
@@ -650,12 +652,12 @@ app.kamiyo.ai/trials?ref=${refCode}
 
                   {/* Explanation */}
                   <div className="bg-gray-900/50 border-l-2 p-4 rounded-r-lg" style={{ borderColor: '#00f0ff' }}>
-                    <p className="text-gray-400 text-sm">{challenge.explanation}</p>
+                    <p className="text-gray-400 text-sm">{t(`challenges.${challenge.id}.explanation`)}</p>
                   </div>
 
                   <div className="pt-4 flex justify-center">
                     <PayButton
-                      text={currentChallenge < CHALLENGES.length - 1 ? "Next Challenge" : "View Results"}
+                      text={currentChallenge < CHALLENGES.length - 1 ? t('nextChallenge') : t('viewResults')}
                       onClick={handleNextChallenge}
                     />
                   </div>
@@ -672,19 +674,19 @@ app.kamiyo.ai/trials?ref=${refCode}
               <span className="text-4xl" style={{ color: '#00f0ff' }}>5/5</span>
             </div>
 
-            <h2 className="text-3xl text-white mb-4">Perfect Score!</h2>
+            <h2 className="text-3xl text-white mb-4">{t('perfectScore.title')}</h2>
 
             <p className="text-gray-400 mb-8">
-              One step left: share on X to claim your entry.
+              {t('perfectScore.description')}
             </p>
 
             <div className="bg-black border border-gray-500/25 rounded-lg p-6 mb-8">
               <p className="text-gray-400 text-sm mb-4">
-                Your share will include your unique referral link. Each friend who completes the trials = +1 bonus entry for you.
+                {t('perfectScore.shareInfo')}
               </p>
               <div className="flex justify-center">
                 <PayButton
-                  text={loading ? "Confirming..." : "Share on X to Enter"}
+                  text={loading ? t('perfectScore.confirming') : t('perfectScore.shareToEnter')}
                   onClick={handleShare}
                   disabled={loading}
                 />
@@ -692,7 +694,7 @@ app.kamiyo.ai/trials?ref=${refCode}
             </div>
 
             <p className="text-gray-500 text-xs">
-              After sharing, sign a message to confirm your entry.
+              {t('perfectScore.afterShare')}
             </p>
           </div>
         )}
@@ -711,26 +713,26 @@ app.kamiyo.ai/trials?ref=${refCode}
 
             {shared ? (
               <>
-                <h2 className="text-3xl text-white mb-6">You're In!</h2>
+                <h2 className="text-3xl text-white mb-6">{t('complete.youreIn')}</h2>
                 <p className="text-gray-400 mb-10">
-                  Entry confirmed. Recruit friends to boost your odds.
+                  {t('complete.entryConfirmed')}
                 </p>
 
                 {/* Entry Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <div className="bg-black border border-gray-500/25 rounded-lg p-4">
                     <p className="text-2xl" style={{ color: '#00f0ff' }}>{entries}</p>
-                    <p className="text-gray-500 text-sm">Total Entries</p>
+                    <p className="text-gray-500 text-sm">{t('complete.totalEntries')}</p>
                   </div>
                   <div className="bg-black border border-gray-500/25 rounded-lg p-4">
                     <p className="text-2xl" style={{ color: '#ff44f5' }}>{referralCount}</p>
-                    <p className="text-gray-500 text-sm">Referrals</p>
+                    <p className="text-gray-500 text-sm">{t('complete.referrals')}</p>
                   </div>
                 </div>
 
                 {/* Referral Link */}
                 <div className="bg-black border border-gray-500/25 rounded-lg p-6 mb-8">
-                  <p className="text-gray-400 text-sm mb-3">Your referral link:</p>
+                  <p className="text-gray-400 text-sm mb-3">{t('complete.referralLink')}</p>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -742,27 +744,27 @@ app.kamiyo.ai/trials?ref=${refCode}
                       onClick={copyRefLink}
                       className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
                     >
-                      {copied ? 'Copied!' : 'Copy'}
+                      {copied ? t('complete.copied') : t('complete.copy')}
                     </button>
                   </div>
                   <p className="text-gray-500 text-xs mt-3">
-                    Max 10 bonus entries. You have {10 - referralCount} slots left.
+                    {t('complete.slotsLeft', { slots: 10 - referralCount })}
                   </p>
                 </div>
 
                 <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm inline-flex items-center gap-1" style={{ color: '#ff44f5' }}>
-                  View Leaderboard <span>&rarr;</span>
+                  {t('viewLeaderboard')} <span>&rarr;</span>
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="text-3xl text-white mb-6">Almost There!</h2>
+                <h2 className="text-3xl text-white mb-6">{t('complete.almostThere')}</h2>
                 <p className="text-gray-400 mb-10">
-                  Share on X to claim your entry.
+                  {t('complete.sharePrompt')}
                 </p>
                 <div className="flex justify-center">
                   <PayButton
-                    text="Share to Enter"
+                    text={t('complete.shareToEnter')}
                     onClick={() => setPhase('share')}
                   />
                 </div>
@@ -783,19 +785,19 @@ app.kamiyo.ai/trials?ref=${refCode}
               </span>
             </div>
 
-            <h2 className="text-3xl text-white mb-6">Trial Failed</h2>
+            <h2 className="text-3xl text-white mb-6">{t('failed.title')}</h2>
             <span className="text-gray-400 block" style={{ marginBottom: '3rem' }}>
-              You needed a perfect 5/5 to qualify. Your one attempt has been used.
+              {t('failed.description')}
             </span>
 
             <div className="bg-black border border-gray-500/25 rounded-lg p-6 mb-8">
               <p className="text-gray-500 text-sm">
-                The KAMIYO Trials require perfection. Each wallet gets one chance to prove their understanding of the protocol.
+                {t('failed.explanation')}
               </p>
             </div>
 
             <Link href="/trials/leaderboard" className="hover:text-white transition-colors text-sm inline-flex items-center gap-1" style={{ color: '#ff44f5' }}>
-              View Leaderboard <span>&rarr;</span>
+              {t('viewLeaderboard')} <span>&rarr;</span>
             </Link>
           </div>
         )}

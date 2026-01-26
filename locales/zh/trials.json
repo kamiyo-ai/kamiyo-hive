@@ -1,0 +1,147 @@
+{
+  "title": "KAMIYO 试炼",
+  "subtitle": "不是所有人都能评判 AI。证明你可以。",
+  "howItWorks": "参与方式",
+  "prizes": "奖品",
+  "steps": {
+    "connectStake": {
+      "title": "连接并质押",
+      "description": "连接钱包并质押至少 100K KAMIYO"
+    },
+    "score": {
+      "title": "全部答对",
+      "description": "正确完成全部 5 个挑战。仅有一次机会。"
+    },
+    "share": {
+      "title": "分享参与",
+      "description": "在 X 上发布结果以获得参赛资格"
+    },
+    "referral": {
+      "title": "推荐奖励",
+      "description": "每位完成试炼的好友 = +1 参赛名额（最多 10 个额外名额）"
+    }
+  },
+  "grandPrize": {
+    "label": "大奖",
+    "amount": "1,000,000 KAMIYO",
+    "bonus": "+ 创世预言机 NFT"
+  },
+  "runnerUp": {
+    "label": "10 名优胜奖",
+    "amount": "400,000 KAMIYO",
+    "bonus": "每人"
+  },
+  "prizeNote": "中奖者按参赛名额加权抽取。推荐越多，中奖几率越高。",
+  "referredBy": "推荐人：",
+  "beginTrials": "开始试炼",
+  "connectWallet": "连接钱包",
+  "viewLeaderboard": "查看排行榜",
+  "stakeVerification": {
+    "title": "质押验证",
+    "noStake": "您需要质押至少 100,000 KAMIYO 才能参与试炼。",
+    "goToStaking": "前往质押",
+    "currentStake": "当前质押：",
+    "needMore": "您需要至少质押 100,000 KAMIYO 才能参与。",
+    "increaseStake": "增加质押",
+    "verified": "质押已验证"
+  },
+  "challengesAhead": {
+    "title": "5 个挑战等待你",
+    "description": "您将接受 KAMIYO 核心概念测试。必须全部答对才能获得资格。",
+    "topics": {
+      "1": "识别错误的 AI 输出",
+      "2": "承诺-揭示投票机制",
+      "3": "ZK 声誉证明",
+      "4": "质押加权共识",
+      "5": "x402 支付协议"
+    }
+  },
+  "registering": "注册中...",
+  "startChallenges": "开始挑战",
+  "oneAttempt": "您只有一次机会。珍惜它。",
+  "progress": {
+    "challenge": "挑战 {current}/{total}",
+    "correctSoFar": "目前答对 {count} 题"
+  },
+  "nextChallenge": "下一题",
+  "viewResults": "查看结果",
+  "correct": "正确",
+  "wrong": "错误",
+  "perfectScore": {
+    "title": "满分！",
+    "description": "最后一步：在 X 上分享以获得参赛资格。",
+    "shareInfo": "您的分享将包含您的专属推荐链接。每位完成试炼的好友 = 您 +1 额外参赛名额。",
+    "confirming": "确认中...",
+    "shareToEnter": "分享到 X 参与",
+    "afterShare": "分享后，签署消息以确认您的参赛资格。"
+  },
+  "complete": {
+    "youreIn": "成功入围！",
+    "entryConfirmed": "参赛资格已确认。邀请好友提高中奖几率。",
+    "totalEntries": "总参赛名额",
+    "referrals": "推荐人数",
+    "referralLink": "您的推荐链接：",
+    "copy": "复制",
+    "copied": "已复制！",
+    "slotsLeft": "最多 10 个额外名额。您还剩 {slots} 个名额。",
+    "almostThere": "即将完成！",
+    "sharePrompt": "在 X 上分享以获得参赛资格。",
+    "shareToEnter": "分享参与"
+  },
+  "failed": {
+    "title": "试炼失败",
+    "description": "您需要 5/5 满分才能获得资格。您的一次机会已用完。",
+    "explanation": "KAMIYO 试炼要求完美表现。每个钱包只有一次机会证明对协议的理解。"
+  },
+  "challenges": {
+    "1": {
+      "title": "找出错误",
+      "description": "一个 AI 代理完成了 3 个任务。其中一个输出明显错误。是哪个？",
+      "question": "任务：\"计算 200 的 15%\"\n\n代理 A：\"30\"\n代理 B：\"15\"\n代理 C：\"30.00\"",
+      "options": ["代理 A", "代理 B", "代理 C"],
+      "explanation": "代理 B 返回 15，这是 200 的 7.5%，而不是 15%。KAMIYO 预言机必须识别错误输出以保护用户。"
+    },
+    "2": {
+      "title": "承诺-揭示",
+      "description": "在争议解决中，预言机先提交隐藏投票，然后再揭示。为什么？",
+      "question": "为什么 KAMIYO 预言机使用承诺-揭示投票？",
+      "options": [
+        "节省 Gas 费",
+        "防止投票抄袭和串通",
+        "加快投票速度",
+        "向用户隐藏结果"
+      ],
+      "explanation": "承诺-揭示机制防止预言机在提交自己的投票前看到他人的投票，消除抄袭投票和串通行为。"
+    },
+    "3": {
+      "title": "声誉检查",
+      "description": "ZK 证明让代理能够证明声誉而不透露确切分数。",
+      "question": "一个代理完成了 20 个任务，其中 17 个成功。\n\n某任务要求最低 80% 声誉。\n\n该代理是否符合条件？",
+      "options": ["是，符合条件", "否，不符合条件"],
+      "explanation": "17/20 = 85% 成功率，超过 80% 门槛。代理可以生成 ZK 证明而不透露确切的 85%。"
+    },
+    "4": {
+      "title": "质押权重",
+      "description": "预言机投票权按质押加权。质押越多 = 影响力越大。",
+      "question": "预言机 A 质押 10 SOL，预言机 B 质押 5 SOL。两者投票正确。\n\n预言机 C 质押 20 SOL，投票错误。\n\n谁赢得争议？",
+      "options": [
+        "预言机 C（单个质押最高）",
+        "预言机 A + B（合计质押超过 C）",
+        "平局"
+      ],
+      "explanation": "A + B = 15 SOL 正确票 vs C = 20 SOL 错误票。等等——C 赢了！质押权重决定结果。这就是为什么预言机多样性很重要。"
+    },
+    "5": {
+      "title": "支付流程",
+      "description": "了解 x402 支付验证。",
+      "question": "在 x402 协议中，如果支付证明验证失败会发生什么？",
+      "options": [
+        "支付自动退款",
+        "请求返回 HTTP 402 需要支付",
+        "代理被永久封禁",
+        "Escrow 进入争议"
+      ],
+      "explanation": "返回 HTTP 402 及支付要求。客户端必须提供有效支付才能继续。没有自动退款或封禁——仅是访问控制。"
+    }
+  }
+}

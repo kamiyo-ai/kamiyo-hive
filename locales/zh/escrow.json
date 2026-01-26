@@ -1,0 +1,46 @@
+{
+  "title": "Escrow 托管",
+  "description": "创建可分享的 escrow 链接实现无信任支付。锁定 SOL 并设置时间锁保护，交付后释放资金，或发起争议由预言机仲裁。",
+  "createEscrow": {
+    "title": "创建 Escrow",
+    "providerAddress": "提供者地址",
+    "providerPlaceholder": "Solana 钱包地址",
+    "quickAmount": "快捷金额",
+    "customAmount": "自定义金额 (SOL)",
+    "timelock": "时间锁",
+    "escrowUrl": "Escrow 链接",
+    "generateLink": "生成链接",
+    "copy": "复制",
+    "copied": "已复制"
+  },
+  "timelockOptions": {
+    "1h": "1 小时",
+    "24h": "24 小时",
+    "7d": "7 天",
+    "30d": "30 天"
+  },
+  "reputation": {
+    "title": "查询声誉",
+    "walletAddress": "钱包地址",
+    "walletPlaceholder": "Solana 钱包地址",
+    "checking": "查询中...",
+    "checkButton": "查询信任评分",
+    "trustScore": "信任评分",
+    "fetchError": "获取声誉失败"
+  },
+  "manage": {
+    "title": "管理 Escrow",
+    "escrowId": "Escrow ID",
+    "escrowIdPlaceholder": "escrow_abc123...",
+    "releaseFunds": "释放资金",
+    "fileDispute": "发起争议"
+  },
+  "howItWorks": {
+    "title": "工作原理",
+    "step1": "使用提供者地址、金额和时间锁期限创建 escrow。",
+    "step2": "分享 escrow 链接。任何人都可以通过 X 或兼容钱包执行交易。",
+    "step3": "交付后释放资金，或发起争议由预言机仲裁。",
+    "step4": "争议由 Switchboard 预言机在 24-48 小时内解决。",
+    "readDocs": "查看文档"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "title": "Staking",
+  "description": "$KAMIYOをstakeして期間乗数で最大24% APYを獲得。ロック期間なし、柔軟なunstake。",
+  "stats": {
+    "totalStaked": "総Stake量",
+    "baseApy": "基本APY",
+    "maxApy": "最大APY",
+    "minimum": "最低",
+    "annual": "年間",
+    "with2xMultiplier": "2x乗数適用時"
+  },
+  "position": {
+    "title": "あなたのポジション",
+    "connectPrompt": "ウォレットを接続してstake",
+    "walletBalance": "ウォレット残高",
+    "stakedAmount": "Stake量",
+    "multiplier": "乗数",
+    "duration": "期間",
+    "effectiveApy": "実効APY",
+    "noActiveStake": "アクティブなstakeなし",
+    "disconnect": "切断"
+  },
+  "stake": {
+    "title": "Stake",
+    "connectPrompt": "ウォレットを接続してstake",
+    "amountLabel": "金額 (最低100,000)",
+    "max": "最大",
+    "processing": "処理中...",
+    "button": "KAMIYOをStake",
+    "minError": "最低stakeは{amount} KAMIYOです"
+  },
+  "unstake": {
+    "title": "Unstake",
+    "connectPrompt": "ウォレットを接続してunstake",
+    "amountLabel": "金額",
+    "max": "最大",
+    "warning": "Unstakeすると期間乗数がリセットされます。保留中の報酬は自動的に請求されます。",
+    "processing": "処理中...",
+    "button": "Unstake",
+    "invalidAmount": "無効なunstake金額"
+  },
+  "claim": {
+    "title": "報酬を請求",
+    "connectPrompt": "ウォレットを接続して請求",
+    "description": "蓄積されたstaking報酬を請求。報酬は報酬vaultから分配されます。",
+    "processing": "処理中...",
+    "button": "報酬を請求",
+    "success": "報酬を請求しました"
+  },
+  "multipliers": {
+    "title": "期間乗数",
+    "description": "乗数はstake期間に応じて自動的に増加します",
+    "tableHeaders": {
+      "duration": "期間",
+      "multiplier": "乗数",
+      "effectiveApy": "実効APY"
+    },
+    "durations": {
+      "0-30": "0-30日",
+      "30-90": "30-90日",
+      "90-180": "90-180日",
+      "180+": "180日以上"
+    },
+    "labels": {
+      "180+": "180日以上",
+      "90+": "90日以上",
+      "30+": "30日以上",
+      "<30": "30日未満"
+    }
+  },
+  "tx": {
+    "confirmed": "トランザクション確認済み",
+    "continue": "続行",
+    "signing": "署名待ち...",
+    "sending": "トランザクション送信中...",
+    "confirming": "トランザクション確認中...",
+    "sign": "署名",
+    "send": "送信",
+    "confirm": "確認",
+    "viewSolscan": "Solscanで表示",
+    "confirmationTimeout": "トランザクション確認タイムアウト。Solscanでステータスを確認してください。",
+    "staked": "{amount} KAMIYOをstakeしました",
+    "unstaked": "{amount} KAMIYOをunstakeしました"
+  },
+  "connectWallet": "ウォレットを接続"
+}

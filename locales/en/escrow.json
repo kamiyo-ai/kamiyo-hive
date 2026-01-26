@@ -1,0 +1,46 @@
+{
+  "title": "Escrow",
+  "description": "Create shareable escrow links for trustless payments. Lock SOL with timelock protection, release on delivery, or dispute for oracle arbitration.",
+  "createEscrow": {
+    "title": "Create Escrow",
+    "providerAddress": "Provider Address",
+    "providerPlaceholder": "Solana wallet address",
+    "quickAmount": "Quick Amount",
+    "customAmount": "Custom Amount (SOL)",
+    "timelock": "Timelock",
+    "escrowUrl": "Escrow URL",
+    "generateLink": "Generate Link",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "timelockOptions": {
+    "1h": "1 hour",
+    "24h": "24 hours",
+    "7d": "7 days",
+    "30d": "30 days"
+  },
+  "reputation": {
+    "title": "Check Reputation",
+    "walletAddress": "Wallet Address",
+    "walletPlaceholder": "Solana wallet address",
+    "checking": "Checking...",
+    "checkButton": "Check Trust Score",
+    "trustScore": "Trust Score",
+    "fetchError": "Failed to fetch reputation"
+  },
+  "manage": {
+    "title": "Manage Escrow",
+    "escrowId": "Escrow ID",
+    "escrowIdPlaceholder": "escrow_abc123...",
+    "releaseFunds": "Release Funds",
+    "fileDispute": "File Dispute"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": "Create an escrow with provider address, amount, and timelock period.",
+    "step2": "Share the escrow URL. Anyone can execute the transaction via X or compatible wallets.",
+    "step3": "Release funds after delivery, or file a dispute for oracle arbitration.",
+    "step4": "Disputes are resolved by Switchboard oracles within 24-48 hours.",
+    "readDocs": "Read Documentation"
+  }
+}
