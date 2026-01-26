@@ -120,6 +120,25 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          {/* Coinbase Wallet */}
+          <button
+            onClick={() => openMobileWallet('coinbase')}
+            className="w-full flex items-center gap-4 p-4 bg-gray-900/50 border border-gray-500/30 rounded-lg hover:border-blue-500/50 hover:bg-gray-900 transition-all"
+          >
+            <img
+              src="/icons/coinbase.png"
+              alt="Coinbase Wallet"
+              className="w-10 h-10 rounded-lg"
+            />
+            <div className="flex-1 text-left">
+              <div className="text-white font-medium">Coinbase Wallet</div>
+              <div className="text-xs text-gray-500">Self-custody wallet</div>
+            </div>
+            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
         <p className="text-xs text-gray-600 mt-6 text-center">

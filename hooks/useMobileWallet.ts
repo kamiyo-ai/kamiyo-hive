@@ -26,7 +26,7 @@ export function useMobileWallet() {
   }, []);
 
   // Build deep link URL for mobile wallets
-  const buildDeepLink = useCallback((wallet: 'phantom' | 'solflare' | 'metamask') => {
+  const buildDeepLink = useCallback((wallet: 'phantom' | 'solflare' | 'metamask' | 'coinbase') => {
     if (typeof window === 'undefined') return '';
 
     const currentUrl = encodeURIComponent(window.location.href);
@@ -50,11 +50,17 @@ export function useMobileWallet() {
       return `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
     }
 
+    if (wallet === 'coinbase') {
+      // Coinbase Wallet uses cbwallet:// protocol or universal link
+      // https://docs.cloud.coinbase.com/wallet-sdk/docs/mobile-linking
+      return `https://go.cb-w.com/dapp?cb_url=${currentUrl}`;
+    }
+
     return '';
   }, []);
 
   // Open wallet app on mobile
-  const openMobileWallet = useCallback((wallet: 'phantom' | 'solflare' | 'metamask') => {
+  const openMobileWallet = useCallback((wallet: 'phantom' | 'solflare' | 'metamask' | 'coinbase') => {
     const deepLink = buildDeepLink(wallet);
     if (deepLink) {
       window.location.href = deepLink;
