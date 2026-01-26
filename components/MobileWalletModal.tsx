@@ -70,7 +70,7 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
             className="w-full flex items-center gap-4 p-4 bg-gray-900/50 border border-gray-500/30 rounded-lg hover:border-purple-500/50 hover:bg-gray-900 transition-all"
           >
             <img
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iIzUxMUNBOCIgcng9IjI2Ii8+PHBhdGggZmlsbD0idXJsKCNhKSIgZD0iTTExMC42IDQ2LjZjLTEuMy00LjgtNC4yLTktOC4zLTExLjctNC4xLTIuNy05LTMuOC0xMy44LTMuMS00LjguNy05LjIgMy4xLTEyLjMgNi43bC0xMi4yIDE0Yy0xLjYgMS45LTQuMSAyLjktNi42IDIuNy0yLjUtLjItNC44LTEuNS02LjEtMy42TDM4LjggMzFjLTMuMy01LjItOC43LTguNy0xNC44LTkuNS02LjEtLjgtMTIuMiAxLjItMTYuOCA1LjQtNC42IDQuMi03LjIgMTAuMi03IDE2LjQuMiA2LjIgMy4yIDEyIDguMiAxNS44bDQyLjggMzIuOGMyLjIgMS43IDMuNSA0LjMgMy41IDcuMXYxNC45YzAgNC40IDIuNiA4LjQgNi43IDEwLjEgNC4xIDEuNyA4LjguOCAxMS45LTIuM2w4LjUtOC41YzIuMS0yLjEgMy4zLTUgMy4zLTh2LTE4LjVjMC0yLjggMS4zLTUuNCAzLjUtNy4xbDE4LjQtMTQuMWM1LTMuOCA4LTkuNiA4LjItMTUuOC4yLTMuMS0uNC02LjItMS42LTkuMXoiLz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSI2NCIgeDI9IjY0IiB5MT0iMjAiIHkyPSIxMjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii43OCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg=="
+              src="/icons/phantom.png"
               alt="Phantom"
               className="w-10 h-10 rounded-lg"
             />
@@ -89,7 +89,7 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
             className="w-full flex items-center gap-4 p-4 bg-gray-900/50 border border-gray-500/30 rounded-lg hover:border-orange-500/50 hover:bg-gray-900 transition-all"
           >
             <img
-              src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSJub25lIj48cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgZmlsbD0iI0ZDNTMxRCIgcng9IjI2Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTk4LjUgNTguMmwtMjktMTYuN2MtNC41LTIuNi0xMC0yLjYtMTQuNSAwbC0yOSAxNi43Yy00LjUgMi42LTcuMiA3LjQtNy4yIDEyLjZ2MzMuNWMwIDUuMiAyLjcgMTAgNy4yIDEyLjZsMjkgMTYuN2M0LjUgMi42IDEwIDIuNiAxNC41IDBsMjktMTYuN2M0LjUtMi42IDcuMi03LjQgNy4yLTEyLjZWNzAuOGMwLTUuMi0yLjctMTAtNy4yLTEyLjZ6bS0zNS41IDU0LjVjLTEwLjggMC0xOS41LTguNy0xOS41LTE5LjVzOC43LTE5LjUgMTkuNS0xOS41IDE5LjUgOC43IDE5LjUgMTkuNS04LjcgMTkuNS0xOS41IDE5LjV6Ii8+PC9zdmc+"
+              src="/icons/solflare.svg"
               alt="Solflare"
               className="w-10 h-10 rounded-lg"
             />
