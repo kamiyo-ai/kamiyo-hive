@@ -23,6 +23,14 @@ const MEMBER_ICONS = [
   "/icons/icon-morphing.svg",
 ];
 
+const MEMBER_COLORS = [
+  "#00f0ff", // cyan
+  "#9944ff", // purple
+  "#ff44f5", // magenta
+  "#ffaa22", // orange
+  "#44ff88", // green
+];
+
 function useSvgTexture(url: string): THREE.Texture | null {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
@@ -254,9 +262,9 @@ function SwarmWeb({ memberPositions }: { memberPositions: [number, number, numbe
   );
 }
 
-const AGENT_NODE_COUNT = 32;
+const AGENT_NODE_COUNT = 16;
 const AGENT_WEB_RADIUS = 1.1;
-const AGENT_CONNECTION_DIST = 1.4;
+const AGENT_CONNECTION_DIST = 1.2;
 
 interface MiniNodeData {
   position: THREE.Vector3;
@@ -266,7 +274,7 @@ interface MiniNodeData {
   drift: THREE.Vector3;
 }
 
-function AgentWeb({ active }: { active: boolean }) {
+function AgentWeb({ color, active }: { color: string; active: boolean }) {
   const nodesRef = useRef<MiniNodeData[] | null>(null);
 
   const pointsGeo = useMemo(() => {
@@ -316,9 +324,9 @@ function AgentWeb({ active }: { active: boolean }) {
   useFrame((_, delta) => {
     const nodes = nodesRef.current!;
     const now = Date.now() * 0.001;
-    const activeColor = new THREE.Color("#ffffff");
-    const restColor = new THREE.Color("#333344");
-    const dimLine = new THREE.Color("#222233");
+    const c = new THREE.Color(color);
+    const restColor = new THREE.Color("#0a3040");
+    const dimLine = new THREE.Color("#082830");
 
     // Smooth activation transition
     const targetActivation = active ? 1 : 0;
@@ -337,7 +345,7 @@ function AgentWeb({ active }: { active: boolean }) {
       const pz = node.basePosition.z + a * Math.sin(now * node.speed * 1.3 + node.phase + 1) * node.drift.z * 4;
       node.position.set(px, py, pz);
       posAttr.setXYZ(i, px, py, pz);
-      const nodeColor = restColor.clone().lerp(activeColor, a);
+      const nodeColor = restColor.clone().lerp(c, a);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
     }
     posAttr.needsUpdate = true;
@@ -350,7 +358,7 @@ function AgentWeb({ active }: { active: boolean }) {
         const dist = nodes[i].position.distanceTo(nodes[j].position);
         if (dist < AGENT_CONNECTION_DIST) {
           const proximity = 1 - dist / AGENT_CONNECTION_DIST;
-          const lineColor = dimLine.clone().lerp(activeColor, proximity * a * 0.85);
+          const lineColor = dimLine.clone().lerp(c, proximity * a * 0.85);
 
           linePos.setXYZ(lineIndex * 2, nodes[i].position.x, nodes[i].position.y, nodes[i].position.z);
           linePos.setXYZ(lineIndex * 2 + 1, nodes[j].position.x, nodes[j].position.y, nodes[j].position.z);
@@ -401,11 +409,12 @@ function MemberNode({
   isLatest: boolean;
 }) {
   const iconTexture = useSvgTexture(MEMBER_ICONS[iconIndex % MEMBER_ICONS.length]);
+  const color = MEMBER_COLORS[iconIndex % MEMBER_COLORS.length];
 
   return (
     <group position={position}>
       {/* Mini web around agent */}
-      <AgentWeb active={isLatest} />
+      <AgentWeb color={color} active={isLatest} />
 
       {/* Icon sprite */}
       {iconTexture && (
