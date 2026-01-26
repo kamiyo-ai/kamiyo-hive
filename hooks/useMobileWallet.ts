@@ -26,7 +26,7 @@ export function useMobileWallet() {
   }, []);
 
   // Build deep link URL for mobile wallets
-  const buildDeepLink = useCallback((wallet: 'phantom' | 'solflare') => {
+  const buildDeepLink = useCallback((wallet: 'phantom' | 'solflare' | 'metamask') => {
     if (typeof window === 'undefined') return '';
 
     const currentUrl = encodeURIComponent(window.location.href);
@@ -44,11 +44,17 @@ export function useMobileWallet() {
       return `https://solflare.com/ul/v1/browse/${currentUrl}`;
     }
 
+    if (wallet === 'metamask') {
+      // MetaMask uses metamask:// protocol or universal link
+      // https://docs.metamask.io/wallet/how-to/connect/set-up-sdk/javascript/react/
+      return `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`;
+    }
+
     return '';
   }, []);
 
   // Open wallet app on mobile
-  const openMobileWallet = useCallback((wallet: 'phantom' | 'solflare') => {
+  const openMobileWallet = useCallback((wallet: 'phantom' | 'solflare' | 'metamask') => {
     const deepLink = buildDeepLink(wallet);
     if (deepLink) {
       window.location.href = deepLink;
