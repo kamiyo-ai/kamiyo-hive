@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import bs58 from 'bs58';
 import PayButton from '@/components/PayButton';
-import { createTeam } from '@/lib/swarm-api';
+import { createTeam, getChallenge, authenticateWallet, setAuthToken, getAuthToken } from '@/lib/swarm-api';
 
 const SwarmScene = dynamic(() => import('@/components/swarm/SwarmScene').then(m => m.SwarmScene), {
   ssr: false,
@@ -34,10 +35,44 @@ export default function SwarmPage() {
     }
   }, [wallet.publicKey]);
 
-  const doCreate = async () => {
-    if (!name || !dailyLimit) return;
-    setCreating(true);
+  const authenticate = async (): Promise<boolean> => {
+    if (!wallet.publicKey || !wallet.signMessage) {
+      return false;
+    }
+
+    // Check if already authenticated
+    if (getAuthToken()) {
+      return true;
+    }
+
     try {
+      const walletAddr = wallet.publicKey.toBase58();
+      const { challenge } = await getChallenge(walletAddr);
+      const messageBytes = new TextEncoder().encode(challenge);
+      const signatureBytes = await wallet.signMessage(messageBytes);
+      const signature = bs58.encode(signatureBytes);
+      const { token } = await authenticateWallet(walletAddr, signature);
+      setAuthToken(token);
+      return true;
+    } catch (err) {
+      console.error('Authentication failed:', err);
+      return false;
+    }
+  };
+
+  const doCreate = async () => {
+    if (!name || !dailyLimit || !wallet.publicKey) return;
+    setCreating(true);
+    setError(null);
+
+    try {
+      const authenticated = await authenticate();
+      if (!authenticated) {
+        setError('Failed to authenticate wallet');
+        setCreating(false);
+        return;
+      }
+
       const team = await createTeam({
         name,
         currency,

@@ -414,6 +414,9 @@ app.kamiyo.ai/trials?ref=${refCode}
         {/* Intro Phase */}
         {phase === 'intro' && (
           <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center text-center">
+            <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+              — Trials トライアル
+            </p>
             <h1 className="text-3xl md:text-4xl font-medium mb-4">{t('title')}</h1>
             <span className="text-gray-400 text-sm md:text-lg block mb-8">
               {t('subtitle')}

@@ -154,7 +154,7 @@ export default function GovernancePage() {
     <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
       <div className="subheading-border mb-10 pb-6">
         <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
-          — {t('subtitle')}
+          — {t('subtitle')} ガバナンス
         </p>
         <h1 className="text-3xl md:text-4xl font-medium text-white">{t('title')}</h1>
       </div>

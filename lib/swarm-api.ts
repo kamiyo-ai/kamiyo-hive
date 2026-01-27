@@ -1,5 +1,16 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kamiyo-protocol-4c70.onrender.com';
 
+// Auth token storage
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  authToken = token;
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
+}
+
 export interface SwarmTeam {
   id: string;
   name: string;
@@ -49,8 +60,15 @@ export interface CreateTeamInput {
 }
 
 async function api<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     ...options,
   });
   if (!res.ok) {
@@ -58,6 +76,8 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
     let message = `API error: ${res.status}`;
     if (typeof err.error === 'string') {
       message = err.error;
+    } else if (err.error?.message) {
+      message = err.error.message;
     } else if (typeof err.message === 'string') {
       message = err.message;
     } else if (res.status === 401) {
@@ -68,6 +88,18 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(message);
   }
   return res.json();
+}
+
+// Auth functions
+export async function getChallenge(wallet: string): Promise<{ challenge: string; expiresAt: number }> {
+  return api(`/api/auth/challenge?wallet=${encodeURIComponent(wallet)}`);
+}
+
+export async function authenticateWallet(wallet: string, signature: string): Promise<{ token: string; wallet: string }> {
+  return api('/api/auth/wallet', {
+    method: 'POST',
+    body: JSON.stringify({ wallet, signature }),
+  });
 }
 
 export async function listTeams(): Promise<SwarmTeam[]> {

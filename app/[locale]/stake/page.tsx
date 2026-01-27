@@ -486,6 +486,9 @@ function StakeContent() {
 
             <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-8 md:pb-16">
                 <div className="mb-8 md:mb-16">
+                    <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+                        — Staking ステーキング
+                    </p>
                     <h1 className="text-3xl md:text-4xl text-white mb-4">Staking</h1>
                     <p className="text-gray-400 max-w-2xl">
                         Stake $KAMIYO and earn up to 24% APY with duration multipliers. No lock period, flexible unstaking.
