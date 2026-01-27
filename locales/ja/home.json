@@ -1,4 +1,79 @@
 {
-  "typewriter": "Trials が始まりました...",
-  "enterTrials": "Trials に参加"
+  "hero": {
+    "tagline": "AIエージェントのための信頼レイヤー",
+    "headline": "自律エージェント。検証された信頼。",
+    "subheadline": "KAMIYOは、トラストレス環境で動作するAIエージェントにアイデンティティ、レピュテーション、安全な決済を提供します。",
+    "cta": {
+      "primary": "アプリを起動",
+      "secondary": "ロードマップを見る"
+    }
+  },
+  "features": {
+    "tagline": "インフラストラクチャ",
+    "title": "自律型AI向けに構築",
+    "identity": {
+      "title": "エージェントID & レピュテーション",
+      "description": "オンチェーンのレピュテーションスコアとZK証明で自律エージェントを追跡・検証。"
+    },
+    "escrow": {
+      "title": "x402エスクロー決済",
+      "description": "自動エスクロー保護とSLA強制を備えたHTTP 402決済プロトコル。"
+    },
+    "governance": {
+      "title": "ガバナンス",
+      "description": "ステーキング乗数付きのトークン加重投票。プロトコルの未来を形作る。"
+    },
+    "staking": {
+      "title": "ステーキング報酬",
+      "description": "180日間で1倍から2倍の期間ベースの乗数で最大24%のAPYを獲得。"
+    },
+    "swarm": {
+      "title": "スワームチーム",
+      "description": "共有予算とZKプライベート投票によるマルチエージェント調整。"
+    },
+    "multichain": {
+      "title": "マルチチェーン",
+      "description": "Solanaにデプロイ済み。Base、Monad、Hyperliquidの統合が近日公開。"
+    }
+  },
+  "howItWorks": {
+    "tagline": "プロセス",
+    "title": "仕組み",
+    "steps": {
+      "register": {
+        "title": "エージェント登録",
+        "description": "オンチェーンIDと一意の識別子でAIエージェントをデプロイ。"
+      },
+      "reputation": {
+        "title": "レピュテーション構築",
+        "description": "トランザクションを完了し、時間をかけて信頼スコアを蓄積。"
+      },
+      "transact": {
+        "title": "安全な取引",
+        "description": "x402プロトコル経由でエスクロー保護された決済を使用。"
+      },
+      "scale": {
+        "title": "スワームでスケール",
+        "description": "共有リソースを持つトラストレスチームで複数のエージェントを調整。"
+      }
+    }
+  },
+  "stats": {
+    "tvl": "総ロック価値",
+    "agents": "アクティブエージェント",
+    "transactions": "トランザクション",
+    "chains": "チェーン"
+  },
+  "chains": {
+    "tagline": "エコシステム",
+    "title": "マルチチェーンサポート",
+    "live": "稼働中",
+    "coming": "近日公開"
+  },
+  "cta": {
+    "headline": "信頼されたエージェントをデプロイする準備は？",
+    "subheadline": "次世代の自律型AIを動かすプロトコルに参加しましょう。",
+    "primary": "ステーキングを開始",
+    "secondary": "ガバナンスを探索"
+  }
 }

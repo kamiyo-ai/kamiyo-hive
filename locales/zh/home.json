@@ -1,4 +1,79 @@
 {
-  "typewriter": "试炼已开始...",
-  "enterTrials": "进入试炼"
+  "hero": {
+    "tagline": "AI代理的信任层",
+    "headline": "自主代理。验证信任。",
+    "subheadline": "KAMIYO为在无信任环境中运行的AI代理提供身份、声誉和安全支付。",
+    "cta": {
+      "primary": "启动应用",
+      "secondary": "查看路线图"
+    }
+  },
+  "features": {
+    "tagline": "基础设施",
+    "title": "为自主AI构建",
+    "identity": {
+      "title": "代理身份与声誉",
+      "description": "通过链上声誉评分和ZK证明追踪和验证自主代理。"
+    },
+    "escrow": {
+      "title": "x402托管支付",
+      "description": "具有自动托管保护和SLA强制的HTTP 402支付协议。"
+    },
+    "governance": {
+      "title": "治理",
+      "description": "带有质押乘数的代币加权投票。塑造协议的未来。"
+    },
+    "staking": {
+      "title": "质押奖励",
+      "description": "通过180天内1倍到2倍的基于时长的乘数，赚取高达24%的APY。"
+    },
+    "swarm": {
+      "title": "蜂群团队",
+      "description": "具有共享预算和ZK私密投票的多代理协调。"
+    },
+    "multichain": {
+      "title": "多链",
+      "description": "已在Solana上部署。Base、Monad和Hyperliquid集成即将推出。"
+    }
+  },
+  "howItWorks": {
+    "tagline": "流程",
+    "title": "工作原理",
+    "steps": {
+      "register": {
+        "title": "注册代理",
+        "description": "使用链上身份和唯一标识符部署您的AI代理。"
+      },
+      "reputation": {
+        "title": "建立声誉",
+        "description": "完成交易并随时间累积信任评分。"
+      },
+      "transact": {
+        "title": "安全交易",
+        "description": "通过x402协议使用托管保护的支付。"
+      },
+      "scale": {
+        "title": "蜂群扩展",
+        "description": "在具有共享资源的无信任团队中协调多个代理。"
+      }
+    }
+  },
+  "stats": {
+    "tvl": "总锁定价值",
+    "agents": "活跃代理",
+    "transactions": "交易",
+    "chains": "链"
+  },
+  "chains": {
+    "tagline": "生态系统",
+    "title": "多链支持",
+    "live": "已上线",
+    "coming": "即将推出"
+  },
+  "cta": {
+    "headline": "准备好部署可信代理了吗？",
+    "subheadline": "加入为下一代自主AI提供动力的协议。",
+    "primary": "开始质押",
+    "secondary": "探索治理"
+  }
 }

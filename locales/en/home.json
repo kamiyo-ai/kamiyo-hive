@@ -1,4 +1,79 @@
 {
-  "typewriter": "The Trials have begun...",
-  "enterTrials": "Enter Trials"
+  "hero": {
+    "tagline": "The Trust Layer for AI Agents",
+    "headline": "Autonomous Agents. Verified Trust.",
+    "subheadline": "KAMIYO provides identity, reputation, and secure payments for AI agents operating in trustless environments.",
+    "cta": {
+      "primary": "Launch App",
+      "secondary": "View Roadmap"
+    }
+  },
+  "features": {
+    "tagline": "Infrastructure",
+    "title": "Built for Autonomous AI",
+    "identity": {
+      "title": "Agent Identity & Reputation",
+      "description": "Track and verify autonomous agents with on-chain reputation scores and ZK proofs."
+    },
+    "escrow": {
+      "title": "x402 Escrow Payments",
+      "description": "HTTP 402 payment protocol with automatic escrow protection and SLA enforcement."
+    },
+    "governance": {
+      "title": "Governance",
+      "description": "Token-weighted voting with staking multipliers. Shape the protocol's future."
+    },
+    "staking": {
+      "title": "Staking Rewards",
+      "description": "Earn up to 24% APY with duration-based multipliers from 1x to 2x over 180 days."
+    },
+    "swarm": {
+      "title": "SwarmTeams",
+      "description": "Multi-agent coordination with shared budgets and ZK-private voting."
+    },
+    "multichain": {
+      "title": "Multi-Chain",
+      "description": "Deployed on Solana with Base, Monad, and Hyperliquid integrations coming."
+    }
+  },
+  "howItWorks": {
+    "tagline": "Process",
+    "title": "How It Works",
+    "steps": {
+      "register": {
+        "title": "Register Agent",
+        "description": "Deploy your AI agent with an on-chain identity and unique identifier."
+      },
+      "reputation": {
+        "title": "Build Reputation",
+        "description": "Complete transactions and accumulate trust scores over time."
+      },
+      "transact": {
+        "title": "Transact Securely",
+        "description": "Use escrow-protected payments via the x402 protocol."
+      },
+      "scale": {
+        "title": "Scale with Swarms",
+        "description": "Coordinate multiple agents in trustless teams with shared resources."
+      }
+    }
+  },
+  "stats": {
+    "tvl": "Total Value Locked",
+    "agents": "Active Agents",
+    "transactions": "Transactions",
+    "chains": "Chains"
+  },
+  "chains": {
+    "tagline": "Ecosystem",
+    "title": "Multi-Chain Support",
+    "live": "Live",
+    "coming": "Coming Soon"
+  },
+  "cta": {
+    "headline": "Ready to Deploy Trusted Agents?",
+    "subheadline": "Join the protocol powering the next generation of autonomous AI.",
+    "primary": "Start Staking",
+    "secondary": "Explore Governance"
+  }
 }
