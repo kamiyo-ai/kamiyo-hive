@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useTranslations } from 'next-intl';
-import CtaButton from '@/components/CtaButton';
 
 interface LeaderboardEntry {
   wallet: string;
@@ -66,16 +65,11 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-16">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div>
-            <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
-              — Leaderboard リーダーボード
-            </p>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">{t('title')}</h1>
-          </div>
-          <div className="ml-8 sm:mr-8">
-            <CtaButton text={t('enterTrials')} href="/trials" />
-          </div>
+        <div className="mb-8">
+          <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+            — Leaderboard リーダーボード
+          </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl text-white">{t('title')}</h1>
         </div>
 
         {/* Concluded Banner */}
