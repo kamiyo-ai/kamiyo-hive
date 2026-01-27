@@ -327,15 +327,6 @@ export function Header() {
                 >
                   {t('nav.roadmap')}
                 </Link>
-                <Link
-                  href="/faq"
-                  onClick={closeMenu}
-                  className={`transition-colors duration-300 text-xs ${
-                    pathname === '/faq' ? 'text-white' : 'text-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  {t('nav.faq')}
-                </Link>
                 <a
                   href="https://kamiyo.ai"
                   target="_blank"
