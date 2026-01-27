@@ -177,8 +177,8 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
     const linePositions = linesGeometry.getAttribute("position") as THREE.BufferAttribute;
     const lineColors = linesGeometry.getAttribute("color") as THREE.BufferAttribute;
 
-    const baseColor = new THREE.Color("#1a1a2e");
-    const dimColor = new THREE.Color("#0d0d1a");
+    const baseColor = new THREE.Color("#0a3040");
+    const dimColor = new THREE.Color("#061820");
 
     // Update nodes
     for (let i = 0; i < nodeCount; i++) {
