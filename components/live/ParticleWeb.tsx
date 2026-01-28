@@ -3,70 +3,83 @@
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import type { ActiveEffect } from "@/types/agent-events";
 
-const NODES_PER_PATH = 12;
-const CONNECTION_DISTANCE = 2.4;
-const WAVE_SPEED = 6;
-const WAVE_RADIUS = 2.16;
+const NODES_PER_PATH = 10;
+const CONNECTION_DISTANCE = 2.8;
+const WAVE_SPEED = 5;
+const WAVE_RADIUS = 2.0;
+
+// Seeded random for consistent regeneration
+function seededRandom(seed: number) {
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
+}
 
 interface NodeData {
   position: THREE.Vector3;
-  velocity: THREE.Vector3;
   basePosition: THREE.Vector3;
   excitation: number;
-  excitationColor: THREE.Color;
 }
 
 interface WaveData {
+  sourceIdx: number;
+  targetIdx: number;
   source: THREE.Vector3;
   target: THREE.Vector3;
   direction: THREE.Vector3;
   totalDist: number;
-  color: THREE.Color;
   startedAt: number;
-  effectId: string;
 }
 
-interface ParticleWebProps {
-  effects: ActiveEffect[];
+interface AgentPosition {
+  id: string;
+  position: [number, number, number];
+  color: string;
 }
 
-const AGENT_POSITIONS: Record<string, [number, number, number]> = {
-  kamiyo: [0, 0, -3],
-  oracle: [-3, 0, 1],
-  sage: [3, 0, 1],
-  chaos: [0, 0, 4],
-};
+// All 7 agents
+const ALL_AGENTS: AgentPosition[] = [
+  { id: "kamiyo", position: [0, 0, -3.6], color: "#00f0ff" },
+  { id: "oracle", position: [-3.6, 0, 1.2], color: "#9944ff" },
+  { id: "sage", position: [3.6, 0, 1.2], color: "#ffaa22" },
+  { id: "chaos", position: [0, 0, 4.8], color: "#ff44f5" },
+  { id: "agent-5", position: [-5, 1.2, -4], color: "#00f0ff" },
+  { id: "agent-6", position: [5, -0.8, -2], color: "#ff44f5" },
+  { id: "agent-7", position: [-4, 1.5, 4], color: "#22ff88" },
+];
 
-const AGENT_NAMES = ["kamiyo", "oracle", "sage", "chaos"];
-
-// Generate nodes distributed along paths between all agent pairs
+// Generate nodes distributed along paths between nearby agent pairs
 function generateNodes(): NodeData[] {
   const nodes: NodeData[] = [];
+  const maxDistance = 12;
+  let seed = 42;
 
-  for (let i = 0; i < AGENT_NAMES.length; i++) {
-    for (let j = i + 1; j < AGENT_NAMES.length; j++) {
-      const from = new THREE.Vector3(...AGENT_POSITIONS[AGENT_NAMES[i]]);
-      const to = new THREE.Vector3(...AGENT_POSITIONS[AGENT_NAMES[j]]);
+  for (let i = 0; i < ALL_AGENTS.length; i++) {
+    for (let j = i + 1; j < ALL_AGENTS.length; j++) {
+      const from = new THREE.Vector3(...ALL_AGENTS[i].position);
+      const to = new THREE.Vector3(...ALL_AGENTS[j].position);
+      const dist = from.distanceTo(to);
 
-      for (let n = 1; n <= NODES_PER_PATH; n++) {
-        const t = n / (NODES_PER_PATH + 1);
+      if (dist > maxDistance) continue;
+
+      const nodesForPath = Math.max(5, Math.floor(NODES_PER_PATH * (dist / 8)));
+
+      for (let n = 1; n <= nodesForPath; n++) {
+        const t = n / (nodesForPath + 1);
         const pos = from.clone().lerp(to, t);
-        // Add some random offset perpendicular to the path
+
+        seed++;
         const offset = new THREE.Vector3(
-          (Math.random() - 0.5) * 1.44,
-          (Math.random() - 0.5) * 0.96,
-          (Math.random() - 0.5) * 1.44
+          (seededRandom(seed) - 0.5) * 1.4,
+          (seededRandom(seed + 100) - 0.5) * 1.0,
+          (seededRandom(seed + 200) - 0.5) * 1.4
         );
         pos.add(offset);
 
         nodes.push({
           position: pos.clone(),
-          velocity: new THREE.Vector3(0, 0, 0),
           basePosition: pos.clone(),
           excitation: 0,
-          excitationColor: new THREE.Color("#00f0ff"),
         });
       }
     }
@@ -75,11 +88,22 @@ function generateNodes(): NodeData[] {
   return nodes;
 }
 
-export function ParticleWeb({ effects }: ParticleWebProps) {
+interface ParticleWebProps {
+  speakingAgents: Set<number>;
+  onAgentReceive?: (idx: number) => void;
+}
+
+export function ParticleWeb({ speakingAgents, onAgentReceive }: ParticleWebProps) {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
-  const processedEffects = useRef<Set<string>>(new Set());
   const activeWaves = useRef<WaveData[]>([]);
+  const lastWaveTime = useRef(0);
+  const conversationState = useRef<{ phase: 'idle' | 'sending' | 'cooldown'; sourceIdx: number; targetIdx: number; startTime: number }>({
+    phase: 'idle',
+    sourceIdx: 0,
+    targetIdx: 1,
+    startTime: 0,
+  });
 
   const nodes = useMemo<NodeData[]>(() => generateNodes(), []);
   const nodeCount = nodes.length;
@@ -106,39 +130,67 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
 
   useFrame((_, delta) => {
     const now = Date.now();
+    const conv = conversationState.current;
 
-    // Detect new effects and spawn waves
-    for (const effect of effects) {
-      if (processedEffects.current.has(effect.id)) continue;
-      processedEffects.current.add(effect.id);
+    // Conversation state machine
+    if (conv.phase === 'idle') {
+      // Start new conversation after delay
+      if (now - conv.startTime > 2000 + Math.random() * 2000) {
+        // Pick source from speaking agents or random
+        const speakingArr = Array.from(speakingAgents);
+        const sourceIdx = speakingArr.length > 0
+          ? speakingArr[Math.floor(Math.random() * speakingArr.length)]
+          : Math.floor(Math.random() * ALL_AGENTS.length);
 
-      const sourceName = effect.source || "kamiyo";
-      const targetName = effect.target || (sourceName === "kamiyo" ? "oracle" : "kamiyo");
+        let targetIdx = Math.floor(Math.random() * ALL_AGENTS.length);
+        while (targetIdx === sourceIdx) {
+          targetIdx = Math.floor(Math.random() * ALL_AGENTS.length);
+        }
 
-      const sourcePos = AGENT_POSITIONS[sourceName];
-      const targetPos = AGENT_POSITIONS[targetName];
-      if (!sourcePos || !targetPos) continue;
+        const src = new THREE.Vector3(...ALL_AGENTS[sourceIdx].position);
+        const tgt = new THREE.Vector3(...ALL_AGENTS[targetIdx].position);
+        const dir = tgt.clone().sub(src).normalize();
+        const totalDist = src.distanceTo(tgt);
 
-      const src = new THREE.Vector3(...sourcePos);
-      const tgt = new THREE.Vector3(...targetPos);
-      const dir = tgt.clone().sub(src).normalize();
-      const totalDist = src.distanceTo(tgt);
+        activeWaves.current.push({
+          sourceIdx,
+          targetIdx,
+          source: src,
+          target: tgt,
+          direction: dir,
+          totalDist,
+          startedAt: now,
+        });
 
-      activeWaves.current.push({
-        source: src,
-        target: tgt,
-        direction: dir,
-        totalDist,
-        color: new THREE.Color("#ffffff"),
-        startedAt: now,
-        effectId: effect.id,
-      });
-    }
-
-    // Clean up old processed IDs
-    if (processedEffects.current.size > 150) {
-      const arr = Array.from(processedEffects.current);
-      processedEffects.current = new Set(arr.slice(arr.length - 100));
+        conv.phase = 'sending';
+        conv.sourceIdx = sourceIdx;
+        conv.targetIdx = targetIdx;
+        conv.startTime = now;
+      }
+    } else if (conv.phase === 'sending') {
+      // Check if wave reached target
+      const wave = activeWaves.current.find(w => w.sourceIdx === conv.sourceIdx && w.targetIdx === conv.targetIdx);
+      if (wave) {
+        const elapsed = (now - wave.startedAt) / 1000;
+        const waveFrontDist = elapsed * WAVE_SPEED;
+        if (waveFrontDist >= wave.totalDist) {
+          // Wave arrived - notify target agent
+          if (onAgentReceive) {
+            onAgentReceive(conv.targetIdx);
+          }
+          conv.phase = 'cooldown';
+          conv.startTime = now;
+        }
+      } else {
+        conv.phase = 'idle';
+        conv.startTime = now;
+      }
+    } else if (conv.phase === 'cooldown') {
+      // Short pause before next conversation
+      if (now - conv.startTime > 800 + Math.random() * 1200) {
+        conv.phase = 'idle';
+        conv.startTime = now;
+      }
     }
 
     // Process active waves
@@ -153,7 +205,6 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
         continue;
       }
 
-      // Wave front position along source->target
       const waveFront = wave.source.clone().add(
         wave.direction.clone().multiplyScalar(Math.min(waveFrontDist, wave.totalDist))
       );
@@ -161,9 +212,8 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
       for (const node of nodes) {
         const distToFront = node.basePosition.distanceTo(waveFront);
         if (distToFront < WAVE_RADIUS) {
-          const strength = (1 - distToFront / WAVE_RADIUS) * 0.7;
+          const strength = (1 - distToFront / WAVE_RADIUS) * 0.9;
           node.excitation = Math.min(1, node.excitation + strength * delta * 12);
-          node.excitationColor.copy(wave.color);
         }
       }
     }
@@ -177,19 +227,16 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
     const linePositions = linesGeometry.getAttribute("position") as THREE.BufferAttribute;
     const lineColors = linesGeometry.getAttribute("color") as THREE.BufferAttribute;
 
-    const baseColor = new THREE.Color("#0a3040");
-    const dimColor = new THREE.Color("#061820");
+    const baseColor = new THREE.Color("#0a4050");
+    const dimColor = new THREE.Color("#082838");
+    const waveColor = new THREE.Color("#ffffff");
 
     // Update nodes
     for (let i = 0; i < nodeCount; i++) {
       const node = nodes[i];
-
-      // Decay excitation
-      node.excitation = Math.max(0, node.excitation - delta * 1.5);
-
+      node.excitation = Math.max(0, node.excitation - delta * 2.0);
       posAttr.setXYZ(i, node.basePosition.x, node.basePosition.y, node.basePosition.z);
-
-      const nodeColor = baseColor.clone().lerp(node.excitationColor, node.excitation);
+      const nodeColor = baseColor.clone().lerp(waveColor, node.excitation);
       colorAttr.setXYZ(i, nodeColor.r, nodeColor.g, nodeColor.b);
     }
     posAttr.needsUpdate = true;
@@ -197,25 +244,20 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
 
     // Update connections
     let lineIndex = 0;
-
     for (let i = 0; i < nodeCount; i++) {
       for (let j = i + 1; j < nodeCount; j++) {
         const dist = nodes[i].basePosition.distanceTo(nodes[j].basePosition);
         if (dist < CONNECTION_DISTANCE) {
           const proximity = 1 - dist / CONNECTION_DISTANCE;
           const excitement = Math.max(nodes[i].excitation, nodes[j].excitation);
-          const excitedNode = nodes[i].excitation > nodes[j].excitation ? nodes[i] : nodes[j];
-          // Show dim lines at rest, bright on excitation
           const baseOpacity = 0.15;
           const blend = baseOpacity + excitement * (1 - baseOpacity);
-          const color = dimColor.clone().lerp(excitedNode.excitationColor, blend * proximity);
+          const color = dimColor.clone().lerp(waveColor, blend * proximity);
 
           linePositions.setXYZ(lineIndex * 2, nodes[i].basePosition.x, nodes[i].basePosition.y, nodes[i].basePosition.z);
           linePositions.setXYZ(lineIndex * 2 + 1, nodes[j].basePosition.x, nodes[j].basePosition.y, nodes[j].basePosition.z);
-
           lineColors.setXYZ(lineIndex * 2, color.r, color.g, color.b);
           lineColors.setXYZ(lineIndex * 2 + 1, color.r, color.g, color.b);
-
           lineIndex++;
         }
       }
@@ -242,10 +284,12 @@ export function ParticleWeb({ effects }: ParticleWebProps) {
         <lineBasicMaterial
           vertexColors
           transparent
-          opacity={0.35}
+          opacity={0.4}
           depthWrite={false}
         />
       </lineSegments>
     </>
   );
 }
+
+export { ALL_AGENTS };
