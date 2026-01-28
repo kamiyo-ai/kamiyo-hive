@@ -43,6 +43,7 @@ export function Header() {
   }, [connected, fetchTeams]);
 
   const navItems = [
+    { href: '/dreams', label: t('nav.dreams') },
     { href: '/stake', label: t('nav.stake') },
     { href: '/governance', label: t('nav.governance') },
     { href: '/escrow', label: t('nav.escrow') },
