@@ -8,32 +8,34 @@ interface CtaButtonProps {
   text: string;
   href: string;
   variant?: 'default' | 'hero';
+  external?: boolean;
 }
 
-export default function CtaButton({ text, href, variant = 'default' }: CtaButtonProps) {
+export default function CtaButton({ text, href, variant = 'default', external = false }: CtaButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { text: scrambledText, setIsHovering } = useScrambleText(text, true);
 
   const isHero = variant === 'hero';
 
-  return (
-    <Link
-      href={href}
-      onMouseEnter={() => {
-        setIsHovering(true);
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovering(false);
-        setIsHovered(false);
-      }}
-      className="group transition-all duration-300 relative px-5 sm:px-6 py-2.5 sm:py-3 text-white text-xs uppercase overflow-visible -ml-6 sm:-ml-8"
-    >
+  const commonProps = {
+    onMouseEnter: () => {
+      setIsHovering(true);
+      setIsHovered(true);
+    },
+    onMouseLeave: () => {
+      setIsHovering(false);
+      setIsHovered(false);
+    },
+    className: "group transition-all duration-300 relative px-5 sm:px-6 py-2.5 sm:py-3 text-white text-xs uppercase overflow-visible -ml-6 sm:-ml-8"
+  };
+
+  const content = (
+    <>
       <span className="relative z-10 ml-6 sm:ml-8 tracking-wider transition-all duration-300 ease-out inline-block whitespace-nowrap">
         {scrambledText}
       </span>
 
-      
+
       {/* Base border - hides on hover for hero variant */}
       <span className={`pointer-events-none absolute inset-0 border border-dotted cta-gradient skew-x-[-45deg] translate-x-4 transition-all duration-500 ${isHero && isHovered ? 'opacity-0' : 'opacity-100'}`} />
 
@@ -70,6 +72,20 @@ export default function CtaButton({ text, href, variant = 'default' }: CtaButton
 
       <span className={`pointer-events-none absolute inset-0 border-r border-dotted cta-gradient-border-right skew-x-[-45deg] translate-x-4 transition-all duration-300 ${isHero && isHovered ? 'opacity-0' : 'opacity-100'}`} />
       <span className={`pointer-events-none absolute bottom-0 left-[-4px] border-b border-dotted cta-gradient-border-bottom transition-all duration-300 w-full ${isHero && isHovered ? 'opacity-0' : 'opacity-100'}`} />
+    </>
+  );
+
+  if (external) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" {...commonProps}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} {...commonProps}>
+      {content}
     </Link>
   );
 }

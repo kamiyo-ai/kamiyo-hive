@@ -20,8 +20,9 @@ export default function LandingHero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-16">
           <CtaButton
             text={t('hero.cta.secondary')}
-            href="/roadmap"
+            href="https://kamiyo.ai/roadmap"
             variant="hero"
+            external
           />
         </div>
       </div>

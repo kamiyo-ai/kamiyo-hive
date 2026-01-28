@@ -216,13 +216,15 @@ export default function FAQPage() {
             <h4 className="text-white text-sm">{t('relatedPages.escrow')}</h4>
           </Link>
 
-          <Link
-            href="/roadmap"
+          <a
+            href="https://kamiyo.ai/roadmap"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-black border border-gray-500/25 rounded-lg p-5 hover:border-gray-700 transition-colors group"
           >
             <div className="gradient-text text-xs uppercase tracking-wider mb-2">Roadmap</div>
             <h4 className="text-white text-sm">{t('relatedPages.roadmap')}</h4>
-          </Link>
+          </a>
         </div>
       </div>
     </div>

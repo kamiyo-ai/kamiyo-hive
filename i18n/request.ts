@@ -15,7 +15,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
   const stake = (await import(`../locales/${locale}/stake.json`)).default;
   const escrow = (await import(`../locales/${locale}/escrow.json`)).default;
   const dreams = (await import(`../locales/${locale}/dreams.json`)).default;
-  const roadmap = (await import(`../locales/${locale}/roadmap.json`)).default;
   const faq = (await import(`../locales/${locale}/faq.json`)).default;
 
   return {
@@ -28,7 +27,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
       stake,
       escrow,
       dreams,
-      roadmap,
       faq
     }
   };

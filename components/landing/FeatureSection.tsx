@@ -29,7 +29,8 @@ export default function FeatureSection() {
     },
     {
       key: 'multichain',
-      href: '/roadmap',
+      href: 'https://kamiyo.ai/roadmap',
+      external: true,
     },
   ];
 
@@ -51,6 +52,7 @@ export default function FeatureSection() {
             title={t(`features.${feature.key}.title`)}
             description={t(`features.${feature.key}.description`)}
             href={feature.href}
+            external={'external' in feature && feature.external}
           />
         ))}
       </div>
