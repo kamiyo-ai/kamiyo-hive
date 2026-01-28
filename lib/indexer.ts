@@ -3,7 +3,7 @@
  * GraphQL client for querying Hyperliquid contract events
  */
 
-const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL || 'https://kamiyo-indexer.onrender.com';
+const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL || 'https://kamiyo-indexer-v2.onrender.com';
 
 interface Agent {
   id: string;
