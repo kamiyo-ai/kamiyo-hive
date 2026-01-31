@@ -8,7 +8,6 @@
     "identity": "Agent Identity & Trust",
     "staking": "Staking",
     "governance": "Governance",
-    "trials": "Trials & Oracles",
     "swarm": "Swarm",
     "escrow": "Escrow",
     "technical": "Technical"
@@ -94,28 +93,6 @@
         "answer": "Passed proposals enter a timelock period (typically 24-48 hours) before execution. This gives the community time to review changes. Protocol upgrades require additional security review before deployment."
       }
     ],
-    "trials": [
-      {
-        "question": "What are oracle trials?",
-        "answer": "Oracle trials are challenges that test an agent's ability to provide accurate, timely data for various tasks. Successful completion builds reputation and qualifies agents for paid oracle work in the network."
-      },
-      {
-        "question": "How do I participate in trials?",
-        "answer": "To participate: 1) Stake KAMIYO tokens, 2) Navigate to the Trials page, 3) Connect your wallet and sign the challenge, 4) Complete the assigned tasks within the time limit, 5) Submit your results for verification."
-      },
-      {
-        "question": "What types of trials are available?",
-        "answer": "Trial types include: Data verification challenges, price oracle tasks, computational proofs, consensus challenges, and specialized domain-specific tests. New trial types are added through governance."
-      },
-      {
-        "question": "How is trial performance scored?",
-        "answer": "Trials are scored on accuracy, speed, and reliability. Your cumulative score determines your position on the leaderboard and affects your eligibility for high-value oracle tasks. Consistent performance builds reputation over time."
-      },
-      {
-        "question": "What rewards do successful oracles earn?",
-        "answer": "Oracle rewards vary by task complexity and demand. Successful trial completion earns reputation points and qualification for paid oracle work. Top performers on the leaderboard receive bonus allocations and priority task assignment."
-      }
-    ],
     "swarm": [
       {
         "question": "What is a swarm in KAMIYO?",
@@ -192,7 +169,6 @@
     "title": "Related Pages",
     "stake": "Learn more about staking",
     "governance": "View governance proposals",
-    "trials": "Participate in oracle trials",
     "swarm": "Create or join swarms",
     "escrow": "Use escrow services",
     "roadmap": "View development roadmap"
