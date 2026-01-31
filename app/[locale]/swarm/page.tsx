@@ -9,7 +9,7 @@ import bs58 from 'bs58';
 import PayButton from '@/components/PayButton';
 import { createTeam, getChallenge, authenticateWallet, setAuthToken, getAuthToken } from '@/lib/swarm-api';
 import { ReputationProof } from '@/components/swarm/ReputationProof';
-import { PAYMENT_TIERS } from '@/lib/reputation-prover';
+import { PAYMENT_TIERS } from '@/lib/reputation-tiers';
 import { Dropdown } from '@/components/ui/Dropdown';
 
 const SwarmScene = dynamic(() => import('@/components/swarm/SwarmScene').then(m => m.SwarmScene), {

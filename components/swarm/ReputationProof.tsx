@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useReputationProof } from '@/hooks/useReputationProof';
-import { PAYMENT_TIERS, getTierForReputation } from '@/lib/reputation-prover';
+import { PAYMENT_TIERS, getTierForReputation } from '@/lib/reputation-tiers';
 import PayButton from '@/components/PayButton';
 
 interface Props {

@@ -1,6 +1,5 @@
-import * as snarkjs from 'snarkjs';
-// @ts-expect-error - circomlibjs has no types
-import { buildPoseidon } from 'circomlibjs';
+// Re-export from separate file to avoid SSR issues
+export { PAYMENT_TIERS, getTierForReputation, getTierRequirements } from './reputation-tiers';
 
 const FIELD_MODULUS = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 const WASM_URL = process.env.NEXT_PUBLIC_CIRCUIT_WASM_URL || '/circuits/agent_reputation.wasm';
@@ -11,6 +10,25 @@ let zkeyBuffer: ArrayBuffer | null = null;
 let loadingPromise: Promise<{ wasmBuffer: ArrayBuffer; zkeyBuffer: ArrayBuffer }> | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let poseidonInstance: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let snarkjsModule: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let circomlibModule: any = null;
+
+async function loadSnarkjs() {
+  if (!snarkjsModule) {
+    snarkjsModule = await import('snarkjs');
+  }
+  return snarkjsModule;
+}
+
+async function loadCircomlib() {
+  if (!circomlibModule) {
+    // @ts-expect-error - circomlibjs has no types
+    circomlibModule = await import('circomlibjs');
+  }
+  return circomlibModule;
+}
 
 async function loadCircuitArtifacts(): Promise<{ wasmBuffer: ArrayBuffer; zkeyBuffer: ArrayBuffer }> {
   if (wasmBuffer && zkeyBuffer) return { wasmBuffer, zkeyBuffer };
@@ -35,14 +53,15 @@ async function loadCircuitArtifacts(): Promise<{ wasmBuffer: ArrayBuffer; zkeyBu
 
 async function getPoseidon() {
   if (!poseidonInstance) {
-    poseidonInstance = await buildPoseidon();
+    const circomlib = await loadCircomlib();
+    poseidonInstance = await circomlib.buildPoseidon();
   }
   return poseidonInstance;
 }
 
 async function poseidonHash(inputs: bigint[]): Promise<bigint> {
   const poseidon = await getPoseidon();
-  const hash = poseidon(inputs.map(i => poseidon.F.e(i)));
+  const hash = poseidon(inputs.map((i: bigint) => poseidon.F.e(i)));
   return BigInt(poseidon.F.toString(hash));
 }
 
@@ -161,6 +180,7 @@ export async function generateReputationProof(inputs: ReputationProofInputs): Pr
     nullifier: nullifier.toString(),
   };
 
+  const snarkjs = await loadSnarkjs();
   const { wasmBuffer: wasm, zkeyBuffer: zkey } = await loadCircuitArtifacts();
   const { proof } = await snarkjs.groth16.fullProve(
     circuitInputs,
@@ -205,25 +225,4 @@ export async function generateReputationProof(inputs: ReputationProofInputs): Pr
       proof_c,
     },
   };
-}
-
-export const PAYMENT_TIERS = {
-  elite: { minReputation: 95, minTransactions: 100, dailyLimit: 10000 },
-  premium: { minReputation: 85, minTransactions: 50, dailyLimit: 2000 },
-  basic: { minReputation: 70, minTransactions: 10, dailyLimit: 500 },
-  standard: { minReputation: 0, minTransactions: 0, dailyLimit: 100 },
-} as const;
-
-export function getTierForReputation(
-  reputationScore: number,
-  transactionCount: number
-): keyof typeof PAYMENT_TIERS {
-  if (reputationScore >= 95 && transactionCount >= 100) return 'elite';
-  if (reputationScore >= 85 && transactionCount >= 50) return 'premium';
-  if (reputationScore >= 70 && transactionCount >= 10) return 'basic';
-  return 'standard';
-}
-
-export function getTierRequirements(tier: keyof typeof PAYMENT_TIERS) {
-  return PAYMENT_TIERS[tier];
 }

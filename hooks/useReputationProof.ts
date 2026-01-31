@@ -3,13 +3,8 @@
 import { useState, useCallback } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Transaction, TransactionInstruction, PublicKey, SystemProgram } from '@solana/web3.js';
-import {
-  generateReputationProof,
-  ReputationProofInputs,
-  ReputationProofResult,
-  getTierForReputation,
-  PAYMENT_TIERS,
-} from '@/lib/reputation-prover';
+import { getTierForReputation, PAYMENT_TIERS } from '@/lib/reputation-tiers';
+import type { ReputationProofInputs, ReputationProofResult } from '@/lib/reputation-prover';
 
 const KAMIYO_PROGRAM_ID = new PublicKey('8sUnNU6WBD2SYapCE12S7LwH1b8zWoniytze7ifWwXCM');
 const DISCRIMINATOR = Buffer.from([0x25, 0xac, 0xf8, 0x03, 0x03, 0xa3, 0x91, 0x55]);
@@ -46,6 +41,7 @@ export function useReputationProof(
     setProof(null);
 
     try {
+      const { generateReputationProof } = await import('@/lib/reputation-prover');
       const result = await generateReputationProof(inputs);
       setProof(result);
       return result;
