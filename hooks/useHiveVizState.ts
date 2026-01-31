@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import type { SwarmMember, SwarmDraw } from '@/lib/swarm-api';
-import type { SwarmVizEffect } from '@/types/swarm-viz';
+import type { HiveMember, HiveDraw } from '@/lib/hive-api';
+import type { HiveVizEffect } from '@/types/hive-viz';
 
 const COLORS = ['#00f0ff', '#9944ff', '#ff44f5', '#ffaa22', '#00ff88', '#ff6644'];
 const RING_DURATION = 1800; // ms
@@ -27,9 +27,9 @@ function computePositions(count: number): [number, number, number][] {
   });
 }
 
-export function useSwarmVizState(members: SwarmMember[], draws: SwarmDraw[]) {
+export function useHiveVizState(members: HiveMember[], draws: HiveDraw[]) {
   const prevDrawIds = useRef<Set<string>>(new Set());
-  const [effects, setEffects] = useState<SwarmVizEffect[]>([]);
+  const [effects, setEffects] = useState<HiveVizEffect[]>([]);
   const animRef = useRef<number>(0);
 
   const positions = computePositions(members.length);
@@ -54,7 +54,7 @@ export function useSwarmVizState(members: SwarmMember[], draws: SwarmDraw[]) {
     const newDraws = draws.filter((d) => !prevDrawIds.current.has(d.id));
 
     if (newDraws.length > 0 && prevDrawIds.current.size > 0) {
-      const newEffects: SwarmVizEffect[] = newDraws.map((draw) => {
+      const newEffects: HiveVizEffect[] = newDraws.map((draw) => {
         const agentIndex = members.findIndex((m) => m.agentId === draw.agentId);
         const pos = positions[agentIndex] || [0, 0, 0];
         const color = draw.blindfoldStatus === 'completed' ? '#00ff88' : '#ffaa22';
@@ -78,7 +78,7 @@ export function useSwarmVizState(members: SwarmMember[], draws: SwarmDraw[]) {
   const tick = useCallback(() => {
     setEffects((prev) => {
       const now = Date.now();
-      const updated: SwarmVizEffect[] = [];
+      const updated: HiveVizEffect[] = [];
       for (const e of prev) {
         const elapsed = now - e.startedAt;
         if (elapsed >= e.duration) continue;

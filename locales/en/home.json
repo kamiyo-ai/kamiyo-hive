@@ -27,8 +27,8 @@
       "title": "Staking Rewards",
       "description": "Earn up to 24% APY with duration-based multipliers from 1x to 2x over 180 days."
     },
-    "swarm": {
-      "title": "SwarmTeams",
+    "hive": {
+      "title": "Hive",
       "description": "Multi-agent coordination with shared budgets and ZK-private voting."
     },
     "multichain": {
@@ -53,7 +53,7 @@
         "description": "Use escrow-protected payments via the x402 protocol."
       },
       "scale": {
-        "title": "Scale with Swarms",
+        "title": "Scale with Hives",
         "description": "Coordinate multiple agents in trustless teams with shared resources."
       }
     }

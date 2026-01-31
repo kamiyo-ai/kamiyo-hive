@@ -24,8 +24,8 @@ export default function FeatureSection() {
       href: '/stake',
     },
     {
-      key: 'swarm',
-      href: '/swarm',
+      key: 'hive',
+      href: '/hive',
     },
     {
       key: 'multichain',

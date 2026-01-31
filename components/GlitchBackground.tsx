@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 
 const baseText = [
     "KAMIYO.AI", "かみよ.じんこうちのう",
-    "INITIALIZING SWARM INSTANCE", "スウォームインスタンス起動中",
+    "INITIALIZING HIVE INSTANCE", "ハイブインスタンス起動中",
     "DEPLOYING AGENT CLUSTER", "エージェントクラスタ展開中",
     "SPINNING UP INFERENCE NODE", "推論ノードをスピンアップ中",
     "x402 HANDSHAKE INITIATED", "x402ハンドシェイク開始",
     "TRUST LAYER SYNC", "信頼レイヤー同期中",
-    "AGENT SWARM SELF-HEALING", "スウォーム自己修復 [pfn-compat]",
+    "AGENT HIVE SELF-HEALING", "ハイブ自己修復 [pfn-compat]",
     "DYNAMIC LOAD BALANCING", "動的ロードバランシング調整中",
     "MULTI-AGENT CONSENSUS", "マルチエージェント合意形成中",
     "ASYMMETRIC KEY EXCHANGE", "非対称鍵交換を実行中",
@@ -17,7 +17,7 @@ const baseText = [
     "CONTEXTUAL SYNTHESIS", "コンテキストシンセサイズ中",
     "NON-DETERMINISTIC STATE", "非決定性ステートに移行",
     "INFERENCE ROUTING ACTIVE", "推論ルーティング稼働中",
-    "SWARM COORDINATION ONLINE", "スウォーム協調オンライン",
+    "HIVE COORDINATION ONLINE", "ハイブ協調オンライン",
     "VERIFYING AGENT IDENTITY", "エージェントID検証中",
     "TEE PROTECTION ENABLED", "TEE保護有効化済",
     "AUTONOMOUS AGENT SPAWNED", "自律エージェント生成完了",

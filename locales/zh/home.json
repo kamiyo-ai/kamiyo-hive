@@ -27,8 +27,8 @@
       "title": "质押奖励",
       "description": "通过180天内1倍到2倍的基于时长的乘数，赚取高达24%的APY。"
     },
-    "swarm": {
-      "title": "蜂群团队",
+    "hive": {
+      "title": "蜂巢",
       "description": "具有共享预算和ZK私密投票的多代理协调。"
     },
     "multichain": {

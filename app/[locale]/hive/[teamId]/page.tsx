@@ -1,16 +1,48 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey, Transaction } from '@solana/web3.js';
+import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createTransferCheckedInstruction, getAccount, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import PayButton from '@/components/PayButton';
 import { useRouter } from 'next/navigation';
 import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
-  initiateFunding, confirmFunding, fundFromCredits, submitTask, deleteTeam,
-  SwarmTeamDetail, SwarmDraw, FundDeposit, TaskResult,
-} from '@/lib/swarm-api';
+  initiateFunding, confirmFunding, fundWithTokens, submitTask, deleteTeam,
+  ensureAuthenticated,
+  HiveTeamDetail, HiveDraw, FundDeposit, TaskResult,
+} from '@/lib/hive-api';
+
+const KAMIYO_MINT = new PublicKey('Gy55EJmheLyDXiZ7k7CW2FhunD1UgjQxQibuBn3Npump');
+const KAMIYO_DECIMALS = 6;
+// Treasury wallet that receives the tokens for the hive pool
+const HIVE_TREASURY = new PublicKey('F7ZxVjxGvirpvkbcF8HUMofR81TkjHqKKS6ABxQYeEtV');
+
+const EXAMPLE_TASKS: Record<string, { agent: string; task: string }[]> = {
+  'Trading Desk': [
+    { agent: 'arb-agent', task: 'Monitor SOL/USDC spread across Jupiter, Raydium, and Orca. Execute arbitrage when spread exceeds 0.3%' },
+    { agent: 'market-maker', task: 'Place limit orders at 0.5% spread on SOL/USDC pair. Rebalance inventory when position exceeds 60% one side' },
+    { agent: 'trend-follower', task: 'Analyze 4h candles for SOL. Enter long if price breaks above 20-day MA with volume confirmation' },
+  ],
+  'Content Studio': [
+    { agent: 'writer', task: 'Write a 800-word blog post about the latest Solana DeFi trends. Include 3 project spotlights with on-chain data' },
+    { agent: 'editor', task: 'Review and fact-check the draft blog post. Verify all statistics and add relevant links to sources' },
+    { agent: 'publisher', task: 'Format post for Medium and Twitter thread. Schedule publication for 9am EST and create promotional graphics' },
+  ],
+  'Research Cluster': [
+    { agent: 'scraper', task: 'Collect all token launches on pump.fun in the last 24h. Extract creator wallets, initial liquidity, and holder distribution' },
+    { agent: 'analyst', task: 'Score the top 20 new tokens by whale concentration, dev wallet activity, and social sentiment. Flag any rug pull indicators' },
+    { agent: 'reporter', task: 'Compile findings into a daily alpha report. Highlight top 3 opportunities and top 3 warnings with supporting evidence' },
+  ],
+  'DevOps Hive': [
+    { agent: 'monitor', task: 'Check RPC endpoint latency and error rates. Alert if p95 latency exceeds 500ms or error rate exceeds 1%' },
+    { agent: 'fixer', task: 'Investigate the failed transaction batch from 14:00 UTC. Retry with higher priority fee if network congestion was the cause' },
+    { agent: 'deployer', task: 'Deploy the updated price oracle to devnet. Run integration tests and prepare mainnet deployment PR for review' },
+  ],
+};
 
 
 function StatusBadge({ status }: { status: string }) {
@@ -31,11 +63,13 @@ function StatusBadge({ status }: { status: string }) {
 export default function TeamDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { publicKey } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, signTransaction } = wallet;
+  const { connection } = useConnection();
   const teamId = params.teamId as string;
 
-  const [team, setTeam] = useState<SwarmTeamDetail | null>(null);
-  const [draws, setDraws] = useState<SwarmDraw[]>([]);
+  const [team, setTeam] = useState<HiveTeamDetail | null>(null);
+  const [draws, setDraws] = useState<HiveDraw[]>([]);
   const [drawsTotal, setDrawsTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -66,13 +100,47 @@ export default function TeamDetailPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  // Authenticate wallet before making API calls
+  const authenticate = useCallback(async (): Promise<boolean> => {
+    if (!publicKey || !wallet.signMessage) {
+      return false;
+    }
+
+    try {
+      const authed = await ensureAuthenticated(() => ({
+        publicKey: publicKey.toBase58(),
+        signMessage: wallet.signMessage!,
+      }));
+      if (!authed) {
+        setAuthError('Authentication failed');
+      }
+      return authed;
+    } catch (err) {
+      console.error('Authentication failed:', err);
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      if (msg.includes('User rejected')) {
+        setAuthError('Please sign the message to view team details');
+      } else {
+        setAuthError(`Authentication failed: ${msg}`);
+      }
+      return false;
+    }
+  }, [publicKey, wallet.signMessage]);
+
   const fetchTeam = useCallback(async () => {
     try {
       const data = await getTeam(teamId);
       setTeam(data);
       setDraws(data.recentDraws);
+      setAuthError(null);
     } catch (err) {
       console.error('Failed to fetch team:', err);
+      const msg = err instanceof Error ? err.message : 'Failed to load team';
+      if (msg.includes('401') || msg.includes('Authentication')) {
+        setAuthError('Please connect your wallet to view team details');
+      }
     } finally {
       setLoading(false);
     }
@@ -88,7 +156,22 @@ export default function TeamDetailPage() {
     }
   }, [teamId]);
 
-  useEffect(() => { fetchTeam(); }, [fetchTeam]);
+  // Authenticate and fetch when wallet connects
+  useEffect(() => {
+    const init = async () => {
+      if (publicKey && wallet.signMessage) {
+        const authed = await authenticate();
+        if (authed) {
+          fetchTeam();
+        }
+      } else {
+        // No wallet - still try to fetch (will fail with 401 but shows loading state)
+        setAuthError('Connect your wallet to view team details');
+        setLoading(false);
+      }
+    };
+    init();
+  }, [publicKey, wallet.signMessage, authenticate, fetchTeam]);
 
   // Poll for draw status updates every 10s
   useEffect(() => {
@@ -105,8 +188,75 @@ export default function TeamDetailPage() {
     setFundError('');
     try {
       if (fundMode === 'credits') {
-        if (!publicKey) { setFundError('Connect wallet first'); return; }
-        const result = await fundFromCredits(teamId, publicKey.toBase58(), amount);
+        // Fund with actual $KAMIYO tokens
+        if (!publicKey || !signTransaction) {
+          setFundError('Connect wallet first');
+          return;
+        }
+
+        // Get user's token account
+        let userAta: PublicKey;
+        let tokenProgram = TOKEN_PROGRAM_ID;
+
+        try {
+          // Try standard token program first
+          userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_PROGRAM_ID);
+          await getAccount(connection, userAta, 'confirmed', TOKEN_PROGRAM_ID);
+        } catch {
+          // Fall back to Token-2022
+          try {
+            userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_2022_PROGRAM_ID);
+            await getAccount(connection, userAta, 'confirmed', TOKEN_2022_PROGRAM_ID);
+            tokenProgram = TOKEN_2022_PROGRAM_ID;
+          } catch {
+            setFundError('No $KAMIYO tokens found in wallet');
+            return;
+          }
+        }
+
+        // Get treasury's token account (create if needed)
+        const treasuryAta = await getAssociatedTokenAddress(KAMIYO_MINT, HIVE_TREASURY, false, tokenProgram);
+        const tx = new Transaction();
+
+        // Check if treasury ATA exists, create if not
+        try {
+          await getAccount(connection, treasuryAta, 'confirmed', tokenProgram);
+        } catch {
+          // Treasury ATA doesn't exist, add create instruction (user pays)
+          tx.add(createAssociatedTokenAccountInstruction(
+            publicKey,
+            treasuryAta,
+            HIVE_TREASURY,
+            KAMIYO_MINT,
+            tokenProgram
+          ));
+        }
+
+        // Build transfer instruction
+        const tokenAmount = BigInt(Math.floor(amount * Math.pow(10, KAMIYO_DECIMALS)));
+        const transferIx = createTransferCheckedInstruction(
+          userAta,
+          KAMIYO_MINT,
+          treasuryAta,
+          publicKey,
+          tokenAmount,
+          KAMIYO_DECIMALS,
+          [],
+          tokenProgram
+        );
+
+        // Add transfer to transaction and sign
+        tx.add(transferIx);
+        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+        tx.recentBlockhash = blockhash;
+        tx.lastValidBlockHeight = lastValidBlockHeight;
+        tx.feePayer = publicKey;
+
+        const signedTx = await signTransaction(tx);
+        const serialized = signedTx.serialize().toString('base64');
+
+        // Send to backend for submission and pool balance update
+        const result = await fundWithTokens(teamId, serialized);
         setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance } : prev);
         setFundAmount('');
       } else {
@@ -220,6 +370,17 @@ export default function TeamDetailPage() {
     return <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Loading...</div>;
   }
 
+  if (authError && !team) {
+    return (
+      <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto">
+        <div className="text-center py-12">
+          <p className="text-gray-400 mb-4">{authError}</p>
+          <p className="text-gray-600 text-sm">Connect your Solana wallet to access Hive</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!team) {
     return <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto text-gray-500 text-sm">Team not found.</div>;
   }
@@ -230,15 +391,12 @@ export default function TeamDetailPage() {
     <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-white">{team.name}</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-500 text-sm">{team.currency}</span>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="text-gray-600 hover:text-red-400 text-xs transition-colors"
-            >
-              Delete
-            </button>
-          </div>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="text-gray-600 hover:text-red-400 text-xs transition-colors"
+          >
+            Delete hive
+          </button>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
@@ -339,13 +497,13 @@ export default function TeamDetailPage() {
             <input
               value={newAgentId}
               onChange={(e) => setNewAgentId(e.target.value)}
-              className="flex-1 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="flex-1 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
               placeholder="Agent ID"
             />
             <select
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
             >
               <option value="member">Member</option>
               <option value="admin">Admin</option>
@@ -354,7 +512,7 @@ export default function TeamDetailPage() {
               value={newDrawLimit}
               onChange={(e) => setNewDrawLimit(e.target.value)}
               type="number"
-              className="w-24 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="w-24 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
               placeholder="Limit"
             />
           </div>
@@ -375,23 +533,34 @@ export default function TeamDetailPage() {
       <div className="space-y-6">
 
       {/* Fund Section */}
-      <div className="card relative rounded-lg border border-gray-500/25 bg-black/20 overflow-hidden">
-        <div className="flex border-b border-gray-500/25">
-          <button
+      <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
+        <div className="flex relative">
+          <div
             onClick={() => setFundMode('credits')}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${fundMode === 'credits' ? 'text-[#00f0ff] border-b-2 border-[#00f0ff]' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
+            {fundMode === 'credits' && (
+              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
+                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
+              </div>
+            )}
             <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
             Fund with $KAMIYO
-          </button>
-          <button
+          </div>
+          <div
             onClick={() => setFundMode('crypto')}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 ${fundMode === 'crypto' ? 'text-[#00f0ff] border-b-2 border-[#00f0ff]' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'crypto' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
+            {fundMode === 'crypto' && (
+              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
+                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
+              </div>
+            )}
             <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
             Blindfold Card
-          </button>
+          </div>
         </div>
+        <div className="border-t border-gray-500/25"></div>
         <div className="p-6">
         {fundingDeposit ? (
           <div className="space-y-3">
@@ -418,17 +587,17 @@ export default function TeamDetailPage() {
               value={fundAmount}
               onChange={(e) => setFundAmount(e.target.value)}
               type="number"
-              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
-              placeholder={fundMode === 'credits' ? 'Amount (USD)' : `Amount (${team.currency})`}
+              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none"
+              placeholder={fundMode === 'credits' ? 'Amount ($KAMIYO)' : `Amount (${team.currency})`}
             />
             <div className="flex items-center gap-2 mt-2">
-              {[1, 5, 10, 50].map((amt) => (
+              {(fundMode === 'credits' ? [100, 500, 1000, 5000] : [1, 5, 10, 50]).map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setFundAmount(String(amt))}
-                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors"
+                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
                 >
-                  ${amt}
+                  {fundMode === 'credits' ? amt.toLocaleString() : `$${amt}`}
                 </button>
               ))}
             </div>
@@ -447,13 +616,32 @@ export default function TeamDetailPage() {
 
       {/* Submit Task */}
       <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
-        <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Submit Task</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm uppercase tracking-wider text-gray-400">Submit Task</h2>
+          {EXAMPLE_TASKS[team.name] && (
+            <div className="flex gap-2 flex-wrap justify-end">
+              {EXAMPLE_TASKS[team.name].map((example, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    const member = team.members.find(m => m.agentId === example.agent);
+                    if (member) setTaskMemberId(member.id);
+                    setTaskDescription(example.task);
+                  }}
+                  className="px-2 py-1 text-xs border border-gray-600/50 rounded hover:border-gray-500 text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  {example.agent}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="space-y-3">
           <div className="flex gap-2">
             <select
               value={taskMemberId}
               onChange={(e) => setTaskMemberId(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
+              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
             >
               <option value="">Select agent</option>
               {team.members.map((m) => (
@@ -464,14 +652,14 @@ export default function TeamDetailPage() {
               value={taskBudget}
               onChange={(e) => setTaskBudget(e.target.value)}
               type="number"
-              className="w-28 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
+              className="w-28 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
               placeholder="Budget"
             />
           </div>
           <textarea
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#00f0ff] focus:outline-none resize-none h-24"
+            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none resize-none h-24"
             placeholder="Describe the task (research, market analysis, wallet lookup...)"
           />
           <div className="flex items-center justify-between">
@@ -556,7 +744,7 @@ export default function TeamDetailPage() {
                   setDeleting(true);
                   try {
                     await deleteTeam(teamId);
-                    router.push('/swarm');
+                    router.push('/hive');
                   } catch (err) {
                     console.error('Failed to delete team:', err);
                     setDeleting(false);

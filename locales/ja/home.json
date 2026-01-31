@@ -27,8 +27,8 @@
       "title": "ステーキング報酬",
       "description": "180日間で1倍から2倍の期間ベースの乗数で最大24%のAPYを獲得。"
     },
-    "swarm": {
-      "title": "スワームチーム",
+    "hive": {
+      "title": "ハイブ",
       "description": "共有予算とZKプライベート投票によるマルチエージェント調整。"
     },
     "multichain": {

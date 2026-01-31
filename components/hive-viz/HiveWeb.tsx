@@ -3,7 +3,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { SwarmVizEffect } from '@/types/swarm-viz';
+import type { HiveVizEffect } from '@/types/hive-viz';
 
 const NODES_PER_PATH = 8;
 const MAX_NODES = 64;
@@ -18,9 +18,9 @@ interface NodeData {
   excitationColor: THREE.Color;
 }
 
-interface SwarmWebProps {
+interface HiveWebProps {
   positions: [number, number, number][];
-  effects: SwarmVizEffect[];
+  effects: HiveVizEffect[];
 }
 
 function generateNodes(agentPositions: [number, number, number][]): NodeData[] {
@@ -70,7 +70,7 @@ function generateNodes(agentPositions: [number, number, number][]): NodeData[] {
   return nodes;
 }
 
-export function SwarmWeb({ positions, effects }: SwarmWebProps) {
+export function HiveWeb({ positions, effects }: HiveWebProps) {
   const processedEffects = useRef<Set<string>>(new Set());
 
   const nodes = useMemo(() => generateNodes(positions), [positions]);

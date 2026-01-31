@@ -5,14 +5,14 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 
-interface SwarmMember {
+interface HiveMember {
   id: string;
   agentId: string;
   role: string;
 }
 
-interface SwarmSceneProps {
-  members: SwarmMember[];
+interface HiveSceneProps {
+  members: HiveMember[];
 }
 
 const MEMBER_ICONS = [
@@ -154,7 +154,7 @@ function generateNodes(memberPositions: [number, number, number][]): NodeData[] 
   return nodes;
 }
 
-function SwarmWeb({ memberPositions }: { memberPositions: [number, number, number][] }) {
+function HiveWeb({ memberPositions }: { memberPositions: [number, number, number][] }) {
   const nodesRef = useRef<NodeData[] | null>(null);
 
   const nodeCount = NODE_COUNT;
@@ -403,7 +403,7 @@ function MemberNode({
   iconIndex,
   isLatest
 }: {
-  member: SwarmMember;
+  member: HiveMember;
   position: [number, number, number];
   iconIndex: number;
   isLatest: boolean;
@@ -513,7 +513,7 @@ function AutoOrbit() {
   );
 }
 
-function SceneContent({ members }: { members: SwarmMember[] }) {
+function SceneContent({ members }: { members: HiveMember[] }) {
   const memberPositions = useMemo(() => {
     return members.map((_, i) => getMemberPosition(i, members.length));
   }, [members]);
@@ -525,7 +525,7 @@ function SceneContent({ members }: { members: SwarmMember[] }) {
       <pointLight position={[-4, 3, -2]} intensity={0.2} color="#ff44f5" />
       <pointLight position={[4, 3, 2]} intensity={0.15} color="#ffaa22" />
 
-      <SwarmWeb memberPositions={memberPositions} />
+      <HiveWeb memberPositions={memberPositions} />
 
       {members.map((member, i) => (
         <MemberNode
@@ -542,7 +542,7 @@ function SceneContent({ members }: { members: SwarmMember[] }) {
   );
 }
 
-export function SwarmScene({ members }: SwarmSceneProps) {
+export function HiveScene({ members }: HiveSceneProps) {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <Canvas

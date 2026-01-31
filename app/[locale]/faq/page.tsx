@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
-type Category = 'gettingStarted' | 'identity' | 'staking' | 'governance' | 'swarm' | 'escrow' | 'technical';
+type Category = 'gettingStarted' | 'identity' | 'staking' | 'governance' | 'hive' | 'escrow' | 'technical';
 
 interface FAQ {
   question: string;
@@ -17,7 +17,7 @@ export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  const categories: Category[] = ['gettingStarted', 'identity', 'staking', 'governance', 'swarm', 'escrow', 'technical'];
+  const categories: Category[] = ['gettingStarted', 'identity', 'staking', 'governance', 'hive', 'escrow', 'technical'];
 
   // Get all FAQs from translations
   const allFaqs = useMemo(() => {
@@ -193,11 +193,11 @@ export default function FAQPage() {
           </Link>
 
           <Link
-            href="/swarm"
+            href="/hive"
             className="bg-black border border-gray-500/25 rounded-lg p-5 hover:border-gray-700 transition-colors group"
           >
-            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Swarm</div>
-            <h4 className="text-white text-sm">{t('relatedPages.swarm')}</h4>
+            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Hive</div>
+            <h4 className="text-white text-sm">{t('relatedPages.hive')}</h4>
           </Link>
 
           <Link

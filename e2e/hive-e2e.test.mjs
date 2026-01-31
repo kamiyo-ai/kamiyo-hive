@@ -1,8 +1,8 @@
 /**
- * SwarmTeams Comprehensive E2E Test Suite
+ * Hive Comprehensive E2E Test Suite
  *
  * Tests all API endpoints, UI flows, and integration points.
- * Run with: node e2e/swarm-e2e.test.mjs
+ * Run with: node e2e/hive-e2e.test.mjs
  */
 
 import { Keypair, Connection, PublicKey, Transaction } from '@solana/web3.js';
@@ -99,7 +99,7 @@ async function testAuthentication() {
   await test('Protected endpoint - rejects without token', async () => {
     const savedToken = authToken;
     authToken = null;
-    const res = await api('/api/swarm-teams');
+    const res = await api('/api/hive-teams');
     authToken = savedToken;
     assert(res.status === 401, `Expected 401, got ${res.status}`);
   });
@@ -112,14 +112,14 @@ async function testAuthentication() {
 async function testTeamManagement() {
   console.log('\n📋 TEAM MANAGEMENT TESTS\n');
 
-  await test('GET /api/swarm-teams - lists teams (empty)', async () => {
-    const res = await api('/api/swarm-teams');
+  await test('GET /api/hive-teams - lists teams (empty)', async () => {
+    const res = await api('/api/hive-teams');
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(Array.isArray(res.data.teams), 'teams should be array');
   });
 
-  await test('POST /api/swarm-teams - creates team', async () => {
-    const res = await api('/api/swarm-teams', {
+  await test('POST /api/hive-teams - creates team', async () => {
+    const res = await api('/api/hive-teams', {
       method: 'POST',
       body: JSON.stringify({
         name: 'E2E Test Team',
@@ -140,54 +140,54 @@ async function testTeamManagement() {
     memberId = res.data.members[0].id;
   });
 
-  await test('POST /api/swarm-teams - rejects missing fields', async () => {
-    const res = await api('/api/swarm-teams', {
+  await test('POST /api/hive-teams - rejects missing fields', async () => {
+    const res = await api('/api/hive-teams', {
       method: 'POST',
       body: JSON.stringify({ name: 'Test' }), // missing currency, dailyLimit
     });
     assert(!res.ok, 'Should reject missing fields');
   });
 
-  await test('POST /api/swarm-teams - rejects invalid dailyLimit', async () => {
-    const res = await api('/api/swarm-teams', {
+  await test('POST /api/hive-teams - rejects invalid dailyLimit', async () => {
+    const res = await api('/api/hive-teams', {
       method: 'POST',
       body: JSON.stringify({ name: 'Test', currency: 'USDC', dailyLimit: -10 }),
     });
     assert(!res.ok, 'Should reject negative dailyLimit');
   });
 
-  await test('GET /api/swarm-teams/:id - returns team detail', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}`);
+  await test('GET /api/hive-teams/:id - returns team detail', async () => {
+    const res = await api(`/api/hive-teams/${teamId}`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(res.data.id === teamId, 'Wrong team id');
     assert(res.data.poolBalance === 0, 'Pool should start at 0');
     assert(res.data.dailySpend === 0, 'Daily spend should be 0');
   });
 
-  await test('GET /api/swarm-teams/:id - returns 404 for invalid id', async () => {
-    const res = await api('/api/swarm-teams/invalid_id');
+  await test('GET /api/hive-teams/:id - returns 404 for invalid id', async () => {
+    const res = await api('/api/hive-teams/invalid_id');
     assert(res.status === 404, `Expected 404, got ${res.status}`);
   });
 
-  await test('PATCH /api/swarm-teams/:id/budget - updates daily limit', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/budget`, {
+  await test('PATCH /api/hive-teams/:id/budget - updates daily limit', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/budget`, {
       method: 'PATCH',
       body: JSON.stringify({ dailyLimit: 200 }),
     });
     assert(res.ok, `Expected 200, got ${res.status}`);
 
-    const detail = await api(`/api/swarm-teams/${teamId}`);
+    const detail = await api(`/api/hive-teams/${teamId}`);
     assert(detail.data.dailyLimit === 200, 'Daily limit not updated');
   });
 
-  await test('PATCH /api/swarm-teams/:id/budget - updates member limit', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/budget`, {
+  await test('PATCH /api/hive-teams/:id/budget - updates member limit', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/budget`, {
       method: 'PATCH',
       body: JSON.stringify({ memberLimits: { [memberId]: 75 } }),
     });
     assert(res.ok, `Expected 200, got ${res.status}`);
 
-    const detail = await api(`/api/swarm-teams/${teamId}`);
+    const detail = await api(`/api/hive-teams/${teamId}`);
     const member = detail.data.members.find(m => m.id === memberId);
     assert(member.drawLimit === 75, 'Member limit not updated');
   });
@@ -202,8 +202,8 @@ async function testMemberManagement() {
 
   let newMemberId;
 
-  await test('POST /api/swarm-teams/:id/members - adds member', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members`, {
+  await test('POST /api/hive-teams/:id/members - adds member', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/members`, {
       method: 'POST',
       body: JSON.stringify({ agentId: 'agent-3', role: 'member', drawLimit: 25 }),
     });
@@ -212,35 +212,35 @@ async function testMemberManagement() {
     newMemberId = res.data.id;
   });
 
-  await test('POST /api/swarm-teams/:id/members - rejects missing agentId', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members`, {
+  await test('POST /api/hive-teams/:id/members - rejects missing agentId', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/members`, {
       method: 'POST',
       body: JSON.stringify({ role: 'member' }),
     });
     assert(!res.ok, 'Should reject missing agentId');
   });
 
-  await test('POST /api/swarm-teams/:id/members - rejects invalid drawLimit', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members`, {
+  await test('POST /api/hive-teams/:id/members - rejects invalid drawLimit', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/members`, {
       method: 'POST',
       body: JSON.stringify({ agentId: 'test', drawLimit: -5 }),
     });
     assert(!res.ok, 'Should reject negative drawLimit');
   });
 
-  await test('DELETE /api/swarm-teams/:id/members/:memberId - removes member', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members/${newMemberId}`, {
+  await test('DELETE /api/hive-teams/:id/members/:memberId - removes member', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/members/${newMemberId}`, {
       method: 'DELETE',
     });
     assert(res.ok, `Expected 200, got ${res.status}`);
 
-    const detail = await api(`/api/swarm-teams/${teamId}`);
+    const detail = await api(`/api/hive-teams/${teamId}`);
     const member = detail.data.members.find(m => m.id === newMemberId);
     assert(!member, 'Member should be deleted');
   });
 
-  await test('DELETE /api/swarm-teams/:id/members/:memberId - returns 404 for invalid', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members/invalid_id`, {
+  await test('DELETE /api/hive-teams/:id/members/:memberId - returns 404 for invalid', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/members/invalid_id`, {
       method: 'DELETE',
     });
     assert(res.status === 404, `Expected 404, got ${res.status}`);
@@ -256,16 +256,16 @@ let poolFunded = false;
 async function testFunding() {
   console.log('\n📋 FUNDING TESTS\n');
 
-  await test('GET /api/swarm-teams/:id/fund/blindfold - returns funding URL', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund/blindfold`);
+  await test('GET /api/hive-teams/:id/fund/blindfold - returns funding URL', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/fund/blindfold`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(res.data.fundingUrl, 'Missing fundingUrl');
     assert(res.data.stateToken, 'Missing stateToken');
     assert(res.data.expiresAt, 'Missing expiresAt');
   });
 
-  await test('POST /api/swarm-teams/:id/fund - handles funding request', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund`, {
+  await test('POST /api/hive-teams/:id/fund - handles funding request', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/fund`, {
       method: 'POST',
       body: JSON.stringify({ amount: 50 }),
     });
@@ -274,7 +274,7 @@ async function testFunding() {
     assert(res.ok, `Expected 200, got ${res.status}: ${JSON.stringify(res.data)}`);
 
     // Check if this is dev mode (auto-credit) or production (redirect)
-    const detail = await api(`/api/swarm-teams/${teamId}`);
+    const detail = await api(`/api/hive-teams/${teamId}`);
     if (detail.data.poolBalance >= 50) {
       poolFunded = true;
       console.log('   (dev mode: pool auto-credited)');
@@ -283,16 +283,16 @@ async function testFunding() {
     }
   });
 
-  await test('POST /api/swarm-teams/:id/fund - rejects invalid amount', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund`, {
+  await test('POST /api/hive-teams/:id/fund - rejects invalid amount', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/fund`, {
       method: 'POST',
       body: JSON.stringify({ amount: 0 }),
     });
     assert(!res.ok, 'Should reject zero amount');
   });
 
-  await test('POST /api/swarm-teams/:id/fund-tokens - rejects invalid transaction', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund-tokens`, {
+  await test('POST /api/hive-teams/:id/fund-tokens - rejects invalid transaction', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/fund-tokens`, {
       method: 'POST',
       body: JSON.stringify({ signedTransaction: 'aW52YWxpZA==' }),
     });
@@ -300,8 +300,8 @@ async function testFunding() {
     assert(res.data.error, 'Should have error message');
   });
 
-  await test('POST /api/swarm-teams/:id/fund-tokens - rejects missing transaction', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund-tokens`, {
+  await test('POST /api/hive-teams/:id/fund-tokens - rejects missing transaction', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/fund-tokens`, {
       method: 'POST',
       body: JSON.stringify({}),
     });
@@ -310,8 +310,8 @@ async function testFunding() {
 
   // If pool not funded yet (production mode), use internal test endpoint
   if (!poolFunded) {
-    await test('POST /api/swarm-teams/:id/fund-test - credits pool for testing', async () => {
-      const res = await api(`/api/swarm-teams/${teamId}/fund-test`, {
+    await test('POST /api/hive-teams/:id/fund-test - credits pool for testing', async () => {
+      const res = await api(`/api/hive-teams/${teamId}/fund-test`, {
         method: 'POST',
         body: JSON.stringify({ amount: 100 }),
       });
@@ -336,21 +336,21 @@ async function testFunding() {
 async function testDrawHistory() {
   console.log('\n📋 DRAW HISTORY TESTS\n');
 
-  await test('GET /api/swarm-teams/:id/draws - returns draws', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/draws`);
+  await test('GET /api/hive-teams/:id/draws - returns draws', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/draws`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(Array.isArray(res.data.draws), 'draws should be array');
     assert(typeof res.data.total === 'number', 'total should be number');
   });
 
-  await test('GET /api/swarm-teams/:id/draws - respects limit', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/draws?limit=5`);
+  await test('GET /api/hive-teams/:id/draws - respects limit', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/draws?limit=5`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(res.data.draws.length <= 5, 'Should respect limit');
   });
 
-  await test('GET /api/swarm-teams/:id/draws - filters by agentId', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/draws?agentId=agent-1`);
+  await test('GET /api/hive-teams/:id/draws - filters by agentId', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/draws?agentId=agent-1`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     // All returned draws should be for agent-1
     for (const draw of res.data.draws) {
@@ -367,7 +367,7 @@ async function testProposalVoting() {
   console.log('\n📋 PROPOSAL & VOTING TESTS\n');
 
   // Check pool balance first
-  const balanceCheck = await api(`/api/swarm-teams/${teamId}`);
+  const balanceCheck = await api(`/api/hive-teams/${teamId}`);
   const hasBalance = balanceCheck.data.poolBalance >= 10;
 
   if (!hasBalance && !poolFunded) {
@@ -376,8 +376,8 @@ async function testProposalVoting() {
     return;
   }
 
-  await test('POST /api/swarm-teams/:id/propose-task - creates proposal', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/propose-task`, {
+  await test('POST /api/hive-teams/:id/propose-task - creates proposal', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/propose-task`, {
       method: 'POST',
       body: JSON.stringify({
         description: 'Test proposal for E2E',
@@ -393,30 +393,30 @@ async function testProposalVoting() {
     proposalId = res.data.proposalId;
   });
 
-  await test('POST /api/swarm-teams/:id/propose-task - rejects missing fields', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/propose-task`, {
+  await test('POST /api/hive-teams/:id/propose-task - rejects missing fields', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/propose-task`, {
       method: 'POST',
       body: JSON.stringify({ description: 'Test' }), // missing budget
     });
     assert(!res.ok, 'Should reject missing budget');
   });
 
-  await test('GET /api/swarm-teams/:id/proposals - lists proposals', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/proposals`);
+  await test('GET /api/hive-teams/:id/proposals - lists proposals', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/proposals`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(Array.isArray(res.data.proposals), 'proposals should be array');
     assert(res.data.proposals.length > 0, 'Should have at least one proposal');
   });
 
-  await test('GET /api/swarm-teams/:id/proposals/:proposalId - returns detail', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/proposals/${proposalId}`);
+  await test('GET /api/hive-teams/:id/proposals/:proposalId - returns detail', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/proposals/${proposalId}`);
     assert(res.ok, `Expected 200, got ${res.status}`);
     assert(res.data.proposal.id === proposalId, 'Wrong proposal id');
     assert(res.data.proposal.status === 'voting', 'Should be in voting phase');
   });
 
-  await test('POST /api/swarm-teams/:id/vote-bid - submits vote', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/vote-bid`, {
+  await test('POST /api/hive-teams/:id/vote-bid - submits vote', async () => {
+    const res = await api(`/api/hive-teams/${teamId}/vote-bid`, {
       method: 'POST',
       body: JSON.stringify({
         proposalId,
@@ -431,11 +431,11 @@ async function testProposalVoting() {
     assert(res.data.voteId, 'Missing voteId');
   });
 
-  await test('POST /api/swarm-teams/:id/vote-bid - rejects duplicate nullifier', async () => {
+  await test('POST /api/hive-teams/:id/vote-bid - rejects duplicate nullifier', async () => {
     const nullifier = `nullifier_dup_${Date.now()}`;
 
     // First vote
-    await api(`/api/swarm-teams/${teamId}/vote-bid`, {
+    await api(`/api/hive-teams/${teamId}/vote-bid`, {
       method: 'POST',
       body: JSON.stringify({
         proposalId,
@@ -448,7 +448,7 @@ async function testProposalVoting() {
     });
 
     // Duplicate
-    const res = await api(`/api/swarm-teams/${teamId}/vote-bid`, {
+    const res = await api(`/api/hive-teams/${teamId}/vote-bid`, {
       method: 'POST',
       body: JSON.stringify({
         proposalId,
@@ -467,15 +467,15 @@ async function testProposalVoting() {
     await new Promise(r => setTimeout(r, 6000));
   });
 
-  await test('POST /api/swarm-teams/:id/reveal-bid - reveals vote', async () => {
+  await test('POST /api/hive-teams/:id/reveal-bid - reveals vote', async () => {
     // First get the vote
-    const detail = await api(`/api/swarm-teams/${teamId}/proposals/${proposalId}`);
+    const detail = await api(`/api/hive-teams/${teamId}/proposals/${proposalId}`);
     const vote = detail.data.votes[0];
     if (!vote) {
       throw new Error('No votes to reveal');
     }
 
-    const res = await api(`/api/swarm-teams/${teamId}/reveal-bid`, {
+    const res = await api(`/api/hive-teams/${teamId}/reveal-bid`, {
       method: 'POST',
       body: JSON.stringify({
         proposalId,
@@ -490,15 +490,15 @@ async function testProposalVoting() {
     assert(res.ok, `Expected 200, got ${res.status}: ${JSON.stringify(res.data)}`);
   });
 
-  await test('POST /api/swarm-teams/:id/reveal-bid - rejects low bid', async () => {
-    const detail = await api(`/api/swarm-teams/${teamId}/proposals/${proposalId}`);
+  await test('POST /api/hive-teams/:id/reveal-bid - rejects low bid', async () => {
+    const detail = await api(`/api/hive-teams/${teamId}/proposals/${proposalId}`);
     const unrevealed = detail.data.votes.find(v => !v.revealed);
     if (!unrevealed) {
       log('SKIP', 'POST reveal-bid low bid', 'No unrevealed votes');
       return;
     }
 
-    const res = await api(`/api/swarm-teams/${teamId}/reveal-bid`, {
+    const res = await api(`/api/hive-teams/${teamId}/reveal-bid`, {
       method: 'POST',
       body: JSON.stringify({
         proposalId,
@@ -522,7 +522,7 @@ async function testTeamDeletion() {
   console.log('\n📋 TEAM DELETION TESTS\n');
 
   // Create a fresh team to delete
-  const createRes = await api('/api/swarm-teams', {
+  const createRes = await api('/api/hive-teams', {
     method: 'POST',
     body: JSON.stringify({
       name: 'Team to Delete',
@@ -532,19 +532,19 @@ async function testTeamDeletion() {
   });
   const deleteTeamId = createRes.data.id;
 
-  await test('DELETE /api/swarm-teams/:id - deletes team', async () => {
-    const res = await api(`/api/swarm-teams/${deleteTeamId}`, {
+  await test('DELETE /api/hive-teams/:id - deletes team', async () => {
+    const res = await api(`/api/hive-teams/${deleteTeamId}`, {
       method: 'DELETE',
     });
     assert(res.ok, `Expected 200, got ${res.status}`);
 
     // Verify it's gone
-    const check = await api(`/api/swarm-teams/${deleteTeamId}`);
+    const check = await api(`/api/hive-teams/${deleteTeamId}`);
     assert(check.status === 404, 'Team should be deleted');
   });
 
-  await test('DELETE /api/swarm-teams/:id - returns 403/404 for invalid', async () => {
-    const res = await api('/api/swarm-teams/invalid_team', {
+  await test('DELETE /api/hive-teams/:id - returns 403/404 for invalid', async () => {
+    const res = await api('/api/hive-teams/invalid_team', {
       method: 'DELETE',
     });
     // Auth middleware may return 403 (not owner) before checking if team exists
@@ -576,7 +576,7 @@ async function testOwnership() {
   authToken = otherToken;
 
   await test('Non-owner cannot add member', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/members`, {
+    const res = await api(`/api/hive-teams/${teamId}/members`, {
       method: 'POST',
       body: JSON.stringify({ agentId: 'hacker-agent' }),
     });
@@ -584,7 +584,7 @@ async function testOwnership() {
   });
 
   await test('Non-owner cannot update budget', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/budget`, {
+    const res = await api(`/api/hive-teams/${teamId}/budget`, {
       method: 'PATCH',
       body: JSON.stringify({ dailyLimit: 9999 }),
     });
@@ -592,14 +592,14 @@ async function testOwnership() {
   });
 
   await test('Non-owner cannot delete team', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}`, {
+    const res = await api(`/api/hive-teams/${teamId}`, {
       method: 'DELETE',
     });
     assert(res.status === 403, `Expected 403, got ${res.status}`);
   });
 
   await test('Non-owner cannot fund with tokens', async () => {
-    const res = await api(`/api/swarm-teams/${teamId}/fund-tokens`, {
+    const res = await api(`/api/hive-teams/${teamId}/fund-tokens`, {
       method: 'POST',
       body: JSON.stringify({ signedTransaction: 'test' }),
     });
@@ -622,7 +622,7 @@ async function cleanup() {
       console.log('   (no team to clean up)');
       return;
     }
-    const res = await api(`/api/swarm-teams/${teamId}`, {
+    const res = await api(`/api/hive-teams/${teamId}`, {
       method: 'DELETE',
     });
     // Cleanup is best-effort - any response is acceptable
@@ -637,7 +637,7 @@ async function cleanup() {
 
 async function runTests() {
   console.log('═══════════════════════════════════════════════');
-  console.log('   SWARMTEAMS E2E TEST SUITE');
+  console.log('   HIVE E2E TEST SUITE');
   console.log('═══════════════════════════════════════════════');
   console.log(`API: ${API_BASE}`);
   console.log(`Time: ${new Date().toISOString()}\n`);

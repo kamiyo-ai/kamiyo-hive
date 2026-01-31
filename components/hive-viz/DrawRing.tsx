@@ -3,10 +3,10 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import type { SwarmVizEffect } from '@/types/swarm-viz';
+import type { HiveVizEffect } from '@/types/hive-viz';
 
 interface DrawRingProps {
-  effect: SwarmVizEffect;
+  effect: HiveVizEffect;
 }
 
 export function DrawRing({ effect }: DrawRingProps) {

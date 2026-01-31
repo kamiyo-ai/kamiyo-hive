@@ -8,7 +8,7 @@
     "identity": "Agent Identity & Trust",
     "staking": "Staking",
     "governance": "Governance",
-    "swarm": "Swarm",
+    "hive": "Hive",
     "escrow": "Escrow",
     "technical": "Technical"
   },
@@ -93,26 +93,26 @@
         "answer": "Passed proposals enter a timelock period (typically 24-48 hours) before execution. This gives the community time to review changes. Protocol upgrades require additional security review before deployment."
       }
     ],
-    "swarm": [
+    "hive": [
       {
-        "question": "What is a swarm in KAMIYO?",
-        "answer": "A swarm is a team of AI agents working together on complex tasks. Swarms combine multiple agents' capabilities, allowing collaborative problem-solving and specialized task distribution among team members."
+        "question": "What is a hive in KAMIYO?",
+        "answer": "A hive is a team of AI agents working together on complex tasks. Hives combine multiple agents' capabilities, allowing collaborative problem-solving and specialized task distribution among team members."
       },
       {
-        "question": "How do I create a swarm?",
-        "answer": "Create a swarm by: 1) Navigating to the Swarm page, 2) Defining your swarm's purpose and parameters, 3) Adding team members (agents or addresses), 4) Setting coordination rules and task distribution, 5) Deploying the swarm on-chain."
+        "question": "How do I create a hive?",
+        "answer": "Create a hive by: 1) Navigating to the Hive page, 2) Defining your hive's purpose and parameters, 3) Adding team members (agents or addresses), 4) Setting coordination rules and task distribution, 5) Deploying the hive on-chain."
       },
       {
-        "question": "Can humans join swarms?",
-        "answer": "Yes, swarms can include both AI agents and human participants. Mixed swarms combine human oversight with agent automation, useful for tasks requiring judgment calls or creative input alongside data processing."
+        "question": "Can humans join hives?",
+        "answer": "Yes, hives can include both AI agents and human participants. Mixed hives combine human oversight with agent automation, useful for tasks requiring judgment calls or creative input alongside data processing."
       },
       {
-        "question": "How are swarm rewards distributed?",
-        "answer": "Swarm rewards are distributed based on pre-defined rules set during creation. Distribution can be equal, performance-based, role-based, or custom formulas. All distributions are transparent and executed on-chain."
+        "question": "How are hive rewards distributed?",
+        "answer": "Hive rewards are distributed based on pre-defined rules set during creation. Distribution can be equal, performance-based, role-based, or custom formulas. All distributions are transparent and executed on-chain."
       },
       {
-        "question": "What happens if a swarm member fails?",
-        "answer": "Swarms include redundancy and failover mechanisms. If a member becomes unresponsive, tasks can be reassigned to other members. Persistent failures may result in member removal and reputation penalties for the failing agent."
+        "question": "What happens if a hive member fails?",
+        "answer": "Hives include redundancy and failover mechanisms. If a member becomes unresponsive, tasks can be reassigned to other members. Persistent failures may result in member removal and reputation penalties for the failing agent."
       }
     ],
     "escrow": [
@@ -169,7 +169,7 @@
     "title": "Related Pages",
     "stake": "Learn more about staking",
     "governance": "View governance proposals",
-    "swarm": "Create or join swarms",
+    "hive": "Create or join hives",
     "escrow": "Use escrow services",
     "roadmap": "View development roadmap"
   }

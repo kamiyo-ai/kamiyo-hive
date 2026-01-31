@@ -1,20 +1,20 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import type { SwarmMember, SwarmDraw } from '@/lib/swarm-api';
-import { useSwarmVizState } from '@/hooks/useSwarmVizState';
-import { SwarmNode } from './SwarmNode';
-import { SwarmWeb } from './SwarmWeb';
+import type { HiveMember, HiveDraw } from '@/lib/hive-api';
+import { useHiveVizState } from '@/hooks/useHiveVizState';
+import { HiveNode } from './HiveNode';
+import { HiveWeb } from './HiveWeb';
 import { DrawRing } from './DrawRing';
 import { SlowDrift } from './SlowDrift';
 
-interface SwarmBackgroundProps {
-  members: SwarmMember[];
-  draws: SwarmDraw[];
+interface HiveBackgroundProps {
+  members: HiveMember[];
+  draws: HiveDraw[];
 }
 
-function Scene({ members, draws }: SwarmBackgroundProps) {
-  const { agents, effects, positions } = useSwarmVizState(members, draws);
+function Scene({ members, draws }: HiveBackgroundProps) {
+  const { agents, effects, positions } = useHiveVizState(members, draws);
 
   return (
     <>
@@ -23,10 +23,10 @@ function Scene({ members, draws }: SwarmBackgroundProps) {
       <pointLight position={[-8, 6, -4]} color="#00f0ff" intensity={0.4} />
       <pointLight position={[8, 4, 4]} color="#ff44f5" intensity={0.3} />
 
-      <SwarmWeb positions={positions} effects={effects} />
+      <HiveWeb positions={positions} effects={effects} />
 
       {agents.map((agent) => (
-        <SwarmNode
+        <HiveNode
           key={agent.memberId}
           agentId={agent.agentId}
           role={agent.role}
@@ -43,7 +43,7 @@ function Scene({ members, draws }: SwarmBackgroundProps) {
   );
 }
 
-export function SwarmBackground({ members, draws }: SwarmBackgroundProps) {
+export function HiveBackground({ members, draws }: HiveBackgroundProps) {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas

@@ -5,14 +5,13 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
-import bs58 from 'bs58';
 import PayButton from '@/components/PayButton';
-import { createTeam, getChallenge, authenticateWallet, setAuthToken, getAuthToken } from '@/lib/swarm-api';
-import { ReputationProof } from '@/components/swarm/ReputationProof';
+import { createTeam, ensureAuthenticated } from '@/lib/hive-api';
+import { ReputationProof } from '@/components/hive/ReputationProof';
 import { PAYMENT_TIERS } from '@/lib/reputation-tiers';
 import { Dropdown } from '@/components/ui/Dropdown';
 
-const SwarmScene = dynamic(() => import('@/components/swarm/SwarmScene').then(m => m.SwarmScene), {
+const HiveScene = dynamic(() => import('@/components/hive/HiveScene').then(m => m.HiveScene), {
   ssr: false,
 });
 
@@ -63,7 +62,7 @@ const PRESETS = [
     ],
   },
   {
-    name: 'DevOps Swarm',
+    name: 'DevOps Hive',
     currency: 'USDC',
     dailyLimit: '500',
     members: [
@@ -79,7 +78,7 @@ const PRESETS = [
   },
 ];
 
-export default function SwarmPage() {
+export default function HivePage() {
   const router = useRouter();
   const wallet = useWallet();
   const { setVisible } = useWalletModal();
@@ -116,20 +115,15 @@ export default function SwarmPage() {
       return false;
     }
 
-    // Check if already authenticated
-    if (getAuthToken()) {
-      return true;
-    }
-
     try {
-      const walletAddr = wallet.publicKey.toBase58();
-      const { challenge } = await getChallenge(walletAddr);
-      const messageBytes = new TextEncoder().encode(challenge);
-      const signatureBytes = await wallet.signMessage(messageBytes);
-      const signature = bs58.encode(signatureBytes);
-      const { token } = await authenticateWallet(walletAddr, signature);
-      setAuthToken(token);
-      return true;
+      const authed = await ensureAuthenticated(() => ({
+        publicKey: wallet.publicKey!.toBase58(),
+        signMessage: wallet.signMessage!,
+      }));
+      if (!authed) {
+        setError('Failed to authenticate wallet');
+      }
+      return authed;
     } catch (err) {
       console.error('Authentication failed:', err);
       const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -169,7 +163,7 @@ export default function SwarmPage() {
             drawLimit: m.drawLimit ? parseFloat(m.drawLimit) : 0,
           })),
       });
-      router.push(`/swarm/${team.id}`);
+      router.push(`/hive/${team.id}`);
     } catch (err) {
       console.error('Failed to create team:', err);
       const message = err instanceof Error
@@ -233,14 +227,14 @@ export default function SwarmPage() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* 3D Scene Background */}
-      <SwarmScene members={sceneMembers} />
+      <HiveScene members={sceneMembers} />
 
       <div className="absolute inset-0 pointer-events-none overflow-y-auto flex items-center">
         <div className="w-full px-5 mx-auto py-8" style={{ maxWidth: '1400px' }}>
           {/* Page Header */}
           <div className="mb-8 pointer-events-auto">
             <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
-              — SwarmTeams スワーム
+              — Hive ハイブ
             </p>
             <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-3">Agent Treasury Management</h1>
             <p className="text-gray-400 text-sm max-w-2xl">
@@ -251,7 +245,7 @@ export default function SwarmPage() {
           <div className="flex flex-col lg:flex-row gap-6 items-start">
             <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/50 pointer-events-auto flex-1">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm uppercase tracking-wider text-gray-400">New SwarmTeam</h2>
+              <h2 className="text-sm uppercase tracking-wider text-gray-400">New Hive</h2>
               <div className="flex gap-2">
                 {PRESETS.map((preset) => (
                   <button
@@ -353,7 +347,7 @@ export default function SwarmPage() {
 
           <div className="flex items-center justify-center gap-8">
             <PayButton
-              text={creating ? 'Creating...' : !wallet.publicKey ? 'Connect Wallet' : 'Create Swarm'}
+              text={creating ? 'Creating...' : !wallet.publicKey ? 'Connect Wallet' : 'Create Hive'}
               onClick={handleCreate}
               disabled={creating || !name || !dailyLimit}
             />

@@ -8,7 +8,7 @@ import * as THREE from 'three';
 const PARTICLE_COUNT = 56;
 const CLOUD_RADIUS = 0.7;
 
-interface SwarmNodeProps {
+interface HiveNodeProps {
   agentId: string;
   role: string;
   position: [number, number, number];
@@ -16,7 +16,7 @@ interface SwarmNodeProps {
   active: boolean;
 }
 
-export function SwarmNode({ agentId, role, position, color, active }: SwarmNodeProps) {
+export function HiveNode({ agentId, role, position, color, active }: HiveNodeProps) {
   const activation = useRef(0);
   const glowRef = useRef<THREE.Mesh>(null);
 

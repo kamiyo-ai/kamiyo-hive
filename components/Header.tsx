@@ -11,12 +11,13 @@ import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
 import { MobileWalletModal } from '@/components/MobileWalletModal';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { listTeams, SwarmTeam } from '@/lib/swarm-api';
+import { listTeams, HiveTeam, ensureAuthenticated } from '@/lib/hive-api';
 
 export function Header() {
   const t = useTranslations('common');
   const pathname = usePathname();
-  const { publicKey, disconnect, connected } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, disconnect, connected, signMessage } = wallet;
   const { setVisible } = useWalletModal();
   const { text: connectText, setIsHovering: setConnectHovering } = useScrambleText(t('buttons.connect'), true);
   const [isConnectHovered, setIsConnectHovered] = useState(false);
@@ -24,23 +25,29 @@ export function Header() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isMenuHovered, setMenuHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [teams, setTeams] = useState<SwarmTeam[]>([]);
+  const [teams, setTeams] = useState<HiveTeam[]>([]);
   const [isMobileWalletModalOpen, setMobileWalletModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const fetchTeams = useCallback(async () => {
+    if (!publicKey || !signMessage) return;
     try {
+      const authed = await ensureAuthenticated(() => ({
+        publicKey: publicKey.toBase58(),
+        signMessage,
+      }));
+      if (!authed) return;
       const data = await listTeams();
       setTeams(data);
     } catch {
       // ignore
     }
-  }, []);
+  }, [publicKey, signMessage]);
 
   useEffect(() => {
-    if (connected) fetchTeams();
-  }, [connected, fetchTeams]);
+    if (connected && publicKey && signMessage) fetchTeams();
+  }, [connected, publicKey, signMessage, fetchTeams]);
 
   const navItems = [
     { href: '/dreams', label: t('nav.dreams') },
@@ -152,14 +159,14 @@ export function Header() {
                       </p>
                     </div>
 
-                    {/* SwarmTeams */}
+                    {/* Hives */}
                     {teams.length > 0 && (
                       <div className="py-2 border-b border-gray-500/25">
-                        <p className="px-4 text-[0.65rem] text-gray-600 uppercase tracking-wider mb-1">SwarmTeams</p>
+                        <p className="px-4 text-[0.65rem] text-gray-600 uppercase tracking-wider mb-1">Hives</p>
                         {teams.map((team) => (
                           <Link
                             key={team.id}
-                            href={`/swarm/${team.id}`}
+                            href={`/hive/${team.id}`}
                             onClick={() => setIsDropdownOpen(false)}
                             className="flex items-center justify-between px-4 py-1.5 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
                           >
@@ -168,11 +175,11 @@ export function Header() {
                           </Link>
                         ))}
                         <Link
-                          href="/swarm"
+                          href="/hive"
                           onClick={() => setIsDropdownOpen(false)}
                           className="flex items-center gap-1 px-4 py-1.5 text-[0.7rem] text-gray-600 hover:text-gray-400 transition-colors"
                         >
-                          <span>+</span> {t('buttons.newTeam')}
+                          <span>+</span> {t('buttons.newHive')}
                         </Link>
                       </div>
                     )}

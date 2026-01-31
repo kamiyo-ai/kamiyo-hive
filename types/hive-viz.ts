@@ -1,4 +1,4 @@
-export interface SwarmVizEffect {
+export interface HiveVizEffect {
   id: string;
   type: 'ring';
   sourcePosition: [number, number, number];
