@@ -1,15 +1,16 @@
 'use client';
 
-import { FC, ReactNode, useMemo, useCallback } from 'react';
+import { FC, ReactNode, useMemo, useCallback, useEffect, useState } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { WalletError } from '@solana/wallet-adapter-base';
+import { WalletError, Adapter } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
   CoinbaseWalletAdapter,
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+import { TestWalletAdapter, getTestWalletSecret } from '@/lib/test-wallet';
 
 import '@solana/wallet-adapter-react-ui/styles.css';
 
@@ -21,17 +22,37 @@ interface Props {
 
 export const SolanaWalletProvider: FC<Props> = ({ children }) => {
   const endpoint = MAINNET_RPC;
+  const [testWalletSecret, setTestWalletSecret] = useState<string | null>(null);
+
+  // Check for test wallet on mount (client-side only)
+  useEffect(() => {
+    const secret = getTestWalletSecret();
+    if (secret) {
+      console.log('[TestWallet] Test mode enabled');
+      setTestWalletSecret(secret);
+    }
+  }, []);
 
   const wallets = useMemo(
-    () => [
-      // Phantom and Solflare have built-in mobile deep linking support
-      // They will redirect to the app or prompt installation on mobile
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new CoinbaseWalletAdapter(),
-      new LedgerWalletAdapter(),
-    ],
-    []
+    () => {
+      const adapters: Adapter[] = [];
+
+      // If test wallet is configured, use it exclusively
+      if (testWalletSecret) {
+        adapters.push(new TestWalletAdapter(testWalletSecret));
+      } else {
+        // Normal wallet adapters
+        adapters.push(
+          new PhantomWalletAdapter(),
+          new SolflareWalletAdapter(),
+          new CoinbaseWalletAdapter(),
+          new LedgerWalletAdapter(),
+        );
+      }
+
+      return adapters;
+    },
+    [testWalletSecret]
   );
 
   // Handle wallet connection errors - especially for mobile
