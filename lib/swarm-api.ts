@@ -201,6 +201,18 @@ export async function fundFromCredits(teamId: string, wallet: string, amountUsd:
   });
 }
 
+export async function fundWithTokens(teamId: string, signedTransaction: string): Promise<{
+  success: boolean;
+  poolBalance: number;
+  tokenAmount: number;
+  signature: string;
+}> {
+  return api(`/api/swarm-teams/${teamId}/fund-tokens`, {
+    method: 'POST',
+    body: JSON.stringify({ signedTransaction }),
+  });
+}
+
 // Task submission
 export interface TaskSubmission {
   memberId: string;
