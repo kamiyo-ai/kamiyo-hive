@@ -2,6 +2,10 @@
   "name": "kamiyo-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -24,6 +28,7 @@
     "@types/pg": "^8.16.0",
     "bn.js": "^5.2.2",
     "bs58": "^6.0.0",
+    "circomlibjs": "^0.1.7",
     "next": "16.1.4",
     "next-auth": "^5.0.0-beta.30",
     "next-intl": "^4.7.0",
@@ -31,6 +36,7 @@
     "prisma": "^7.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "snarkjs": "^0.7.6",
     "three": "^0.182.0",
     "tweetnacl": "^1.0.3"
   },
@@ -39,6 +45,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/snarkjs": "^0.7.9",
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",

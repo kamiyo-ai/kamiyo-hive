@@ -95,6 +95,11 @@ ol li {
     font-size: 0.8rem !important;
 }
 
+/* Clickable elements */
+button, [role="button"] {
+    cursor: pointer;
+}
+
 /* Animations */
 @keyframes gradientBorder {
     0% {
