@@ -62,12 +62,12 @@ function useSvgTexture(url: string): THREE.Texture | null {
 function getMemberPosition(index: number, total: number): [number, number, number] {
   if (total === 0) return [0, 0, 0];
   const angle = (index / total) * Math.PI * 2 - Math.PI / 2;
-  const radius = 3;
+  const radius = 5;
   return [Math.cos(angle) * radius, 0, Math.sin(angle) * radius];
 }
 
-const NODE_COUNT = 120;
-const CONNECTION_DISTANCE = 2.5;
+const NODE_COUNT = 180;
+const CONNECTION_DISTANCE = 3.5;
 
 interface NodeData {
   position: THREE.Vector3;
@@ -85,10 +85,10 @@ function generateNodes(memberPositions: [number, number, number][]): NodeData[] 
     for (let i = 0; i < NODE_COUNT; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 2 + Math.random() * 5;
+      const r = 3 + Math.random() * 8;
       const pos = new THREE.Vector3(
         r * Math.sin(phi) * Math.cos(theta),
-        (Math.random() - 0.5) * 4,
+        (Math.random() - 0.5) * 6,
         r * Math.sin(phi) * Math.sin(theta)
       );
       nodes.push({
@@ -114,9 +114,9 @@ function generateNodes(memberPositions: [number, number, number][]): NodeData[] 
         const t = n / (nodesPerPair + 1);
         const pos = from.clone().lerp(to, t);
         const offset = new THREE.Vector3(
-          (Math.random() - 0.5) * 1.2,
-          (Math.random() - 0.5) * 0.8,
-          (Math.random() - 0.5) * 1.2
+          (Math.random() - 0.5) * 2,
+          (Math.random() - 0.5) * 1.5,
+          (Math.random() - 0.5) * 2
         );
         pos.add(offset);
 
@@ -136,10 +136,10 @@ function generateNodes(memberPositions: [number, number, number][]): NodeData[] 
   for (let i = 0; i < remaining; i++) {
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(2 * Math.random() - 1);
-    const r = 1 + Math.random() * 5;
+    const r = 2 + Math.random() * 8;
     const pos = new THREE.Vector3(
       r * Math.sin(phi) * Math.cos(theta),
-      (Math.random() - 0.5) * 3,
+      (Math.random() - 0.5) * 5,
       r * Math.sin(phi) * Math.sin(theta)
     );
     nodes.push({
@@ -476,13 +476,13 @@ function AutoOrbit() {
         angleRef.current = Math.atan2(cam.x, cam.z);
       }
 
-      angleRef.current += delta * 0.1;
-      const radius = 12;
+      angleRef.current += delta * 0.08;
+      const radius = 18;
       const x = Math.sin(angleRef.current) * radius;
       const z = Math.cos(angleRef.current) * radius;
 
       controlsRef.current.object.position.lerp(
-        new THREE.Vector3(x, 5, z),
+        new THREE.Vector3(x, 7, z),
         delta * 0.5
       );
       controlsRef.current.target.lerp(
@@ -498,8 +498,8 @@ function AutoOrbit() {
       ref={controlsRef}
       enableZoom={true}
       enablePan={false}
-      minDistance={4}
-      maxDistance={20}
+      minDistance={6}
+      maxDistance={30}
       dampingFactor={0.05}
       onStart={() => {
         dragging.current = true;
@@ -546,7 +546,7 @@ export function HiveScene({ members }: HiveSceneProps) {
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <Canvas
-        camera={{ position: [0, 5, 12], fov: 50 }}
+        camera={{ position: [0, 7, 18], fov: 55 }}
         style={{ background: "transparent" }}
         gl={{ antialias: true, alpha: true }}
       >
