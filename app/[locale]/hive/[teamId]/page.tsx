@@ -448,7 +448,7 @@ export default function TeamDetailPage() {
               <div className="-mx-6">
                 <iframe
                   src={blindfoldUrl}
-                  className="w-full h-[700px] border-0"
+                  className="w-full h-[900px] border-0"
                   allow="payment"
                 />
               </div>
