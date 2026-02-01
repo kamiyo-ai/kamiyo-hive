@@ -94,7 +94,7 @@ export function TrustGraphHUD({
         type="button"
         onClick={() => setIsPanelOpen(!isPanelOpen)}
         className={`absolute top-[74px] sm:top-[82px] md:top-[90px] z-20 p-2 bg-black/90 border border-gray-500/25 rounded-r transition-all ${
-          isPanelOpen ? "left-[240px] sm:left-[280px] md:left-[300px]" : "left-0"
+          isPanelOpen ? "left-[240px] sm:left-[280px] md:left-[300px]" : "left-2"
         }`}
         aria-label={isPanelOpen ? "Close panel" : "Open panel"}
       >
