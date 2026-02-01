@@ -220,9 +220,9 @@ export function Header() {
                 >
                   <img src="/icons/icon-settlement.svg" alt="" className="w-5 h-5" />
                 </button>
-                {/* Desktop connect button */}
+                {/* Desktop connect button - directly open wallet adapter */}
                 <button
-                  onClick={() => setMobileWalletModalOpen(true)}
+                  onClick={() => setVisible(true)}
                   onMouseEnter={() => { setConnectHovering(true); setIsConnectHovered(true); }}
                   onMouseLeave={() => { setConnectHovering(false); setIsConnectHovered(false); }}
                   className="hidden md:flex items-center gap-2 text-sm text-white tracking-wider group cursor-pointer"
