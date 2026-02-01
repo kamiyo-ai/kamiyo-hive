@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMobileWallet } from '@/hooks/useMobileWallet';
 
 interface MobileWalletModalProps {
@@ -11,6 +11,7 @@ interface MobileWalletModalProps {
 
 export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileWalletModalProps) {
   const { isMobile, isInWalletBrowser, openMobileWallet } = useMobileWallet();
+  const hasTriggeredDesktop = useRef(false);
 
   // Close on escape key
   useEffect(() => {
@@ -27,13 +28,23 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
     };
   }, [isOpen, onClose]);
 
+  // If on desktop or inside wallet browser, use standard wallet adapter
+  useEffect(() => {
+    if (isOpen && (!isMobile || isInWalletBrowser) && !hasTriggeredDesktop.current) {
+      hasTriggeredDesktop.current = true;
+      onDesktopConnect();
+      onClose();
+    }
+    // Reset when modal closes
+    if (!isOpen) {
+      hasTriggeredDesktop.current = false;
+    }
+  }, [isOpen, isMobile, isInWalletBrowser, onDesktopConnect, onClose]);
+
   if (!isOpen) return null;
 
-  // If on desktop or inside wallet browser, use standard wallet adapter
+  // Don't render mobile UI if we're on desktop
   if (!isMobile || isInWalletBrowser) {
-    // Trigger standard wallet modal and close this one
-    onDesktopConnect();
-    onClose();
     return null;
   }
 
