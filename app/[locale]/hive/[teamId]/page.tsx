@@ -478,8 +478,9 @@ export default function TeamDetailPage() {
                         <div className="text-lg font-mono text-white">{blindfoldTx.amountCrypto} SOL</div>
                         <div className="text-gray-500 text-xs">${blindfoldAmount} USD</div>
                       </div>
-                      <div className="flex justify-center gap-3">
-                        <button
+                      <div className="flex justify-center gap-3 items-center">
+                        <PayButton
+                          text={blindfoldLoading ? 'Signing...' : 'Sign & Pay'}
                           onClick={async () => {
                             if (!publicKey || !signTransaction) return;
                             setBlindfoldLoading(true);
@@ -503,14 +504,11 @@ export default function TeamDetailPage() {
                             }
                           }}
                           disabled={blindfoldLoading}
-                          className="px-5 py-2 bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] text-black text-sm font-medium rounded hover:opacity-90 disabled:opacity-50"
-                        >
-                          {blindfoldLoading ? 'Signing...' : 'Sign & Pay'}
-                        </button>
+                        />
                         <button
                           onClick={() => { setBlindfoldTx(null); setFundError(''); }}
                           disabled={blindfoldLoading}
-                          className="px-5 py-2 border border-gray-600 text-gray-400 text-sm rounded hover:border-gray-500 disabled:opacity-50"
+                          className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
                         >
                           Cancel
                         </button>
@@ -518,7 +516,7 @@ export default function TeamDetailPage() {
                       {fundError && <div className="text-red-400 text-xs text-center">{fundError}</div>}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 justify-center">
+                    <div className="flex items-center gap-3 justify-center">
                       <input
                         value={blindfoldAmount}
                         onChange={(e) => setBlindfoldAmount(e.target.value)}
@@ -526,7 +524,8 @@ export default function TeamDetailPage() {
                         className="w-24 bg-black/30 border border-gray-600 rounded px-3 py-2 text-white text-sm focus:border-[#00f0ff] focus:outline-none"
                         placeholder="USD"
                       />
-                      <button
+                      <PayButton
+                        text={blindfoldLoading ? 'Loading...' : 'Pay with Wallet'}
                         onClick={async () => {
                           const amount = parseFloat(blindfoldAmount);
                           if (!amount || amount <= 0 || !publicKey || !blindfoldStateToken) return;
@@ -550,13 +549,10 @@ export default function TeamDetailPage() {
                           }
                         }}
                         disabled={!blindfoldAmount || !publicKey || blindfoldLoading}
-                        className="px-4 py-2 bg-[#00f0ff]/20 border border-[#00f0ff]/50 text-[#00f0ff] text-sm rounded hover:bg-[#00f0ff]/30 disabled:opacity-50"
-                      >
-                        {blindfoldLoading ? '...' : 'Pay'}
-                      </button>
-                      {fundError && <span className="text-red-400 text-xs">{fundError}</span>}
+                      />
                     </div>
                   )}
+                  {fundError && <div className="text-red-400 text-xs text-center mt-2">{fundError}</div>}
                 </div>
               </>
             ) : (
