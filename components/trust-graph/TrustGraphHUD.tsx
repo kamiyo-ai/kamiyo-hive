@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { TrustNode, TrustGraphStats, Tier } from "./types";
 import { TIER_COLORS } from "./types";
 
@@ -13,13 +13,13 @@ interface TrustGraphHUDProps {
   loading?: boolean;
 }
 
-const TIERS: Array<{ value: Tier | "all"; label: string }> = [
+const TIERS: Array<{ value: Tier | "all"; label: string; color?: string }> = [
   { value: "all", label: "All Tiers" },
-  { value: "oracle", label: "Oracle" },
-  { value: "sentinel", label: "Sentinel" },
-  { value: "architect", label: "Architect" },
-  { value: "scout", label: "Scout" },
-  { value: "ghost", label: "Ghost" },
+  { value: "oracle", label: "Oracle", color: TIER_COLORS.oracle },
+  { value: "sentinel", label: "Sentinel", color: TIER_COLORS.sentinel },
+  { value: "architect", label: "Architect", color: TIER_COLORS.architect },
+  { value: "scout", label: "Scout", color: TIER_COLORS.scout },
+  { value: "ghost", label: "Ghost", color: TIER_COLORS.ghost },
 ];
 
 export function TrustGraphHUD({
@@ -32,6 +32,24 @@ export function TrustGraphHUD({
 }: TrustGraphHUDProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState<Tier | "all">("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleSearch = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,17 +60,19 @@ export function TrustGraphHUD({
     [onSearch]
   );
 
-  const handleTierChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value as Tier | "all";
-      setSelectedTier(value);
-      onFilterTier(value);
+  const handleTierSelect = useCallback(
+    (tier: Tier | "all") => {
+      setSelectedTier(tier);
+      onFilterTier(tier);
+      setIsDropdownOpen(false);
     },
     [onFilterTier]
   );
 
+  const selectedTierData = TIERS.find((t) => t.value === selectedTier);
+
   return (
-    <div className="absolute top-0 left-0 bottom-0 w-[280px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10">
+    <div className="absolute top-[80px] left-0 bottom-0 w-[300px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10">
       {/* Header */}
       <div className="p-5 border-b border-gray-500/25">
         <h1 className="text-lg text-white mb-1">Trust Graph</h1>
@@ -73,22 +93,67 @@ export function TrustGraphHUD({
         />
       </div>
 
-      {/* Filter */}
+      {/* Filter - Custom Dropdown */}
       <div className="p-4 border-b border-gray-500/25">
         <label className="block text-gray-500 text-xs uppercase tracking-wider mb-2">
           Filter by Tier
         </label>
-        <select
-          value={selectedTier}
-          onChange={handleTierChange}
-          className="w-full px-3 py-2 bg-black border border-gray-500/50 rounded text-white text-sm focus:border-cyan focus:outline-none transition-colors cursor-pointer"
-        >
-          {TIERS.map((tier) => (
-            <option key={tier.value} value={tier.value}>
-              {tier.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="w-full px-3 py-2 bg-black border border-gray-500/50 rounded text-sm text-left flex items-center justify-between hover:border-gray-400 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              {selectedTierData?.color && (
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{
+                    background: selectedTierData.color,
+                    boxShadow: `0 0 6px ${selectedTierData.color}`,
+                  }}
+                />
+              )}
+              <span className="text-white">{selectedTierData?.label}</span>
+            </span>
+            <svg
+              className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute top-full left-0 right-0 mt-1 py-1 bg-black border border-gray-500/25 rounded shadow-lg z-50">
+              {TIERS.map((tier) => (
+                <button
+                  key={tier.value}
+                  onClick={() => handleTierSelect(tier.value)}
+                  className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
+                    tier.value === selectedTier
+                      ? "text-cyan"
+                      : "text-gray-400 hover:text-white hover:bg-gray-500/10"
+                  }`}
+                >
+                  {tier.color && (
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        background: tier.color,
+                        boxShadow: `0 0 6px ${tier.color}`,
+                      }}
+                    />
+                  )}
+                  {!tier.color && <span className="w-2 h-2" />}
+                  {tier.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats */}
