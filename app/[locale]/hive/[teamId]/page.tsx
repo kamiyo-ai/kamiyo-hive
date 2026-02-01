@@ -779,6 +779,11 @@ export default function TeamDetailPage() {
                 onClick={async () => {
                   setDeleting(true);
                   try {
+                    const authed = await authenticate();
+                    if (!authed) {
+                      setDeleting(false);
+                      return;
+                    }
                     await deleteTeam(teamId);
                     router.push('/hive');
                   } catch (err) {
