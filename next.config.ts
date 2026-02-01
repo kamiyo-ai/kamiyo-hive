@@ -15,19 +15,10 @@ const nextConfig: NextConfig = {
         crypto: false,
       };
     }
-
-    // Ignore bun: protocol imports that Prisma CLI uses internally
-    config.externals = config.externals || [];
-    if (Array.isArray(config.externals)) {
-      config.externals.push(/^bun:/);
-    }
-
     return config;
   },
   // Transpile these packages to handle ESM properly
   transpilePackages: ['snarkjs', 'circomlibjs'],
-  // Mark Prisma as server-only to avoid client-side bundling issues
-  serverExternalPackages: ['prisma', '@prisma/client'],
 };
 
 export default withNextIntl(nextConfig);
