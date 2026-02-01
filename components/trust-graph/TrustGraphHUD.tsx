@@ -34,6 +34,7 @@ export function TrustGraphHUD({
   const [selectedTier, setSelectedTier] = useState<Tier | "all">("all");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isIntroExpanded, setIsIntroExpanded] = useState(true);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -87,11 +88,37 @@ export function TrustGraphHUD({
   );
 
   return (
-    <div className="absolute top-[80px] left-0 bottom-0 w-[300px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10 overflow-y-auto">
-      <div className="p-5 border-b border-gray-500/25">
-        <h1 className="text-lg text-white mb-1">Trust Graph</h1>
-        <p className="text-gray-500 text-xs">Agent reputation network</p>
-      </div>
+    <>
+      {/* Toggle button - visible when panel is closed or on mobile */}
+      <button
+        type="button"
+        onClick={() => setIsPanelOpen(!isPanelOpen)}
+        className={`absolute top-[90px] z-20 p-2 bg-black/90 border border-gray-500/25 rounded-r transition-all ${
+          isPanelOpen ? "left-[300px] max-md:left-[280px]" : "left-0"
+        }`}
+        aria-label={isPanelOpen ? "Close panel" : "Open panel"}
+      >
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform ${isPanelOpen ? "" : "rotate-180"}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      {/* Side panel */}
+      <div
+        className={`absolute top-[80px] left-0 bottom-0 w-[300px] max-md:w-[280px] bg-black/[0.98] border-r border-gray-500/25 flex flex-col z-10 overflow-y-auto transition-transform ${
+          isPanelOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-5 border-b border-gray-500/25">
+          <h1 className="text-lg text-white mb-1">Trust Graph</h1>
+          <p className="text-gray-500 text-xs">Agent reputation network</p>
+        </div>
 
       {/* Expandable intro */}
       <div className="border-b border-gray-500/25">
@@ -138,7 +165,7 @@ export function TrustGraphHUD({
           value={searchQuery}
           onChange={handleSearch}
           placeholder="Agent ID or name..."
-          className="w-full px-3 py-2 bg-black border border-gray-500/50 rounded text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+          className="w-full px-3 py-2 bg-black/[0.98] border border-gray-500/50 rounded text-white text-sm focus:border-cyan focus:outline-none transition-colors"
         />
       </div>
 
@@ -153,7 +180,7 @@ export function TrustGraphHUD({
             onKeyDown={handleKeyDown}
             aria-haspopup="listbox"
             aria-expanded={isDropdownOpen}
-            className="w-full px-3 py-2 bg-black border border-gray-500/50 rounded text-sm text-left flex items-center justify-between hover:border-gray-400 transition-colors"
+            className="w-full px-3 py-2 bg-black/[0.98] border border-gray-500/50 rounded text-sm text-left flex items-center justify-between hover:border-gray-400 transition-colors"
           >
             <span className="flex items-center gap-2">
               {selectedTierData?.color && (
@@ -182,7 +209,7 @@ export function TrustGraphHUD({
             <div
               role="listbox"
               aria-label="Select tier"
-              className="absolute top-full left-0 right-0 mt-1 py-1 bg-black border border-gray-500/25 rounded shadow-lg z-50"
+              className="absolute top-full left-0 right-0 mt-1 py-1 bg-black/[0.98] border border-gray-500/25 rounded shadow-lg z-50"
             >
               {TIERS.map((tier) => (
                 <button
@@ -303,17 +330,18 @@ export function TrustGraphHUD({
         </div>
       )}
 
-      {loading && (
-        <div className="p-5 text-center text-gray-500 text-sm">Loading graph...</div>
-      )}
+        {loading && (
+          <div className="p-5 text-center text-gray-500 text-sm">Loading graph...</div>
+        )}
 
-      <div className="flex-1" />
+        <div className="flex-1" />
 
-      <div className="p-4 border-t border-gray-500/25">
-        <p className="text-[12.8px] text-gray-600">
-          Drag to rotate. Scroll to zoom. Click node to select.
-        </p>
+        <div className="p-4 border-t border-gray-500/25">
+          <p className="text-[12.8px] text-gray-600">
+            Drag to rotate. Scroll to zoom. Click node to select.
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
