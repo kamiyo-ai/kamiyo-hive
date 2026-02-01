@@ -80,16 +80,16 @@ export function Header() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 w-full bg-black/90 backdrop-blur-sm border-b border-gray-500/25 z-40 transition-transform duration-300 ${isMenuOpen ? '-translate-x-72' : 'translate-x-0'}`}>
-        <div className="w-full px-5 mx-auto py-3 flex items-center justify-between" style={{ maxWidth: '1400px' }}>
-          <div className="flex items-center gap-4 md:gap-8">
+      <header className={`fixed top-0 left-0 w-full bg-black/90 backdrop-blur-sm border-b border-gray-500/25 z-40 transition-transform duration-300 ${isMenuOpen ? '-translate-x-64 sm:-translate-x-72' : 'translate-x-0'}`}>
+        <div className="w-full px-3 sm:px-5 mx-auto py-2 sm:py-3 flex items-center justify-between" style={{ maxWidth: '1400px' }}>
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-8">
             <Link href="/" className="flex items-center flex-shrink-0">
               <img
                 src="/media/KAMIYO_logomark.png"
                 alt="KAMIYO"
                 width="240"
                 height="64"
-                className="object-contain h-10 sm:h-12 md:h-14 w-auto"
+                className="object-contain h-8 sm:h-10 md:h-12 lg:h-14 w-auto"
               />
             </Link>
             <nav className="hidden md:flex items-center gap-5">
@@ -115,7 +115,7 @@ export function Header() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             <div className="hidden md:block">
               <LanguageSwitcher />
             </div>
@@ -238,7 +238,7 @@ export function Header() {
               onClick={() => setMenuOpen(!isMenuOpen)}
               onMouseEnter={() => setMenuHovered(true)}
               onMouseLeave={() => setMenuHovered(false)}
-              className={`cursor-pointer focus:outline-none transition-all duration-300 ${isMenuOpen ? 'fixed right-5 top-[22px] sm:top-[26px] md:top-[30px] z-[60]' : ''}`}
+              className={`cursor-pointer focus:outline-none transition-all duration-300 ${isMenuOpen ? 'fixed right-3 sm:right-5 top-[14px] sm:top-[18px] md:top-[22px] z-[60]' : ''}`}
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               <svg
@@ -292,8 +292,8 @@ export function Header() {
       {mounted && createPortal(
         <div
           ref={menuRef}
-          className={`w-72 fixed top-0 right-0 h-screen flex flex-col bg-black border-l border-gray-500/25 transform transition-transform duration-300 z-50 ${
-            isMenuOpen ? 'translate-x-0' : 'translate-x-72'
+          className={`w-64 sm:w-72 fixed top-0 right-0 h-screen flex flex-col bg-black border-l border-gray-500/25 transform transition-transform duration-300 z-50 ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-64 sm:translate-x-72'
           }`}
         >
           <div className="py-4 flex flex-col h-full justify-between overflow-y-auto">

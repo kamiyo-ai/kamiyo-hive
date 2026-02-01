@@ -93,8 +93,8 @@ export function TrustGraphHUD({
       <button
         type="button"
         onClick={() => setIsPanelOpen(!isPanelOpen)}
-        className={`absolute top-[90px] z-20 p-2 bg-black/90 border border-gray-500/25 rounded-r transition-all ${
-          isPanelOpen ? "left-[300px] max-md:left-[280px]" : "left-0"
+        className={`absolute top-[74px] sm:top-[82px] md:top-[90px] z-20 p-2 bg-black/90 border border-gray-500/25 rounded-r transition-all ${
+          isPanelOpen ? "left-[240px] sm:left-[280px] md:left-[300px]" : "left-0"
         }`}
         aria-label={isPanelOpen ? "Close panel" : "Open panel"}
       >
@@ -111,7 +111,7 @@ export function TrustGraphHUD({
 
       {/* Side panel */}
       <div
-        className={`absolute top-[80px] left-0 bottom-0 w-[300px] max-md:w-[280px] bg-black/[0.98] border-r border-gray-500/25 flex flex-col z-10 overflow-y-auto transition-transform ${
+        className={`absolute top-[64px] sm:top-[72px] md:top-[80px] left-0 bottom-0 w-[240px] sm:w-[280px] md:w-[300px] bg-black/[0.98] border-r border-gray-500/25 flex flex-col z-10 overflow-y-auto transition-transform ${
           isPanelOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

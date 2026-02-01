@@ -484,40 +484,40 @@ function StakeContent() {
                 document.body
             )}
 
-            <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-8 md:pb-16">
-                <div className="mb-8 md:mb-16">
-                    <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+            <div className="w-full px-3 sm:px-5 mx-auto max-w-[1400px] pt-20 sm:pt-24 md:pt-28 pb-6 sm:pb-8 md:pb-16">
+                <div className="mb-6 sm:mb-8 md:mb-16">
+                    <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
                         — Staking ステーキング
                     </p>
-                    <h1 className="text-3xl md:text-4xl text-white mb-4">Staking</h1>
-                    <p className="text-gray-400 max-w-2xl">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-2 sm:mb-4">Staking</h1>
+                    <p className="text-gray-400 text-xs sm:text-sm max-w-2xl">
                         Stake $KAMIYO and earn up to 24% APY with duration multipliers. No lock period, flexible unstaking.
                     </p>
                 </div>
 
                 {poolStats && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 md:mb-12">
-                        <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-                            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Total Staked</div>
-                            <div className="text-white text-2xl font-light mb-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-12">
+                        <div className="bg-black border border-gray-500/25 rounded-lg p-3 sm:p-5 text-center">
+                            <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">Total Staked</div>
+                            <div className="text-white text-lg sm:text-2xl font-light mb-0.5 sm:mb-1">
                                 {poolStats.totalStaked.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                             </div>
-                            <div className="text-gray-500 text-xs">KAMIYO</div>
+                            <div className="text-gray-500 text-[10px] sm:text-xs">KAMIYO</div>
                         </div>
-                        <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-                            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Base APY</div>
-                            <div className="text-white text-2xl font-light mb-1">12%</div>
-                            <div className="text-gray-500 text-xs">annual</div>
+                        <div className="bg-black border border-gray-500/25 rounded-lg p-3 sm:p-5 text-center">
+                            <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">Base APY</div>
+                            <div className="text-white text-lg sm:text-2xl font-light mb-0.5 sm:mb-1">12%</div>
+                            <div className="text-gray-500 text-[10px] sm:text-xs">annual</div>
                         </div>
-                        <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-                            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Max APY</div>
-                            <div className="text-white text-2xl font-light mb-1">24%</div>
-                            <div className="text-gray-500 text-xs">with 2x multiplier</div>
+                        <div className="bg-black border border-gray-500/25 rounded-lg p-3 sm:p-5 text-center">
+                            <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">Max APY</div>
+                            <div className="text-white text-lg sm:text-2xl font-light mb-0.5 sm:mb-1">24%</div>
+                            <div className="text-gray-500 text-[10px] sm:text-xs">with 2x multiplier</div>
                         </div>
-                        <div className="bg-black border border-gray-500/25 rounded-lg p-5 text-center">
-                            <div className="gradient-text text-xs uppercase tracking-wider mb-2">Minimum</div>
-                            <div className="text-white text-2xl font-light mb-1">100K</div>
-                            <div className="text-gray-500 text-xs">KAMIYO</div>
+                        <div className="bg-black border border-gray-500/25 rounded-lg p-3 sm:p-5 text-center">
+                            <div className="gradient-text text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">Minimum</div>
+                            <div className="text-white text-lg sm:text-2xl font-light mb-0.5 sm:mb-1">100K</div>
+                            <div className="text-gray-500 text-[10px] sm:text-xs">KAMIYO</div>
                         </div>
                     </div>
                 )}
@@ -528,9 +528,9 @@ function StakeContent() {
                     </div>
                 )}
                 
-                <div className="grid md:grid-cols-2 gap-4 md:gap-8">
-                    <div className="card relative p-6 rounded-xl border border-gray-500/25">
-                        <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Your Position</h2>
+                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 md:gap-8">
+                    <div className="card relative p-4 sm:p-6 rounded-xl border border-gray-500/25">
+                        <h2 className="text-lg sm:text-xl text-white mb-4 sm:mb-6 pb-2 subheading-border">Your Position</h2>
 
                         {!publicKey ? (
                             <div className="text-center py-8">
@@ -587,8 +587,8 @@ function StakeContent() {
                         )}
                     </div>
 
-                    <div className="card relative p-6 rounded-xl border border-gray-500/25">
-                        <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Stake</h2>
+                    <div className="card relative p-4 sm:p-6 rounded-xl border border-gray-500/25">
+                        <h2 className="text-lg sm:text-xl text-white mb-4 sm:mb-6 pb-2 subheading-border">Stake</h2>
 
                         {!publicKey ? (
                             <div className="text-center py-8">
@@ -637,8 +637,8 @@ function StakeContent() {
                         )}
                     </div>
 
-                    <div className="card relative p-6 rounded-xl border border-gray-500/25">
-                        <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Unstake</h2>
+                    <div className="card relative p-4 sm:p-6 rounded-xl border border-gray-500/25">
+                        <h2 className="text-lg sm:text-xl text-white mb-4 sm:mb-6 pb-2 subheading-border">Unstake</h2>
 
                         {!publicKey ? (
                             <div className="text-center py-8">
@@ -690,8 +690,8 @@ function StakeContent() {
                         )}
                     </div>
 
-                    <div className="card relative p-6 rounded-xl border border-gray-500/25">
-                        <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Claim Rewards</h2>
+                    <div className="card relative p-4 sm:p-6 rounded-xl border border-gray-500/25">
+                        <h2 className="text-lg sm:text-xl text-white mb-4 sm:mb-6 pb-2 subheading-border">Claim Rewards</h2>
 
                         {!publicKey ? (
                             <div className="text-center py-8">
@@ -719,41 +719,41 @@ function StakeContent() {
                     </div>
                 </div>
 
-                <div className="border-t border-gray-800 pt-12 mt-12">
-                    <h4 className="text-xl md:text-2xl mb-4 font-light text-center">Duration Multipliers</h4>
-                    <p className="text-gray-500 text-sm text-center mb-8">
+                <div className="border-t border-gray-800 pt-8 sm:pt-12 mt-8 sm:mt-12">
+                    <h4 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-4 font-light text-center">Duration Multipliers</h4>
+                    <p className="text-gray-500 text-xs sm:text-sm text-center mb-4 sm:mb-8">
                         Your multiplier increases automatically based on how long you stake
                     </p>
-                    <div className="md:max-w-2xl md:mx-auto">
-                        <div className="border border-gray-800 rounded-lg overflow-hidden">
-                            <table className="w-full text-sm">
+                    <div className="sm:max-w-2xl sm:mx-auto overflow-x-auto">
+                        <div className="border border-gray-800 rounded-lg overflow-hidden min-w-[300px]">
+                            <table className="w-full text-xs sm:text-sm">
                                 <thead className="bg-gray-900/50">
                                     <tr>
-                                        <th className="text-left p-4 text-gray-400 font-light">Duration</th>
-                                        <th className="text-left p-4 text-gray-400 font-light">Multiplier</th>
-                                        <th className="text-left p-4 text-gray-400 font-light">Effective APY</th>
+                                        <th className="text-left p-2 sm:p-4 text-gray-400 font-light">Duration</th>
+                                        <th className="text-left p-2 sm:p-4 text-gray-400 font-light">Multiplier</th>
+                                        <th className="text-left p-2 sm:p-4 text-gray-400 font-light">Effective APY</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-800">
                                     <tr>
-                                        <td className="p-4 text-white">0-30 days</td>
-                                        <td className="p-4 text-gray-400">1.0x</td>
-                                        <td className="p-4 text-cyan">12%</td>
+                                        <td className="p-2 sm:p-4 text-white">0-30 days</td>
+                                        <td className="p-2 sm:p-4 text-gray-400">1.0x</td>
+                                        <td className="p-2 sm:p-4 text-cyan">12%</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 text-white">30-90 days</td>
-                                        <td className="p-4 text-gray-400">1.2x</td>
-                                        <td className="p-4 text-cyan">14.4%</td>
+                                        <td className="p-2 sm:p-4 text-white">30-90 days</td>
+                                        <td className="p-2 sm:p-4 text-gray-400">1.2x</td>
+                                        <td className="p-2 sm:p-4 text-cyan">14.4%</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 text-white">90-180 days</td>
-                                        <td className="p-4 text-gray-400">1.5x</td>
-                                        <td className="p-4 text-cyan">18%</td>
+                                        <td className="p-2 sm:p-4 text-white">90-180 days</td>
+                                        <td className="p-2 sm:p-4 text-gray-400">1.5x</td>
+                                        <td className="p-2 sm:p-4 text-cyan">18%</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-4 text-white">180+ days</td>
-                                        <td className="p-4 text-magenta">2.0x</td>
-                                        <td className="p-4 text-magenta">24%</td>
+                                        <td className="p-2 sm:p-4 text-white">180+ days</td>
+                                        <td className="p-2 sm:p-4 text-magenta">2.0x</td>
+                                        <td className="p-2 sm:p-4 text-magenta">24%</td>
                                     </tr>
                                 </tbody>
                             </table>

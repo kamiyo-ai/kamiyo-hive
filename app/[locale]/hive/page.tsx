@@ -230,15 +230,15 @@ export default function HivePage() {
       {/* 3D Scene Background */}
       <HiveScene members={sceneMembers} />
 
-      <div className="absolute inset-0 pointer-events-none overflow-y-auto flex items-center">
-        <div className="w-full px-5 mx-auto py-8" style={{ maxWidth: '1400px' }}>
+      <div className="absolute inset-0 pointer-events-none overflow-y-auto flex items-start md:items-center pt-20 md:pt-0">
+        <div className="w-full px-3 sm:px-5 mx-auto py-4 sm:py-8" style={{ maxWidth: '1400px' }}>
           {/* Page Header */}
-          <div className="mb-8 pointer-events-auto">
-            <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+          <div className="mb-4 sm:mb-8 pointer-events-auto">
+            <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
               — Hive ハイブ
             </p>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-3">Agent Treasury Management</h1>
-            <p className="text-gray-400 text-sm max-w-2xl">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-2 sm:mb-3">Agent Treasury Management</h1>
+            <p className="text-gray-400 text-xs sm:text-sm max-w-2xl">
               Create shared treasuries for AI agent teams with configurable spending limits and role-based access control.
               Agents build reputation through completed tasks&mdash;explore the{' '}
               <Link href="/trust-graph" className="text-cyan hover:underline">
@@ -248,16 +248,16 @@ export default function HivePage() {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6 items-start">
-            <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/50 pointer-events-auto flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm uppercase tracking-wider text-gray-400">New Hive</h2>
-              <div className="flex gap-2">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
+            <div className="card relative p-4 sm:p-6 rounded-lg border border-gray-500/25 bg-black/50 pointer-events-auto flex-1 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-4">
+              <h2 className="text-xs sm:text-sm uppercase tracking-wider text-gray-400">New Hive</h2>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {PRESETS.map((preset) => (
                   <button
                     key={preset.name}
                     onClick={() => applyPreset(preset)}
-                    className="px-2 py-1 text-xs border border-gray-600/50 rounded hover:border-gray-500 text-gray-500 hover:text-gray-300 transition-colors"
+                    className="px-1.5 sm:px-2 py-1 text-[10px] sm:text-xs border border-gray-600/50 rounded hover:border-gray-500 text-gray-500 hover:text-gray-300 transition-colors"
                   >
                     {preset.name}
                   </button>
@@ -265,32 +265,32 @@ export default function HivePage() {
               </div>
             </div>
           {error && (
-            <div className="px-4 py-3 rounded mb-4 text-sm" style={{ backgroundColor: 'rgba(255, 50, 50, 0.05)', border: '1px solid rgba(255, 50, 50, 0.5)', color: '#ff3232' }}>
+            <div className="px-3 sm:px-4 py-2 sm:py-3 rounded mb-4 text-xs sm:text-sm" style={{ backgroundColor: 'rgba(255, 50, 50, 0.05)', border: '1px solid rgba(255, 50, 50, 0.5)', color: '#ff3232' }}>
               {error}
             </div>
           )}
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-4">
             <div>
-              <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Name</label>
+              <label className="text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 block">Name</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
+                className="w-full bg-black border border-gray-500/50 rounded px-3 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 placeholder="Trading Squad"
               />
             </div>
             <div>
-              <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Daily Limit</label>
+              <label className="text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 block">Daily Limit</label>
               <input
                 value={dailyLimit}
                 onChange={(e) => setDailyLimit(e.target.value)}
                 type="number"
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
+                className="w-full bg-black border border-gray-500/50 rounded px-3 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 placeholder="10.0"
               />
             </div>
-            <div className="relative z-[50]">
-              <label className="text-gray-400 text-xs uppercase tracking-wider mb-1 block">Currency</label>
+            <div className="relative z-[50] sm:col-span-2 md:col-span-1">
+              <label className="text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 block">Currency</label>
               <Dropdown
                 value={currency}
                 onChange={setCurrency}
@@ -304,25 +304,25 @@ export default function HivePage() {
           </div>
 
           <div className="mb-4 relative z-[40]">
-            <label className="text-gray-400 text-xs uppercase tracking-wider mb-2 block">Members</label>
+            <label className="text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-2 block">Members</label>
             {members.map((m, idx) => (
-              <div key={idx} className="flex gap-2 mb-2">
+              <div key={idx} className="flex gap-1 sm:gap-2 mb-2">
                 {members.length > 1 && (
                   <button
                     onClick={() => setMembers(members.filter((_, i) => i !== idx))}
-                    className="text-gray-600 hover:text-red-400 text-xs px-2 transition-colors self-center"
+                    className="text-gray-600 hover:text-red-400 text-xs px-1 sm:px-2 transition-colors self-center"
                     title="Remove member"
                   >
                     x
                   </button>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 flex-1">
                   <input
                     ref={el => { memberInputRefs.current[idx] = el; }}
                     value={m.agentId}
                     onChange={(e) => updateMember(idx, 'agentId', e.target.value)}
                     onKeyDown={(e) => handleMemberKeyDown(e, idx)}
-                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
+                    className="bg-black border border-gray-500/50 rounded px-2 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm focus:border-[#364153] focus:outline-none"
                     placeholder="Agent ID"
                   />
                   <input
@@ -330,8 +330,8 @@ export default function HivePage() {
                     onChange={(e) => updateMember(idx, 'drawLimit', e.target.value)}
                     onKeyDown={(e) => handleMemberKeyDown(e, idx)}
                     type="number"
-                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
-                    placeholder="Draw limit"
+                    className="bg-black border border-gray-500/50 rounded px-2 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm focus:border-[#364153] focus:outline-none"
+                    placeholder="Limit"
                   />
                   <Dropdown
                     value={m.role}
@@ -346,13 +346,13 @@ export default function HivePage() {
             ))}
             <button
               onClick={() => addMemberRow(true)}
-              className="text-gray-500 text-xs hover:text-gray-300 transition-colors"
+              className="text-gray-500 text-[10px] sm:text-xs hover:text-gray-300 transition-colors"
             >
               + Add member
             </button>
           </div>
 
-          <div className="flex items-center justify-center gap-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8">
             <PayButton
               text={creating ? 'Creating...' : !wallet.publicKey ? 'Connect Wallet' : 'Create Hive'}
               onClick={handleCreate}
@@ -360,7 +360,7 @@ export default function HivePage() {
             />
             <button
               onClick={() => setShowProofPanel(!showProofPanel)}
-              className="text-xs hover:text-white transition-colors ml-8 cursor-pointer"
+              className="text-[10px] sm:text-xs hover:text-white transition-colors cursor-pointer"
               style={{ color: '#ff44f5' }}
             >
               {showProofPanel ? 'Hide proof panel' : 'Prove reputation'}

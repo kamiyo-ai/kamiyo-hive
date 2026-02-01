@@ -60,26 +60,26 @@ export default function EscrowPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="w-full px-5 mx-auto max-w-[1400px] pt-24 md:pt-28 pb-8 md:pb-16">
-        <div className="mb-8 md:mb-16">
-          <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+      <div className="w-full px-3 sm:px-5 mx-auto max-w-[1400px] pt-20 sm:pt-24 md:pt-28 pb-6 sm:pb-8 md:pb-16">
+        <div className="mb-6 sm:mb-8 md:mb-16">
+          <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
             — Escrow エスクロー
           </p>
-          <h1 className="text-3xl md:text-4xl text-white mb-4">Escrow</h1>
-          <p className="text-gray-400 max-w-2xl">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-2 sm:mb-4">Escrow</h1>
+          <p className="text-gray-400 text-xs sm:text-sm max-w-2xl">
             Create shareable escrow links for trustless payments.
             Lock SOL with timelock protection, release on delivery, or dispute for oracle arbitration.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
+        <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 md:gap-8">
           {/* Create Escrow */}
-          <div className="card relative p-6 rounded-xl border border-gray-500/25">
-            <h2 className="text-xl text-white mb-6 pb-2 subheading-border">Create Escrow</h2>
+          <div className="card relative p-4 sm:p-6 rounded-xl border border-gray-500/25">
+            <h2 className="text-lg sm:text-xl text-white mb-4 sm:mb-6 pb-2 subheading-border">Create Escrow</h2>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="block text-gray-400 text-xs uppercase tracking-wider mb-2">
+                <label className="block text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">
                   Provider Address
                 </label>
                 <input
@@ -87,15 +87,15 @@ export default function EscrowPage() {
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                   placeholder="Solana wallet address"
-                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-500/50 rounded px-3 sm:px-4 py-2 sm:py-3 text-white text-xs sm:text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 text-xs uppercase tracking-wider mb-2">
+                <label className="block text-gray-400 text-[10px] sm:text-xs uppercase tracking-wider mb-1 sm:mb-2">
                   Quick Amount
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-1 sm:gap-2">
                   {QUICK_AMOUNTS.map((amt) => (
                     <button
                       key={amt}

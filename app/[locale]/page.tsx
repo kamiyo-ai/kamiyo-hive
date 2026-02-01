@@ -10,7 +10,7 @@ const AgentScene = dynamic(
 
 export default function LandingPage() {
   return (
-    <div className="relative h-[calc(100vh-80px)] bg-black">
+    <div className="relative h-[calc(100vh-var(--header-height))] bg-black">
       {/* Hero with 3D AgentScene */}
       <div className="absolute inset-0">
         <AgentScene hideHUD={true} />

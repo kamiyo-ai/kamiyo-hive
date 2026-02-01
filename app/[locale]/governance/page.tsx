@@ -51,7 +51,7 @@ function ProposalCard({ proposal, config, t }: { proposal: Proposal; config: Gov
 
   return (
     <Link href={`/governance/${proposal.id.toString()}`}>
-      <div className="card bg-black border border-gray-800 rounded-lg p-6 hover:border-transparent transition-all cursor-pointer">
+      <div className="card bg-black border border-gray-800 rounded-lg p-4 sm:p-6 hover:border-transparent transition-all cursor-pointer">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <span className="text-gray-500 text-sm">#{proposal.id.toString()}</span>
@@ -151,21 +151,21 @@ export default function GovernancePage() {
   const activeCount = proposals.filter(p => p.state === ProposalState.Voting).length;
 
   return (
-    <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
-      <div className="subheading-border mb-10 pb-6">
-        <p className="font-light text-sm uppercase tracking-widest gradient-text mb-4">
+    <div className="min-h-screen pt-20 sm:pt-24 md:pt-28 pb-8 sm:pb-10 px-3 sm:px-5 max-w-[1400px] mx-auto">
+      <div className="subheading-border mb-6 sm:mb-10 pb-4 sm:pb-6">
+        <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
           — {t('subtitle')} ガバナンス
         </p>
-        <h1 className="text-3xl md:text-4xl font-medium text-white">{t('title')}</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-medium text-white">{t('title')}</h1>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           {(['all', 'active', 'closed'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 text-sm rounded transition-colors ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded transition-colors ${
                 filter === f
                   ? 'bg-white/10 text-white'
                   : 'text-gray-500 hover:text-gray-300'
@@ -173,7 +173,7 @@ export default function GovernancePage() {
             >
               {t(`filters.${f}`)}
               {f === 'active' && activeCount > 0 && (
-                <span className="ml-2 text-cyan">{activeCount}</span>
+                <span className="ml-1 sm:ml-2 text-cyan">{activeCount}</span>
               )}
             </button>
           ))}
@@ -181,7 +181,7 @@ export default function GovernancePage() {
 
         <Link
           href="/governance/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-gray-700 hover:border-cyan/50 text-white text-sm rounded transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-white/5 border border-gray-700 hover:border-cyan/50 text-white text-xs sm:text-sm rounded transition-colors"
         >
           <span>+</span>
           {t('createProposal')}
@@ -201,7 +201,7 @@ export default function GovernancePage() {
               : t('noClosedProposals')}
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
           {filteredProposals.map((proposal) => (
             <ProposalCard
               key={proposal.id.toString()}
@@ -214,9 +214,9 @@ export default function GovernancePage() {
       )}
 
       {config && (
-        <div className="mt-12 p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
-          <h3 className="text-white font-medium mb-4">{t('parameters.title')}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-xs md:text-sm">
+        <div className="mt-8 sm:mt-12 p-4 sm:p-6 bg-gray-900/50 border border-gray-800 rounded-lg">
+          <h3 className="text-white font-medium mb-3 sm:mb-4 text-sm sm:text-base">{t('parameters.title')}</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 text-[10px] sm:text-xs md:text-sm">
             <div>
               <div className="text-gray-500 mb-1">{t('parameters.proposalThreshold')}</div>
               <div className="text-white">
