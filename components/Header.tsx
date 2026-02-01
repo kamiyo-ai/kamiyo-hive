@@ -53,7 +53,7 @@ export function Header() {
     { href: '/stake', label: t('nav.stake') },
     { href: '/governance', label: t('nav.governance') },
     { href: '/escrow', label: t('nav.escrow') },
-    { href: '/dreams', label: t('nav.trustGraph') },
+    { href: '/trust-graph', label: t('nav.trustGraph') },
     { href: '/faq', label: t('nav.faq') },
   ];
 
