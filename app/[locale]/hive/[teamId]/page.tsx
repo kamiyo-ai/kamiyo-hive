@@ -195,19 +195,19 @@ export default function TeamDetailPage() {
         }
 
         // Get user's token account
+        // pump.fun tokens use Token-2022, try that first
         let userAta: PublicKey;
-        let tokenProgram = TOKEN_PROGRAM_ID;
+        let tokenProgram = TOKEN_2022_PROGRAM_ID;
 
         try {
-          // Try standard token program first
-          userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_PROGRAM_ID);
-          await getAccount(connection, userAta, 'confirmed', TOKEN_PROGRAM_ID);
+          userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_2022_PROGRAM_ID);
+          await getAccount(connection, userAta, 'confirmed', TOKEN_2022_PROGRAM_ID);
         } catch {
-          // Fall back to Token-2022
+          // Fall back to standard token program
           try {
-            userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_2022_PROGRAM_ID);
-            await getAccount(connection, userAta, 'confirmed', TOKEN_2022_PROGRAM_ID);
-            tokenProgram = TOKEN_2022_PROGRAM_ID;
+            userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_PROGRAM_ID);
+            await getAccount(connection, userAta, 'confirmed', TOKEN_PROGRAM_ID);
+            tokenProgram = TOKEN_PROGRAM_ID;
           } catch {
             setFundError('No $KAMIYO tokens found in wallet');
             return;

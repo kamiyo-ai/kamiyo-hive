@@ -134,41 +134,41 @@ export async function authenticateWallet(wallet: string, signature: string): Pro
 }
 
 export async function listTeams(): Promise<HiveTeam[]> {
-  const data = await api<{ teams: HiveTeam[] }>('/api/hive-teams');
+  const data = await api<{ teams: HiveTeam[] }>('/api/swarm-teams');
   return data.teams;
 }
 
 export async function createTeam(input: CreateTeamInput): Promise<HiveTeamDetail> {
-  return api<HiveTeamDetail>('/api/hive-teams', {
+  return api<HiveTeamDetail>('/api/swarm-teams', {
     method: 'POST',
     body: JSON.stringify(input),
   });
 }
 
 export async function getTeam(teamId: string): Promise<HiveTeamDetail> {
-  return api<HiveTeamDetail>(`/api/hive-teams/${teamId}`);
+  return api<HiveTeamDetail>(`/api/swarm-teams/${teamId}`);
 }
 
 export async function addMember(
   teamId: string,
   data: { agentId: string; role?: string; drawLimit?: number }
 ): Promise<HiveMember> {
-  return api<HiveMember>(`/api/hive-teams/${teamId}/members`, {
+  return api<HiveMember>(`/api/swarm-teams/${teamId}/members`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteTeam(teamId: string): Promise<void> {
-  await api(`/api/hive-teams/${teamId}`, { method: 'DELETE' });
+  await api(`/api/swarm-teams/${teamId}`, { method: 'DELETE' });
 }
 
 export async function removeMember(teamId: string, memberId: string): Promise<void> {
-  await api(`/api/hive-teams/${teamId}/members/${memberId}`, { method: 'DELETE' });
+  await api(`/api/swarm-teams/${teamId}/members/${memberId}`, { method: 'DELETE' });
 }
 
 export async function fundTeam(teamId: string, amount: number): Promise<{ poolBalance: number }> {
-  return api<{ success: boolean; poolBalance: number }>(`/api/hive-teams/${teamId}/fund`, {
+  return api<{ success: boolean; poolBalance: number }>(`/api/swarm-teams/${teamId}/fund`, {
     method: 'POST',
     body: JSON.stringify({ amount }),
   });
@@ -178,7 +178,7 @@ export async function updateBudget(
   teamId: string,
   data: { dailyLimit?: number; memberLimits?: Record<string, number> }
 ): Promise<void> {
-  await api(`/api/hive-teams/${teamId}/budget`, {
+  await api(`/api/swarm-teams/${teamId}/budget`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
@@ -194,7 +194,7 @@ export async function getDraws(
   if (params?.agentId) query.set('agentId', params.agentId);
   const qs = query.toString();
   return api<{ draws: HiveDraw[]; total: number }>(
-    `/api/hive-teams/${teamId}/draws${qs ? `?${qs}` : ''}`
+    `/api/swarm-teams/${teamId}/draws${qs ? `?${qs}` : ''}`
   );
 }
 
@@ -209,7 +209,7 @@ export interface FundDeposit {
 }
 
 export async function initiateFunding(teamId: string, amount: number): Promise<FundDeposit> {
-  return api<FundDeposit>(`/api/hive-teams/${teamId}/fund`, {
+  return api<FundDeposit>(`/api/swarm-teams/${teamId}/fund`, {
     method: 'POST',
     body: JSON.stringify({ amount }),
   });
@@ -219,14 +219,14 @@ export async function confirmFunding(teamId: string, depositId: string): Promise
   status: string;
   poolBalance?: number;
 }> {
-  return api(`/api/hive-teams/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
+  return api(`/api/swarm-teams/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
 }
 
 export async function fundFromCredits(teamId: string, wallet: string, amountUsd: number): Promise<{
   success: boolean;
   poolBalance: number;
 }> {
-  return api(`/api/hive-teams/${teamId}/fund-credits`, {
+  return api(`/api/swarm-teams/${teamId}/fund-credits`, {
     method: 'POST',
     body: JSON.stringify({ wallet, amountUsd }),
   });
@@ -238,7 +238,7 @@ export async function fundWithTokens(teamId: string, signedTransaction: string):
   tokenAmount: number;
   signature: string;
 }> {
-  return api(`/api/hive-teams/${teamId}/fund-tokens`, {
+  return api(`/api/swarm-teams/${teamId}/fund-tokens`, {
     method: 'POST',
     body: JSON.stringify({ signedTransaction }),
   });
@@ -260,7 +260,7 @@ export interface TaskResult {
 }
 
 export async function submitTask(teamId: string, task: TaskSubmission): Promise<TaskResult> {
-  return api<TaskResult>(`/api/hive-teams/${teamId}/tasks`, {
+  return api<TaskResult>(`/api/swarm-teams/${teamId}/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),
   });
