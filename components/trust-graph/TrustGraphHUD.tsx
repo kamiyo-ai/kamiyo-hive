@@ -310,7 +310,7 @@ export function TrustGraphHUD({
       <div className="flex-1" />
 
       <div className="p-4 border-t border-gray-500/25">
-        <p className="text-[10px] text-gray-600">
+        <p className="text-[12.8px] text-gray-600">
           Drag to rotate. Scroll to zoom. Click node to select.
         </p>
       </div>
