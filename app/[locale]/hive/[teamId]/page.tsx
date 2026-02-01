@@ -275,6 +275,17 @@ export default function TeamDetailPage() {
     }
   };
 
+  // Preload Blindfold URL on page load
+  useEffect(() => {
+    if (team && !blindfoldUrl) {
+      getBlindfoldFundingUrl(teamId).then(({ fundingUrl }) => {
+        setBlindfoldUrl(fundingUrl);
+      }).catch(() => {
+        // Silently fail - will retry on tab click
+      });
+    }
+  }, [team, teamId]);
+
   // Poll deposit confirmation
   useEffect(() => {
     if (!fundingDeposit || fundingDeposit.status === 'confirmed') return;
@@ -421,15 +432,9 @@ export default function TeamDetailPage() {
           </div>
           {/* Right tab */}
           <div
-            onClick={async () => {
+            onClick={() => {
               setFundMode('blindfold');
               setFundError('');
-              try {
-                const { fundingUrl } = await getBlindfoldFundingUrl(teamId);
-                setBlindfoldUrl(fundingUrl);
-              } catch (err) {
-                setFundError(err instanceof Error ? err.message : 'Failed to load Blindfold');
-              }
             }}
             className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
             style={fundMode === 'blindfold'
@@ -442,80 +447,83 @@ export default function TeamDetailPage() {
         </div>
         {/* Card body */}
         <div className="p-6 rounded-b-lg bg-black/20" style={{ border: '1px solid #364153', borderTop: 'none' }}>
-        {fundMode === 'blindfold' ? (
-          blindfoldUrl ? (
-            <div>
-              <div className="-mx-6">
-                <iframe
-                  src={blindfoldUrl}
-                  className="w-full h-[900px] border-0"
-                  allow="payment"
-                />
+        {/* Preloaded Blindfold iframe - hidden when not active */}
+        {blindfoldUrl && (
+          <div className={fundMode === 'blindfold' ? '' : 'hidden'}>
+            <div className="-mx-6">
+              <iframe
+                src={blindfoldUrl}
+                className="w-full h-[900px] border-0"
+                allow="payment"
+              />
+            </div>
+            <button
+              onClick={() => setFundMode('credits')}
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors mt-3"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {fundMode === 'blindfold' && !blindfoldUrl && (
+          <div className="text-center py-8">
+            {fundError ? (
+              <div className="text-red-400 text-sm">{fundError}</div>
+            ) : (
+              <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
+            )}
+          </div>
+        )}
+        {fundMode === 'credits' && (
+          fundingDeposit ? (
+            <div className="space-y-3">
+              <div className="text-sm text-gray-300">Send exactly:</div>
+              <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {currencyDisplay}</div>
+              <div className="text-sm text-gray-400">To address:</div>
+              <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-500">
+                  {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
+                </span>
+                <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
               </div>
               <button
-                onClick={() => { setBlindfoldUrl(null); setFundMode('credits'); }}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors mt-3"
+                onClick={() => setFundingDeposit(null)}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
               >
                 Cancel
               </button>
             </div>
           ) : (
-            <div className="text-center py-8">
-              {fundError ? (
-                <div className="text-red-400 text-sm">{fundError}</div>
-              ) : (
-                <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
-              )}
-            </div>
-          )
-        ) : fundingDeposit ? (
-          <div className="space-y-3">
-            <div className="text-sm text-gray-300">Send exactly:</div>
-            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {currencyDisplay}</div>
-            <div className="text-sm text-gray-400">To address:</div>
-            <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">
-                {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
-              </span>
-              <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
-            </div>
-            <button
-              onClick={() => setFundingDeposit(null)}
-              className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <>
-            <input
-              value={fundAmount}
-              onChange={(e) => setFundAmount(e.target.value)}
-              type="number"
-              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none mt-4"
-              placeholder="Amount ($KAMIYO)"
-            />
-            <div className="flex items-center gap-2 mt-4">
-              {[100, 500, 1000, 5000].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => setFundAmount(String(amt))}
-                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-                >
-                  {amt.toLocaleString()}
-                </button>
-              ))}
-            </div>
-            <div className="ml-8 mt-8">
-              <PayButton
-                text="Fund with $KAMIYO"
-                onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
+            <>
+              <input
+                value={fundAmount}
+                onChange={(e) => setFundAmount(e.target.value)}
+                type="number"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none mt-4"
+                placeholder="Amount ($KAMIYO)"
               />
-            </div>
-            {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
-          </>
+              <div className="flex items-center gap-2 mt-4">
+                {[100, 500, 1000, 5000].map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setFundAmount(String(amt))}
+                    className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                  >
+                    {amt.toLocaleString()}
+                  </button>
+                ))}
+              </div>
+              <div className="ml-8 mt-8">
+                <PayButton
+                  text="Fund with $KAMIYO"
+                  onClick={handleFund}
+                  disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
+                />
+              </div>
+              {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
+            </>
+          )
         )}
         </div>
       </div>
