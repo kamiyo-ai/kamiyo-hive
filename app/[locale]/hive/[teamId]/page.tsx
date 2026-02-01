@@ -15,6 +15,7 @@ import {
   ensureAuthenticated, getBlindfoldFundingUrl,
   HiveTeamDetail, HiveDraw, FundDeposit, TaskResult,
 } from '@/lib/hive-api';
+import { Dropdown } from '@/components/ui/Dropdown';
 
 const KAMIYO_MINT = new PublicKey('Gy55EJmheLyDXiZ7k7CW2FhunD1UgjQxQibuBn3Npump');
 const KAMIYO_DECIMALS = 6;
@@ -387,6 +388,7 @@ export default function TeamDetailPage() {
   }
 
   const spendPct = team.dailyLimit > 0 ? Math.min(100, (team.dailySpend / team.dailyLimit) * 100) : 0;
+  const currencyDisplay = team.currency === 'KAMIYO' ? '$KAMIYO' : team.currency;
 
   return (
     <div className="min-h-screen pt-24 md:pt-28 pb-16 px-5 max-w-[1400px] mx-auto">
@@ -402,21 +404,22 @@ export default function TeamDetailPage() {
 
         <div className="space-y-6">
 
-      {/* Fund Section */}
-      <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
-        <div className="flex relative">
+      {/* Fund Section - Folder Tab Style */}
+      <div className="relative">
+        {/* Tabs row */}
+        <div className="flex">
+          {/* Left tab */}
           <div
             onClick={() => { setFundMode('credits'); setBlindfoldUrl(null); }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            style={fundMode === 'credits'
+              ? { border: '1px solid #364153', borderBottom: '1px solid transparent', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem', background: 'rgba(0,0,0,0.2)' }
+              : { border: '1px solid transparent', borderBottom: '1px solid #364153' }}
           >
-            {fundMode === 'credits' && (
-              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
-                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
-              </div>
-            )}
             <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
             Fund with $KAMIYO
           </div>
+          {/* Right tab */}
           <div
             onClick={async () => {
               setFundMode('blindfold');
@@ -428,30 +431,30 @@ export default function TeamDetailPage() {
                 setFundError(err instanceof Error ? err.message : 'Failed to load Blindfold');
               }
             }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            style={fundMode === 'blindfold'
+              ? { border: '1px solid #364153', borderBottom: '1px solid transparent', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem', background: 'rgba(0,0,0,0.2)' }
+              : { border: '1px solid transparent', borderBottom: '1px solid #364153' }}
           >
-            {fundMode === 'blindfold' && (
-              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
-                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
-              </div>
-            )}
             <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
             Blindfold Card
           </div>
         </div>
-        <div className="border-t border-gray-500/25"></div>
-        <div className="p-6">
+        {/* Card body */}
+        <div className="p-6 rounded-b-lg bg-black/20" style={{ border: '1px solid #364153', borderTop: 'none' }}>
         {fundMode === 'blindfold' ? (
           blindfoldUrl ? (
-            <div className="space-y-3">
-              <iframe
-                src={blindfoldUrl}
-                className="w-full h-[500px] rounded-lg border border-gray-700"
-                allow="payment"
-              />
+            <div>
+              <div className="-mx-6">
+                <iframe
+                  src={blindfoldUrl}
+                  className="w-full h-[700px] border-0"
+                  allow="payment"
+                />
+              </div>
               <button
                 onClick={() => { setBlindfoldUrl(null); setFundMode('credits'); }}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors mt-3"
               >
                 Cancel
               </button>
@@ -468,7 +471,7 @@ export default function TeamDetailPage() {
         ) : fundingDeposit ? (
           <div className="space-y-3">
             <div className="text-sm text-gray-300">Send exactly:</div>
-            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {team.currency}</div>
+            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {currencyDisplay}</div>
             <div className="text-sm text-gray-400">To address:</div>
             <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
             <div className="flex items-center justify-between">
@@ -490,10 +493,10 @@ export default function TeamDetailPage() {
               value={fundAmount}
               onChange={(e) => setFundAmount(e.target.value)}
               type="number"
-              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none"
+              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none mt-4"
               placeholder="Amount ($KAMIYO)"
             />
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-4">
               {[100, 500, 1000, 5000].map((amt) => (
                 <button
                   key={amt}
@@ -504,7 +507,7 @@ export default function TeamDetailPage() {
                 </button>
               ))}
             </div>
-            <div className="ml-8 mt-5">
+            <div className="ml-8 mt-8">
               <PayButton
                 text="Fund with $KAMIYO"
                 onClick={handleFund}
@@ -525,7 +528,7 @@ export default function TeamDetailPage() {
           <div className="space-y-4">
             <div>
               <div className="text-3xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent mb-1">
-                {team.poolBalance.toFixed(2)} {team.currency}
+                {team.poolBalance.toFixed(2)} {currencyDisplay}
               </div>
               <span className="text-gray-500 text-xs">Pool balance</span>
             </div>
@@ -549,7 +552,7 @@ export default function TeamDetailPage() {
                     className="text-white cursor-pointer hover:text-[#00f0ff] transition-colors"
                     onClick={() => { setEditingDailyLimit(true); setDailyLimitValue(String(team.dailyLimit)); }}
                   >
-                    {team.dailyLimit.toFixed(2)} {team.currency}/day
+                    {team.dailyLimit.toFixed(2)} {currencyDisplay}/day
                   </span>
                 )}
               </div>
@@ -578,7 +581,7 @@ export default function TeamDetailPage() {
                     {d.purpose && <span className="text-gray-500 text-xs ml-2">{d.purpose}</span>}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-300 text-sm">{d.amount.toFixed(2)} {team.currency}</span>
+                    <span className="text-gray-300 text-sm">{d.amount.toFixed(2)} {currencyDisplay}</span>
                     <StatusBadge status={d.blindfoldStatus} />
                     <span className="text-gray-600 text-xs">
                       {new Date(d.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -643,22 +646,22 @@ export default function TeamDetailPage() {
             <input
               value={newAgentId}
               onChange={(e) => setNewAgentId(e.target.value)}
-              className="flex-1 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
+              className="flex-1 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
               placeholder="Agent ID"
             />
-            <select
+            <Dropdown
               value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
-            >
-              <option value="member">Member</option>
-              <option value="admin">Admin</option>
-            </select>
+              onChange={setNewRole}
+              options={[
+                { value: 'member', label: 'Member' },
+                { value: 'admin', label: 'Admin' },
+              ]}
+            />
             <input
               value={newDrawLimit}
               onChange={(e) => setNewDrawLimit(e.target.value)}
               type="number"
-              className="w-24 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
+              className="w-24 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
               placeholder="Limit"
             />
           </div>
@@ -696,28 +699,26 @@ export default function TeamDetailPage() {
         </div>
         <div className="space-y-3">
           <div className="flex gap-2">
-            <select
+            <Dropdown
               value={taskMemberId}
-              onChange={(e) => setTaskMemberId(e.target.value)}
-              className="bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239ca3af%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_12px_center] pr-10"
-            >
-              <option value="">Select agent</option>
-              {team.members.map((m) => (
-                <option key={m.id} value={m.id}>{m.agentId}</option>
-              ))}
-            </select>
+              onChange={setTaskMemberId}
+              options={[
+                { value: '', label: 'Select agent' },
+                ...team.members.map((m) => ({ value: m.id, label: m.agentId })),
+              ]}
+            />
             <input
               value={taskBudget}
               onChange={(e) => setTaskBudget(e.target.value)}
               type="number"
-              className="w-28 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-gray-300 focus:outline-none"
+              className="w-28 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
               placeholder="Budget"
             />
           </div>
           <textarea
             value={taskDescription}
             onChange={(e) => setTaskDescription(e.target.value)}
-            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none resize-none h-24"
+            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none resize-none h-24"
             placeholder="Describe the task (research, market analysis, wallet lookup...)"
           />
           <div className="flex items-center justify-between">
@@ -735,7 +736,7 @@ export default function TeamDetailPage() {
               <div className="flex items-center justify-between mb-2">
                 <StatusBadge status={taskResult.status} />
                 {taskResult.amountDrawn !== undefined && (
-                  <span className="text-gray-400 text-xs">{taskResult.amountDrawn.toFixed(4)} {team.currency} drawn</span>
+                  <span className="text-gray-400 text-xs">{taskResult.amountDrawn.toFixed(4)} {currencyDisplay} drawn</span>
                 )}
               </div>
               {taskResult.output && (

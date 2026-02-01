@@ -21,7 +21,7 @@ export function Dropdown({ value, onChange, options, className = '' }: DropdownP
   const ref = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const selectedOption = options.find(o => o.value === value) || options[0];
+  const selectedOption = options.find(o => o.value === value) || options[0] || { value: '', label: '' };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -45,8 +45,8 @@ export function Dropdown({ value, onChange, options, className = '' }: DropdownP
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setMenuPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 4,
+        left: rect.left,
         width: rect.width,
       });
     }
@@ -91,7 +91,7 @@ export function Dropdown({ value, onChange, options, className = '' }: DropdownP
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm text-left flex items-center justify-between focus:border-cyan focus:outline-none transition-colors"
+        className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm text-left flex items-center justify-between focus:border-[#364153] focus:outline-none transition-colors"
       >
         <span>{selectedOption.label}</span>
         <svg
