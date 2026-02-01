@@ -276,3 +276,47 @@ export async function submitTask(teamId: string, task: TaskSubmission): Promise<
     body: JSON.stringify(task),
   });
 }
+
+// Blindfold direct funding (bypasses iframe wallet connect issue)
+export interface BlindfolDirectFundingRequest {
+  wallet_address: string;
+  amount_usd: number;
+  currency: string;
+  partner_id: string;
+  pool_id: string;
+  state: string;
+}
+
+export interface BlindfoldDirectFundingResponse {
+  transaction: string;  // base64 encoded transaction to sign
+  amount_crypto: string;
+  expires_at: string;
+  payment_id: string;
+}
+
+export async function initiateBlindfoldFunding(
+  walletAddress: string,
+  amountUsd: number,
+  poolId: string,
+  stateToken: string
+): Promise<BlindfoldDirectFundingResponse> {
+  const res = await fetch('https://www.blindfoldfinance.com/api/partner/initiate-funding', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      wallet_address: walletAddress,
+      amount_usd: amountUsd,
+      currency: 'SOL',
+      partner_id: 'kamiyo',
+      pool_id: poolId,
+      state: stateToken,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || err.error || `Blindfold API error: ${res.status}`);
+  }
+
+  return res.json();
+}
