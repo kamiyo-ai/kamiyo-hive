@@ -198,6 +198,17 @@ export async function getDraws(
   );
 }
 
+// Blindfold iframe funding
+export interface BlindfoldFundingUrl {
+  fundingUrl: string;
+  stateToken: string;
+  expiresAt: number;
+}
+
+export async function getBlindfoldFundingUrl(teamId: string): Promise<BlindfoldFundingUrl> {
+  return api<BlindfoldFundingUrl>(`/api/swarm-teams/${teamId}/fund/blindfold`);
+}
+
 // Fund deposit flow (Blindfold integration)
 export interface FundDeposit {
   depositId: string;

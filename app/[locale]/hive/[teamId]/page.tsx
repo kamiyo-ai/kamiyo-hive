@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
   initiateFunding, confirmFunding, fundWithTokens, submitTask, deleteTeam,
-  ensureAuthenticated,
+  ensureAuthenticated, getBlindfoldFundingUrl,
   HiveTeamDetail, HiveDraw, FundDeposit, TaskResult,
 } from '@/lib/hive-api';
 
@@ -84,9 +84,10 @@ export default function TeamDetailPage() {
   const [dailyLimitValue, setDailyLimitValue] = useState('');
 
   // Fund deposit state
-  const [fundMode, setFundMode] = useState<'crypto' | 'credits'>('credits');
+  const [fundMode, setFundMode] = useState<'crypto' | 'credits' | 'blindfold'>('credits');
   const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
   const [fundError, setFundError] = useState('');
+  const [blindfoldUrl, setBlindfoldUrl] = useState<string | null>(null);
 
   // Task submission state
   const [taskMemberId, setTaskMemberId] = useState('');
@@ -536,7 +537,7 @@ export default function TeamDetailPage() {
       <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
         <div className="flex relative">
           <div
-            onClick={() => setFundMode('credits')}
+            onClick={() => { setFundMode('credits'); setBlindfoldUrl(null); }}
             className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
             {fundMode === 'credits' && (
@@ -548,10 +549,19 @@ export default function TeamDetailPage() {
             Fund with $KAMIYO
           </div>
           <div
-            onClick={() => setFundMode('crypto')}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'crypto' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            onClick={async () => {
+              setFundMode('blindfold');
+              setFundError('');
+              try {
+                const { fundingUrl } = await getBlindfoldFundingUrl(teamId);
+                setBlindfoldUrl(fundingUrl);
+              } catch (err) {
+                setFundError(err instanceof Error ? err.message : 'Failed to load Blindfold');
+              }
+            }}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
           >
-            {fundMode === 'crypto' && (
+            {fundMode === 'blindfold' && (
               <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
                 <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
               </div>
@@ -562,7 +572,31 @@ export default function TeamDetailPage() {
         </div>
         <div className="border-t border-gray-500/25"></div>
         <div className="p-6">
-        {fundingDeposit ? (
+        {fundMode === 'blindfold' ? (
+          blindfoldUrl ? (
+            <div className="space-y-3">
+              <iframe
+                src={blindfoldUrl}
+                className="w-full h-[500px] rounded-lg border border-gray-700"
+                allow="payment"
+              />
+              <button
+                onClick={() => { setBlindfoldUrl(null); setFundMode('credits'); }}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              {fundError ? (
+                <div className="text-red-400 text-sm">{fundError}</div>
+              ) : (
+                <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
+              )}
+            </div>
+          )
+        ) : fundingDeposit ? (
           <div className="space-y-3">
             <div className="text-sm text-gray-300">Send exactly:</div>
             <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {team.currency}</div>
@@ -588,24 +622,24 @@ export default function TeamDetailPage() {
               onChange={(e) => setFundAmount(e.target.value)}
               type="number"
               className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none"
-              placeholder={fundMode === 'credits' ? 'Amount ($KAMIYO)' : `Amount (${team.currency})`}
+              placeholder="Amount ($KAMIYO)"
             />
             <div className="flex items-center gap-2 mt-2">
-              {(fundMode === 'credits' ? [100, 500, 1000, 5000] : [1, 5, 10, 50]).map((amt) => (
+              {[100, 500, 1000, 5000].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setFundAmount(String(amt))}
                   className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
                 >
-                  {fundMode === 'credits' ? amt.toLocaleString() : `$${amt}`}
+                  {amt.toLocaleString()}
                 </button>
               ))}
             </div>
             <div className="ml-8 mt-5">
               <PayButton
-                text={fundMode === 'credits' ? 'Use Credits' : 'Fund'}
+                text="Fund with $KAMIYO"
                 onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || (fundMode === 'credits' && !publicKey)}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
               />
             </div>
             {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
