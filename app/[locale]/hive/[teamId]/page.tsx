@@ -402,6 +402,121 @@ export default function TeamDetailPage() {
 
         <div className="space-y-6">
 
+      {/* Fund Section */}
+      <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
+        <div className="flex relative">
+          <div
+            onClick={() => { setFundMode('credits'); setBlindfoldUrl(null); }}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            {fundMode === 'credits' && (
+              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
+                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
+              </div>
+            )}
+            <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
+            Fund with $KAMIYO
+          </div>
+          <div
+            onClick={async () => {
+              setFundMode('blindfold');
+              setFundError('');
+              try {
+                const { fundingUrl } = await getBlindfoldFundingUrl(teamId);
+                setBlindfoldUrl(fundingUrl);
+              } catch (err) {
+                setFundError(err instanceof Error ? err.message : 'Failed to load Blindfold');
+              }
+            }}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            {fundMode === 'blindfold' && (
+              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
+                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
+              </div>
+            )}
+            <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
+            Blindfold Card
+          </div>
+        </div>
+        <div className="border-t border-gray-500/25"></div>
+        <div className="p-6">
+        {fundMode === 'blindfold' ? (
+          blindfoldUrl ? (
+            <div className="space-y-3">
+              <iframe
+                src={blindfoldUrl}
+                className="w-full h-[500px] rounded-lg border border-gray-700"
+                allow="payment"
+              />
+              <button
+                onClick={() => { setBlindfoldUrl(null); setFundMode('credits'); }}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              {fundError ? (
+                <div className="text-red-400 text-sm">{fundError}</div>
+              ) : (
+                <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
+              )}
+            </div>
+          )
+        ) : fundingDeposit ? (
+          <div className="space-y-3">
+            <div className="text-sm text-gray-300">Send exactly:</div>
+            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {team.currency}</div>
+            <div className="text-sm text-gray-400">To address:</div>
+            <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">
+                {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
+              </span>
+              <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
+            </div>
+            <button
+              onClick={() => setFundingDeposit(null)}
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <>
+            <input
+              value={fundAmount}
+              onChange={(e) => setFundAmount(e.target.value)}
+              type="number"
+              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none"
+              placeholder="Amount ($KAMIYO)"
+            />
+            <div className="flex items-center gap-2 mt-2">
+              {[100, 500, 1000, 5000].map((amt) => (
+                <button
+                  key={amt}
+                  onClick={() => setFundAmount(String(amt))}
+                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                >
+                  {amt.toLocaleString()}
+                </button>
+              ))}
+            </div>
+            <div className="ml-8 mt-5">
+              <PayButton
+                text="Fund with $KAMIYO"
+                onClick={handleFund}
+                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
+              />
+            </div>
+            {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
+          </>
+        )}
+        </div>
+      </div>
+
       {/* Budget + Draw History - Two Column Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Budget Section */}
@@ -554,121 +669,6 @@ export default function TeamDetailPage() {
               disabled={!newAgentId}
             />
           </div>
-        </div>
-      </div>
-
-      {/* Fund Section */}
-      <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
-        <div className="flex relative">
-          <div
-            onClick={() => { setFundMode('credits'); setBlindfoldUrl(null); }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-          >
-            {fundMode === 'credits' && (
-              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
-                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
-              </div>
-            )}
-            <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
-            Fund with $KAMIYO
-          </div>
-          <div
-            onClick={async () => {
-              setFundMode('blindfold');
-              setFundError('');
-              try {
-                const { fundingUrl } = await getBlindfoldFundingUrl(teamId);
-                setBlindfoldUrl(fundingUrl);
-              } catch (err) {
-                setFundError(err instanceof Error ? err.message : 'Failed to load Blindfold');
-              }
-            }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer relative z-10 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-          >
-            {fundMode === 'blindfold' && (
-              <div className="absolute inset-0 rounded-t-lg p-[1px] -z-10" style={{ background: 'linear-gradient(90deg, #00f0ff, #ff44f5)' }}>
-                <div className="w-full h-full rounded-t-lg bg-black" style={{ borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }} />
-              </div>
-            )}
-            <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
-            Blindfold Card
-          </div>
-        </div>
-        <div className="border-t border-gray-500/25"></div>
-        <div className="p-6">
-        {fundMode === 'blindfold' ? (
-          blindfoldUrl ? (
-            <div className="space-y-3">
-              <iframe
-                src={blindfoldUrl}
-                className="w-full h-[500px] rounded-lg border border-gray-700"
-                allow="payment"
-              />
-              <button
-                onClick={() => { setBlindfoldUrl(null); setFundMode('credits'); }}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              {fundError ? (
-                <div className="text-red-400 text-sm">{fundError}</div>
-              ) : (
-                <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
-              )}
-            </div>
-          )
-        ) : fundingDeposit ? (
-          <div className="space-y-3">
-            <div className="text-sm text-gray-300">Send exactly:</div>
-            <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {team.currency}</div>
-            <div className="text-sm text-gray-400">To address:</div>
-            <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">
-                {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
-              </span>
-              <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
-            </div>
-            <button
-              onClick={() => setFundingDeposit(null)}
-              className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <>
-            <input
-              value={fundAmount}
-              onChange={(e) => setFundAmount(e.target.value)}
-              type="number"
-              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-gray-300 focus:outline-none"
-              placeholder="Amount ($KAMIYO)"
-            />
-            <div className="flex items-center gap-2 mt-2">
-              {[100, 500, 1000, 5000].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => setFundAmount(String(amt))}
-                  className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-                >
-                  {amt.toLocaleString()}
-                </button>
-              ))}
-            </div>
-            <div className="ml-8 mt-5">
-              <PayButton
-                text="Fund with $KAMIYO"
-                onClick={handleFund}
-                disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
-              />
-            </div>
-            {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
-          </>
-        )}
         </div>
       </div>
 
