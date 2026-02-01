@@ -612,7 +612,7 @@ function StakeContent() {
                                             placeholder="100000"
                                             min={MIN_STAKE}
                                             disabled={loading}
-                                            className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors disabled:opacity-50"
+                                            className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors disabled:opacity-50"
                                         />
                                         {balance !== null && (
                                             <button
@@ -661,7 +661,7 @@ function StakeContent() {
                                             onChange={(e) => setUnstakeAmount(e.target.value)}
                                             placeholder="0"
                                             disabled={loading || !position}
-                                            className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors disabled:opacity-50"
+                                            className="flex-1 bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors disabled:opacity-50"
                                         />
                                         {position && (
                                             <button

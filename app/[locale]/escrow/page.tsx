@@ -87,7 +87,7 @@ export default function EscrowPage() {
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                   placeholder="Solana wallet address"
-                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 />
               </div>
 
@@ -124,7 +124,7 @@ export default function EscrowPage() {
                   min="0.001"
                   max="1000"
                   step="0.001"
-                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 />
               </div>
 
@@ -195,7 +195,7 @@ export default function EscrowPage() {
                   value={reputationAddress}
                   onChange={(e) => setReputationAddress(e.target.value)}
                   placeholder="Solana wallet address"
-                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 />
               </div>
 
@@ -254,7 +254,7 @@ export default function EscrowPage() {
                   value={escrowId}
                   onChange={(e) => setEscrowId(e.target.value)}
                   placeholder="escrow_abc123..."
-                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                  className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 />
               </div>
 

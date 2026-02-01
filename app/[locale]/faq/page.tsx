@@ -78,7 +78,7 @@ export default function FAQPage() {
           placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-black border border-gray-800 rounded-lg px-6 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-gray-700 transition-colors"
+          className="w-full bg-black border border-gray-800 rounded-lg px-6 py-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#364153] transition-colors"
         />
       </div>
 

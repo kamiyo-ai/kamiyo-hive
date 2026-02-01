@@ -269,7 +269,7 @@ export default function HivePage() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 placeholder="Trading Squad"
               />
             </div>
@@ -279,7 +279,7 @@ export default function HivePage() {
                 value={dailyLimit}
                 onChange={(e) => setDailyLimit(e.target.value)}
                 type="number"
-                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+                className="w-full bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
                 placeholder="10.0"
               />
             </div>
@@ -316,7 +316,7 @@ export default function HivePage() {
                     value={m.agentId}
                     onChange={(e) => updateMember(idx, 'agentId', e.target.value)}
                     onKeyDown={(e) => handleMemberKeyDown(e, idx)}
-                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none"
+                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
                     placeholder="Agent ID"
                   />
                   <input
@@ -324,7 +324,7 @@ export default function HivePage() {
                     onChange={(e) => updateMember(idx, 'drawLimit', e.target.value)}
                     onKeyDown={(e) => handleMemberKeyDown(e, idx)}
                     type="number"
-                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-cyan focus:outline-none"
+                    className="bg-black border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
                     placeholder="Draw limit"
                   />
                   <Dropdown

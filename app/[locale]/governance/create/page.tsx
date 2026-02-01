@@ -166,7 +166,7 @@ export default function CreateProposalPage() {
               onChange={(e) => setTitle(e.target.value)}
               maxLength={128}
               placeholder={t('titlePlaceholder')}
-              className="w-full px-4 py-3 bg-black border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-cyan/50"
+              className="w-full px-4 py-3 bg-black border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-[#364153]"
             />
             <div className="text-right text-xs text-gray-500 mt-1">
               {title.length}/128
@@ -184,7 +184,7 @@ export default function CreateProposalPage() {
               maxLength={1024}
               rows={8}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full px-4 py-3 bg-black border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-cyan/50 resize-none"
+              className="w-full px-4 py-3 bg-black border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:border-[#364153] resize-none"
             />
             <div className="text-right text-xs text-gray-500 mt-1">
               {description.length}/1024
