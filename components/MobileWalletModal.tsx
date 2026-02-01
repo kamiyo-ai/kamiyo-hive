@@ -32,8 +32,11 @@ export function MobileWalletModal({ isOpen, onClose, onDesktopConnect }: MobileW
   useEffect(() => {
     if (isOpen && (!isMobile || isInWalletBrowser) && !hasTriggeredDesktop.current) {
       hasTriggeredDesktop.current = true;
-      onDesktopConnect();
       onClose();
+      // Small delay to ensure modal closes before opening wallet adapter modal
+      setTimeout(() => {
+        onDesktopConnect();
+      }, 50);
     }
     // Reset when modal closes
     if (!isOpen) {
