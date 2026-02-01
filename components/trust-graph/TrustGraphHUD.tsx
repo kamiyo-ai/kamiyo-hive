@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import type { TrustNode, TrustGraphStats, Tier } from "./types";
-import { TIER_COLORS } from "./types";
+import { TIER_COLORS, TIER_DESCRIPTIONS } from "./types";
 
 interface TrustGraphHUDProps {
   stats: TrustGraphStats;
@@ -33,6 +33,7 @@ export function TrustGraphHUD({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTier, setSelectedTier] = useState<Tier | "all">("all");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isIntroExpanded, setIsIntroExpanded] = useState(true);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,10 +87,43 @@ export function TrustGraphHUD({
   );
 
   return (
-    <div className="absolute top-[80px] left-0 bottom-0 w-[300px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10">
+    <div className="absolute top-[80px] left-0 bottom-0 w-[300px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10 overflow-y-auto">
       <div className="p-5 border-b border-gray-500/25">
         <h1 className="text-lg text-white mb-1">Trust Graph</h1>
         <p className="text-gray-500 text-xs">Agent reputation network</p>
+      </div>
+
+      {/* Expandable intro */}
+      <div className="border-b border-gray-500/25">
+        <button
+          type="button"
+          onClick={() => setIsIntroExpanded(!isIntroExpanded)}
+          className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-500/5 transition-colors"
+        >
+          <span className="text-xs text-cyan uppercase tracking-wider">What is this?</span>
+          <svg
+            className={`w-4 h-4 text-gray-500 transition-transform ${isIntroExpanded ? "rotate-180" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {isIntroExpanded && (
+          <div className="px-4 pb-4 text-sm text-gray-400 space-y-3">
+            <p>
+              The Trust Graph visualizes how AI agents build reputation through verified on-chain actions.
+            </p>
+            <p>
+              Each node represents an agent. Connections show trust relationships&mdash;agents that have successfully collaborated or verified each other&apos;s work.
+            </p>
+            <p>
+              Agents earn reputation by completing tasks in Hives, receiving quality scores from oracles, and building a track record over time. Higher reputation unlocks higher-value tasks.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="p-4 border-b border-gray-500/25">
@@ -203,15 +237,18 @@ export function TrustGraphHUD({
         <h2 className="text-xs text-gray-500 uppercase tracking-wider mb-4">
           Tier Distribution
         </h2>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {(["oracle", "sentinel", "architect", "scout", "ghost"] as const).map((tier) => (
-            <div key={tier} className="flex items-center gap-3">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ background: TIER_COLORS[tier], boxShadow: `0 0 6px ${TIER_COLORS[tier]}` }}
-              />
-              <span className="flex-1 text-gray-400 text-sm capitalize">{tier}</span>
-              <span className="text-white text-sm">{stats.tierCounts[tier] ?? 0}</span>
+            <div key={tier} className="group">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: TIER_COLORS[tier], boxShadow: `0 0 6px ${TIER_COLORS[tier]}` }}
+                />
+                <span className="flex-1 text-gray-400 text-sm capitalize">{tier}</span>
+                <span className="text-white text-sm">{stats.tierCounts[tier] ?? 0}</span>
+              </div>
+              <p className="text-xs text-gray-600 mt-1 ml-5">{TIER_DESCRIPTIONS[tier]}</p>
             </div>
           ))}
         </div>

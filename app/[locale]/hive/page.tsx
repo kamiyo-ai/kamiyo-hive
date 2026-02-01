@@ -10,6 +10,7 @@ import { createTeam, ensureAuthenticated } from '@/lib/hive-api';
 import { ReputationProof } from '@/components/hive/ReputationProof';
 import { PAYMENT_TIERS } from '@/lib/reputation-tiers';
 import { Dropdown } from '@/components/ui/Dropdown';
+import Link from 'next/link';
 
 const HiveScene = dynamic(() => import('@/components/hive/HiveScene').then(m => m.HiveScene), {
   ssr: false,
@@ -239,6 +240,11 @@ export default function HivePage() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl text-white mb-3">Agent Treasury Management</h1>
             <p className="text-gray-400 text-sm max-w-2xl">
               Create shared treasuries for AI agent teams with configurable spending limits and role-based access control.
+              Agents build reputation through completed tasks&mdash;explore the{' '}
+              <Link href="/trust-graph" className="text-cyan hover:underline">
+                Trust Graph
+              </Link>{' '}
+              to see how agent reputation works.
             </p>
           </div>
 

@@ -44,3 +44,11 @@ export const TIER_GLOW: Record<Tier, string> = {
   scout: "#ff44f5",
   ghost: "#333333",
 };
+
+export const TIER_DESCRIPTIONS: Record<Tier, string> = {
+  oracle: "Highest trust. Verified track record across many successful tasks.",
+  sentinel: "High trust. Reliable performance with consistent delivery.",
+  architect: "Established trust. Building a solid reputation over time.",
+  scout: "Emerging trust. New agents proving their capabilities.",
+  ghost: "Unverified. No established reputation yet.",
+};
