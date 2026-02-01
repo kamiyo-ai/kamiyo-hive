@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback, useMemo } from "react";
+import { useRef, useState, useCallback, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
@@ -9,8 +9,10 @@ import { TrustGraphHUD } from "./TrustGraphHUD";
 import type { TrustNode, TrustEdge, TrustGraphStats, Tier } from "./types";
 import { TIER_COLORS } from "./types";
 
-// Mock data for demo
-const MOCK_NODES: TrustNode[] = [
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.kamiyo.ai";
+
+// Fallback mock data when API unavailable
+const FALLBACK_NODES: TrustNode[] = [
   { id: "agent-001", label: "Kamiyo Prime", tier: "oracle", reputation: 95, txCount: 1247 },
   { id: "agent-002", label: "Data Fetcher", tier: "sentinel", reputation: 82, txCount: 856 },
   { id: "agent-003", label: "Price Bot", tier: "sentinel", reputation: 78, txCount: 423 },
@@ -25,7 +27,7 @@ const MOCK_NODES: TrustNode[] = [
   { id: "agent-012", label: "Test Agent", tier: "ghost", reputation: 8, txCount: 2 },
 ];
 
-const MOCK_EDGES: TrustEdge[] = [
+const FALLBACK_EDGES: TrustEdge[] = [
   { source: "agent-001", target: "agent-002", weight: 85 },
   { source: "agent-001", target: "agent-008", weight: 92 },
   { source: "agent-002", target: "agent-003", weight: 72 },
@@ -44,6 +46,44 @@ const MOCK_EDGES: TrustEdge[] = [
   { source: "agent-011", target: "agent-006", weight: 15 },
   { source: "agent-012", target: "agent-011", weight: 10 },
 ];
+
+interface TrustGraphResponse {
+  nodes: TrustNode[];
+  edges: TrustEdge[];
+  stats: TrustGraphStats;
+}
+
+function useTrustGraph() {
+  const [data, setData] = useState<TrustGraphResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGraph() {
+      try {
+        const res = await fetch(`${API_URL}/api/trust-graph`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        setData(json);
+        setError(null);
+      } catch (err) {
+        console.warn("[TrustGraph] API unavailable, using fallback data");
+        setError(err instanceof Error ? err.message : "Unknown error");
+        // Use fallback data
+        setData({
+          nodes: FALLBACK_NODES,
+          edges: FALLBACK_EDGES,
+          stats: computeStats(FALLBACK_NODES, FALLBACK_EDGES),
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchGraph();
+  }, []);
+
+  return { data, loading, error };
+}
 
 // Generate 3D positions using force-directed layout simulation
 function generatePositions(nodes: TrustNode[], edges: TrustEdge[]): Map<string, [number, number, number]> {
@@ -499,12 +539,14 @@ function SpeakingManager({ nodes, setSpeakingNodes }: { nodes: TrustNode[]; setS
 }
 
 export function TrustGraphScene() {
-  const [nodes] = useState<TrustNode[]>(MOCK_NODES);
-  const [edges] = useState<TrustEdge[]>(MOCK_EDGES);
+  const { data, loading } = useTrustGraph();
   const [selectedNode, setSelectedNode] = useState<TrustNode | null>(null);
   const [speakingNodes, setSpeakingNodes] = useState<Set<string>>(new Set());
   const [filterTier, setFilterTier] = useState<Tier | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const nodes = data?.nodes ?? [];
+  const edges = data?.edges ?? [];
 
   // Filter nodes
   const filteredNodes = useMemo(() => {
@@ -533,7 +575,7 @@ export function TrustGraphScene() {
     [filteredNodes, filteredEdges]
   );
 
-  // Compute stats
+  // Compute stats for filtered view
   const stats = useMemo(
     () => computeStats(filteredNodes, filteredEdges),
     [filteredNodes, filteredEdges]
@@ -570,6 +612,7 @@ export function TrustGraphScene() {
         onSearch={setSearchQuery}
         onFilterTier={setFilterTier}
         onClearSelection={handleClearSelection}
+        loading={loading}
       />
     </div>
   );
