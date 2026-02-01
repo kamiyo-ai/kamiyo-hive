@@ -4,6 +4,20 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:locale/dreams',
+        destination: '/:locale/trust-graph',
+        permanent: true,
+      },
+      {
+        source: '/dreams',
+        destination: '/trust-graph',
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // snarkjs and circomlibjs use Node.js APIs that break SSR
     // Mark them as external so they're only loaded client-side at runtime
