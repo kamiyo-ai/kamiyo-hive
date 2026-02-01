@@ -400,49 +400,79 @@ export default function TeamDetailPage() {
           </button>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-      {/* Left Column */}
-      <div className="space-y-6">
+        <div className="space-y-6">
 
-      {/* Budget Section */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
-        <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <div className="text-3xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent mb-1">
-              {team.poolBalance.toFixed(2)} {team.currency}
+      {/* Budget + Draw History - Two Column Row */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Budget Section */}
+        <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
+          <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
+          <div className="space-y-4">
+            <div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent mb-1">
+                {team.poolBalance.toFixed(2)} {team.currency}
+              </div>
+              <span className="text-gray-500 text-xs">Pool balance</span>
             </div>
-            <span className="text-gray-500 text-xs">Pool balance</span>
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                {editingDailyLimit ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={dailyLimitValue}
+                      onChange={(e) => setDailyLimitValue(e.target.value)}
+                      type="number"
+                      className="w-24 bg-black border border-[#00f0ff] rounded px-2 py-1 text-white text-sm focus:outline-none"
+                      onKeyDown={(e) => e.key === 'Enter' && handleUpdateDailyLimit()}
+                      autoFocus
+                    />
+                    <button onClick={handleUpdateDailyLimit} className="text-[#00f0ff] text-xs">Save</button>
+                    <button onClick={() => setEditingDailyLimit(false)} className="text-gray-500 text-xs">Cancel</button>
+                  </div>
+                ) : (
+                  <span
+                    className="text-white cursor-pointer hover:text-[#00f0ff] transition-colors"
+                    onClick={() => { setEditingDailyLimit(true); setDailyLimitValue(String(team.dailyLimit)); }}
+                  >
+                    {team.dailyLimit.toFixed(2)} {team.currency}/day
+                  </span>
+                )}
+              </div>
+              <div className="w-full bg-gray-800 rounded-full h-2 mb-1">
+                <div className="h-2 rounded-full bg-[#00f0ff] transition-all" style={{ width: `${spendPct}%` }} />
+              </div>
+              <span className="text-gray-500 text-xs">{team.dailySpend.toFixed(2)} spent today</span>
+            </div>
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              {editingDailyLimit ? (
-                <div className="flex items-center gap-2">
-                  <input
-                    value={dailyLimitValue}
-                    onChange={(e) => setDailyLimitValue(e.target.value)}
-                    type="number"
-                    className="w-24 bg-black border border-[#00f0ff] rounded px-2 py-1 text-white text-sm focus:outline-none"
-                    onKeyDown={(e) => e.key === 'Enter' && handleUpdateDailyLimit()}
-                    autoFocus
-                  />
-                  <button onClick={handleUpdateDailyLimit} className="text-[#00f0ff] text-xs">Save</button>
-                  <button onClick={() => setEditingDailyLimit(false)} className="text-gray-500 text-xs">Cancel</button>
+        </div>
+
+        {/* Draw History */}
+        <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm uppercase tracking-wider text-gray-400">Draw History</h2>
+            <span className="text-gray-600 text-xs">{drawsTotal} total</span>
+          </div>
+          {draws.length === 0 ? (
+            <div className="text-gray-600 text-sm">No draws yet.</div>
+          ) : (
+            <div className="space-y-2">
+              {draws.map((d) => (
+                <div key={d.id} className="flex items-center justify-between py-2 border-b border-gray-800 last:border-0">
+                  <div>
+                    <span className="text-white text-sm font-mono">{d.agentId}</span>
+                    {d.purpose && <span className="text-gray-500 text-xs ml-2">{d.purpose}</span>}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-300 text-sm">{d.amount.toFixed(2)} {team.currency}</span>
+                    <StatusBadge status={d.blindfoldStatus} />
+                    <span className="text-gray-600 text-xs">
+                      {new Date(d.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                <span
-                  className="text-white cursor-pointer hover:text-[#00f0ff] transition-colors"
-                  onClick={() => { setEditingDailyLimit(true); setDailyLimitValue(String(team.dailyLimit)); }}
-                >
-                  {team.dailyLimit.toFixed(2)} {team.currency}/day
-                </span>
-              )}
+              ))}
             </div>
-            <div className="w-full bg-gray-800 rounded-full h-2 mb-1">
-              <div className="h-2 rounded-full bg-[#00f0ff] transition-all" style={{ width: `${spendPct}%` }} />
-            </div>
-            <span className="text-gray-500 text-xs">{team.dailySpend.toFixed(2)} spent today</span>
-          </div>
+          )}
         </div>
       </div>
 
@@ -526,12 +556,6 @@ export default function TeamDetailPage() {
           </div>
         </div>
       </div>
-
-      </div>
-      {/* End Left Column */}
-
-      {/* Right Column */}
-      <div className="space-y-6">
 
       {/* Fund Section */}
       <div className="relative rounded-lg bg-black/20 border border-gray-500/25 overflow-visible">
@@ -725,39 +749,8 @@ export default function TeamDetailPage() {
         </div>
       </div>
 
-      {/* Draw History */}
-      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm uppercase tracking-wider text-gray-400">Draw History</h2>
-          <span className="text-gray-600 text-xs">{drawsTotal} total</span>
-        </div>
-        {draws.length === 0 ? (
-          <div className="text-gray-600 text-sm">No draws yet.</div>
-        ) : (
-          <div className="space-y-2">
-            {draws.map((d) => (
-              <div key={d.id} className="flex items-center justify-between py-2 border-b border-gray-800 last:border-0">
-                <div>
-                  <span className="text-white text-sm font-mono">{d.agentId}</span>
-                  {d.purpose && <span className="text-gray-500 text-xs ml-2">{d.purpose}</span>}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-300 text-sm">{d.amount.toFixed(2)} {team.currency}</span>
-                  <StatusBadge status={d.blindfoldStatus} />
-                  <span className="text-gray-600 text-xs">
-                    {new Date(d.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
-
-      </div>
-      {/* End Right Column */}
-      </div>
-      {/* End Two Column Grid */}
+      {/* End main content */}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && createPortal(
