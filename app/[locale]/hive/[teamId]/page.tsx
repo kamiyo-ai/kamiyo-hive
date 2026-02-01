@@ -5,14 +5,14 @@ import { createPortal } from 'react-dom';
 import { useParams } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
+import { PublicKey, Transaction } from '@solana/web3.js';
 import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createTransferCheckedInstruction, getAccount, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import PayButton from '@/components/PayButton';
 import { useRouter } from 'next/navigation';
 import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
   initiateFunding, confirmFunding, fundWithTokens, submitTask, deleteTeam,
-  ensureAuthenticated, getBlindfoldFundingUrl, initiateBlindfoldFunding,
+  ensureAuthenticated, getBlindfoldFundingUrl,
   HiveTeamDetail, HiveDraw, FundDeposit, TaskResult,
 } from '@/lib/hive-api';
 import { Dropdown } from '@/components/ui/Dropdown';
@@ -88,16 +88,7 @@ export default function TeamDetailPage() {
   const [fundMode, setFundMode] = useState<'crypto' | 'credits' | 'blindfold'>('credits');
   const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
   const [fundError, setFundError] = useState('');
-
-  // Blindfold direct funding state
-  const [blindfoldAmount, setBlindfoldAmount] = useState('');
-  const [blindfoldLoading, setBlindfoldLoading] = useState(false);
-  const [blindfoldPending, setBlindfoldPending] = useState<{
-    transaction: string;
-    amountCrypto: string;
-    paymentId: string;
-    expiresAt: string;
-  } | null>(null);
+  const [blindfoldUrl, setBlindfoldUrl] = useState<string | null>(null);
 
   // Task submission state
   const [taskMemberId, setTaskMemberId] = useState('');
@@ -284,6 +275,16 @@ export default function TeamDetailPage() {
     }
   };
 
+  // Preload Blindfold URL on page load
+  useEffect(() => {
+    if (team && !blindfoldUrl) {
+      getBlindfoldFundingUrl(teamId).then(({ fundingUrl }) => {
+        setBlindfoldUrl(fundingUrl);
+      }).catch(() => {
+        // Silently fail - will retry on tab click
+      });
+    }
+  }, [team, teamId]);
 
   // Poll deposit confirmation
   useEffect(() => {
@@ -446,126 +447,32 @@ export default function TeamDetailPage() {
         </div>
         {/* Card body */}
         <div className="p-6 rounded-b-lg bg-black/20" style={{ border: '1px solid #364153', borderTop: 'none' }}>
-        {/* Blindfold direct funding */}
-        {fundMode === 'blindfold' && (
-          blindfoldPending ? (
-            <div className="space-y-4">
-              <div className="text-center">
-                <div className="text-gray-400 text-sm mb-2">Confirm payment of</div>
-                <div className="text-2xl font-mono text-white mb-1">{blindfoldPending.amountCrypto} SOL</div>
-                <div className="text-gray-500 text-xs">${blindfoldAmount} USD</div>
-              </div>
-              <div className="flex justify-center gap-3 mt-6">
-                <button
-                  onClick={async () => {
-                    if (!publicKey || !signTransaction) return;
-                    setBlindfoldLoading(true);
-                    setFundError('');
-                    try {
-                      const txBytes = Buffer.from(blindfoldPending.transaction, 'base64');
-                      const tx = VersionedTransaction.deserialize(txBytes);
-                      const signedTx = await signTransaction(tx);
-                      const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-                        skipPreflight: false,
-                        preflightCommitment: 'confirmed',
-                      });
-                      await connection.confirmTransaction(signature, 'confirmed');
-                      setBlindfoldPending(null);
-                      setBlindfoldAmount('');
-                      fetchTeam();
-                    } catch (err) {
-                      console.error('Blindfold payment failed:', err);
-                      setFundError(err instanceof Error ? err.message : 'Payment failed');
-                    } finally {
-                      setBlindfoldLoading(false);
-                    }
-                  }}
-                  disabled={blindfoldLoading}
-                  className="px-6 py-3 bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] text-black font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
-                  {blindfoldLoading ? 'Signing...' : 'Sign & Pay'}
-                </button>
-                <button
-                  onClick={() => {
-                    setBlindfoldPending(null);
-                    setFundError('');
-                  }}
-                  disabled={blindfoldLoading}
-                  className="px-6 py-3 border border-gray-600 text-gray-400 rounded hover:border-gray-500 hover:text-gray-300 transition-colors disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="text-center text-gray-600 text-xs">
-                Expires: {new Date(blindfoldPending.expiresAt).toLocaleTimeString()}
-              </div>
-              {fundError && <div className="text-red-400 text-sm text-center">{fundError}</div>}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="text-center mb-4">
-                <img src="/media/blindfold-logo.jpg" alt="Blindfold" className="h-16 mx-auto mb-3 rounded" />
-                <div className="text-gray-400 text-sm">Fund your hive with SOL via Blindfold</div>
-              </div>
-              <input
-                value={blindfoldAmount}
-                onChange={(e) => setBlindfoldAmount(e.target.value)}
-                type="number"
-                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
-                placeholder="Amount (USD)"
+        {/* Preloaded Blindfold iframe - hidden when not active */}
+        {blindfoldUrl && (
+          <div className={fundMode === 'blindfold' ? '' : 'hidden'}>
+            <div className="-mx-6">
+              <iframe
+                src={blindfoldUrl}
+                className="w-full h-[900px] border-0"
+                allow="payment"
               />
-              <div className="flex items-center gap-2">
-                {[10, 25, 50, 100].map((amt) => (
-                  <button
-                    key={amt}
-                    onClick={() => setBlindfoldAmount(String(amt))}
-                    className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-                  >
-                    ${amt}
-                  </button>
-                ))}
-              </div>
-              <div className="ml-8 mt-4">
-                <PayButton
-                  text={blindfoldLoading ? 'Loading...' : 'Continue'}
-                  onClick={async () => {
-                    const amount = parseFloat(blindfoldAmount);
-                    if (!amount || amount <= 0 || !publicKey) return;
-                    setBlindfoldLoading(true);
-                    setFundError('');
-                    try {
-                      const { stateToken } = await getBlindfoldFundingUrl(teamId);
-                      const result = await initiateBlindfoldFunding(
-                        publicKey.toBase58(),
-                        amount,
-                        teamId,
-                        stateToken
-                      );
-                      setBlindfoldPending({
-                        transaction: result.transaction,
-                        amountCrypto: result.amount_crypto,
-                        paymentId: result.payment_id,
-                        expiresAt: result.expires_at,
-                      });
-                    } catch (err) {
-                      console.error('Blindfold initiation failed:', err);
-                      setFundError(err instanceof Error ? err.message : 'Failed to initiate payment');
-                    } finally {
-                      setBlindfoldLoading(false);
-                    }
-                  }}
-                  disabled={!blindfoldAmount || parseFloat(blindfoldAmount) <= 0 || !publicKey || blindfoldLoading}
-                />
-              </div>
-              {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
-              <button
-                onClick={() => setFundMode('credits')}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors block mx-auto mt-4"
-              >
-                Cancel
-              </button>
             </div>
-          )
+            <button
+              onClick={() => setFundMode('credits')}
+              className="text-xs text-gray-600 hover:text-gray-400 transition-colors mt-3"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {fundMode === 'blindfold' && !blindfoldUrl && (
+          <div className="text-center py-8">
+            {fundError ? (
+              <div className="text-red-400 text-sm">{fundError}</div>
+            ) : (
+              <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
+            )}
+          </div>
         )}
         {fundMode === 'credits' && (
           fundingDeposit ? (
