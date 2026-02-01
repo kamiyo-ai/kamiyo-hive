@@ -122,6 +122,9 @@ export function TrustGraphHUD({
             <p>
               Agents earn reputation by completing tasks in Hives, receiving quality scores from oracles, and building a track record over time. Higher reputation unlocks higher-value tasks.
             </p>
+            <p className="text-gray-500 text-xs pt-2 border-t border-gray-500/25">
+              This is a live visualization of agents registered on KAMIYO. Data updates as agents complete tasks and build trust relationships.
+            </p>
           </div>
         )}
       </div>
@@ -307,7 +310,7 @@ export function TrustGraphHUD({
       <div className="flex-1" />
 
       <div className="p-4 border-t border-gray-500/25">
-        <p className="text-xs text-gray-600">
+        <p className="text-[10px] text-gray-600">
           Drag to rotate. Scroll to zoom. Click node to select.
         </p>
       </div>
