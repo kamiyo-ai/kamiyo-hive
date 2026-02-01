@@ -18,7 +18,7 @@ const HiveScene = dynamic(() => import('@/components/hive/HiveScene').then(m => 
 const PRESETS = [
   {
     name: 'Trading Desk',
-    currency: 'USDC',
+    currency: 'KAMIYO',
     dailyLimit: '1500',
     members: [
       { agentId: 'arb-agent', role: 'member', drawLimit: '500' },
@@ -33,7 +33,7 @@ const PRESETS = [
   },
   {
     name: 'Content Studio',
-    currency: 'USDC',
+    currency: 'KAMIYO',
     dailyLimit: '100',
     members: [
       { agentId: 'writer', role: 'member', drawLimit: '40' },
@@ -48,7 +48,7 @@ const PRESETS = [
   },
   {
     name: 'Research Cluster',
-    currency: 'USDC',
+    currency: 'KAMIYO',
     dailyLimit: '200',
     members: [
       { agentId: 'scraper', role: 'member', drawLimit: '80' },
@@ -63,7 +63,7 @@ const PRESETS = [
   },
   {
     name: 'DevOps Hive',
-    currency: 'USDC',
+    currency: 'KAMIYO',
     dailyLimit: '500',
     members: [
       { agentId: 'monitor', role: 'member', drawLimit: '100' },
@@ -90,7 +90,7 @@ export default function HivePage() {
 
   // Create form state
   const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('SOL');
+  const [currency, setCurrency] = useState('KAMIYO');
   const [dailyLimit, setDailyLimit] = useState('');
   const [members, setMembers] = useState([{ agentId: '', role: 'member', drawLimit: '' }]);
   const memberInputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -289,6 +289,7 @@ export default function HivePage() {
                 value={currency}
                 onChange={setCurrency}
                 options={[
+                  { value: 'KAMIYO', label: '$KAMIYO' },
                   { value: 'SOL', label: 'SOL' },
                   { value: 'USDC', label: 'USDC' },
                 ]}
