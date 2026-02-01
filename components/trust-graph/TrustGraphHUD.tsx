@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import type { TrustNode, TrustGraphStats, Tier } from "./types";
 import { TIER_COLORS } from "./types";
 
@@ -13,14 +13,14 @@ interface TrustGraphHUDProps {
   loading?: boolean;
 }
 
-const TIERS: Array<{ value: Tier | "all"; label: string; color?: string }> = [
+const TIERS: ReadonlyArray<{ value: Tier | "all"; label: string; color?: string }> = [
   { value: "all", label: "All Tiers" },
   { value: "oracle", label: "Oracle", color: TIER_COLORS.oracle },
   { value: "sentinel", label: "Sentinel", color: TIER_COLORS.sentinel },
   { value: "architect", label: "Architect", color: TIER_COLORS.architect },
   { value: "scout", label: "Scout", color: TIER_COLORS.scout },
   { value: "ghost", label: "Ghost", color: TIER_COLORS.ghost },
-];
+] as const;
 
 export function TrustGraphHUD({
   stats,
@@ -69,17 +69,29 @@ export function TrustGraphHUD({
     [onFilterTier]
   );
 
-  const selectedTierData = TIERS.find((t) => t.value === selectedTier);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsDropdownOpen(false);
+      } else if (e.key === "Enter" || e.key === " ") {
+        setIsDropdownOpen((prev) => !prev);
+      }
+    },
+    []
+  );
+
+  const selectedTierData = useMemo(
+    () => TIERS.find((t) => t.value === selectedTier) ?? TIERS[0],
+    [selectedTier]
+  );
 
   return (
     <div className="absolute top-[80px] left-0 bottom-0 w-[300px] bg-black/95 border-r border-gray-500/25 flex flex-col z-10">
-      {/* Header */}
       <div className="p-5 border-b border-gray-500/25">
         <h1 className="text-lg text-white mb-1">Trust Graph</h1>
         <p className="text-gray-500 text-xs">Agent reputation network</p>
       </div>
 
-      {/* Search */}
       <div className="p-4 border-b border-gray-500/25">
         <label className="block text-gray-500 text-xs uppercase tracking-wider mb-2">
           Search Agent
@@ -93,14 +105,17 @@ export function TrustGraphHUD({
         />
       </div>
 
-      {/* Filter - Custom Dropdown */}
       <div className="p-4 border-b border-gray-500/25">
         <label className="block text-gray-500 text-xs uppercase tracking-wider mb-2">
           Filter by Tier
         </label>
         <div className="relative" ref={dropdownRef}>
           <button
+            type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            onKeyDown={handleKeyDown}
+            aria-haspopup="listbox"
+            aria-expanded={isDropdownOpen}
             className="w-full px-3 py-2 bg-black border border-gray-500/50 rounded text-sm text-left flex items-center justify-between hover:border-gray-400 transition-colors"
           >
             <span className="flex items-center gap-2">
@@ -127,10 +142,17 @@ export function TrustGraphHUD({
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-1 py-1 bg-black border border-gray-500/25 rounded shadow-lg z-50">
+            <div
+              role="listbox"
+              aria-label="Select tier"
+              className="absolute top-full left-0 right-0 mt-1 py-1 bg-black border border-gray-500/25 rounded shadow-lg z-50"
+            >
               {TIERS.map((tier) => (
                 <button
                   key={tier.value}
+                  type="button"
+                  role="option"
+                  aria-selected={tier.value === selectedTier}
                   onClick={() => handleTierSelect(tier.value)}
                   className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 transition-colors ${
                     tier.value === selectedTier
@@ -138,7 +160,7 @@ export function TrustGraphHUD({
                       : "text-gray-400 hover:text-white hover:bg-gray-500/10"
                   }`}
                 >
-                  {tier.color && (
+                  {tier.color ? (
                     <span
                       className="w-2 h-2 rounded-full"
                       style={{
@@ -146,8 +168,9 @@ export function TrustGraphHUD({
                         boxShadow: `0 0 6px ${tier.color}`,
                       }}
                     />
+                  ) : (
+                    <span className="w-2 h-2" />
                   )}
-                  {!tier.color && <span className="w-2 h-2" />}
                   {tier.label}
                 </button>
               ))}
@@ -156,7 +179,6 @@ export function TrustGraphHUD({
         </div>
       </div>
 
-      {/* Stats */}
       <div className="p-4 border-b border-gray-500/25">
         <h2 className="text-xs text-gray-500 uppercase tracking-wider mb-4">
           Network Stats
@@ -177,36 +199,24 @@ export function TrustGraphHUD({
         </div>
       </div>
 
-      {/* Tier Distribution */}
       <div className="p-4 border-b border-gray-500/25">
         <h2 className="text-xs text-gray-500 uppercase tracking-wider mb-4">
           Tier Distribution
         </h2>
         <div className="space-y-2">
-          {(Object.entries(stats.tierCounts) as [Tier, number][]).map(
-            ([tier, count]) => (
+          {(["oracle", "sentinel", "architect", "scout", "ghost"] as const).map((tier) => (
+            <div key={tier} className="flex items-center gap-3">
               <div
-                key={tier}
-                className="flex items-center gap-3"
-              >
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{
-                    background: TIER_COLORS[tier],
-                    boxShadow: `0 0 6px ${TIER_COLORS[tier]}`,
-                  }}
-                />
-                <span className="flex-1 text-gray-400 text-sm capitalize">
-                  {tier}
-                </span>
-                <span className="text-white text-sm">{count}</span>
-              </div>
-            )
-          )}
+                className="w-2 h-2 rounded-full"
+                style={{ background: TIER_COLORS[tier], boxShadow: `0 0 6px ${TIER_COLORS[tier]}` }}
+              />
+              <span className="flex-1 text-gray-400 text-sm capitalize">{tier}</span>
+              <span className="text-white text-sm">{stats.tierCounts[tier] ?? 0}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Selected Node */}
       {selectedNode && (
         <div className="p-4 border-b border-gray-500/25">
           <h2 className="text-xs uppercase tracking-wider mb-4 gradient-text">
@@ -243,6 +253,7 @@ export function TrustGraphHUD({
               <span className="text-white text-sm">{selectedNode.txCount.toLocaleString()}</span>
             </div>
             <button
+              type="button"
               onClick={onClearSelection}
               className="mt-2 w-full px-3 py-2 text-xs border border-gray-500/50 rounded text-gray-400 hover:text-white hover:border-gray-400 transition-all"
             >
@@ -252,17 +263,12 @@ export function TrustGraphHUD({
         </div>
       )}
 
-      {/* Loading state */}
       {loading && (
-        <div className="p-5 text-center text-gray-500 text-sm">
-          Loading graph...
-        </div>
+        <div className="p-5 text-center text-gray-500 text-sm">Loading graph...</div>
       )}
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Legend */}
       <div className="p-4 border-t border-gray-500/25">
         <p className="text-xs text-gray-600">
           Drag to rotate. Scroll to zoom. Click node to select.
