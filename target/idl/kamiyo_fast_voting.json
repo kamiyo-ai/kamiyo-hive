@@ -1,0 +1,910 @@
+{
+  "address": "AakwnBstczs5KC2jKPfBuFLQZADXrx4oPH8FtJbhPxwA",
+  "metadata": {
+    "name": "kamiyo_fast_voting",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "TEE-based real-time agent voting using MagicBlock Private Ephemeral Rollups"
+  },
+  "instructions": [
+    {
+      "name": "cancel_action",
+      "discriminator": [
+        228,
+        144,
+        170,
+        146,
+        66,
+        88,
+        133,
+        128
+      ],
+      "accounts": [
+        {
+          "name": "fast_action",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  115,
+                  116,
+                  95,
+                  97,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "action_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "_action_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "create_fast_action",
+      "discriminator": [
+        30,
+        170,
+        212,
+        38,
+        91,
+        250,
+        201,
+        137
+      ],
+      "accounts": [
+        {
+          "name": "fast_action",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  115,
+                  116,
+                  95,
+                  97,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "action_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "action_id",
+          "type": "u64"
+        },
+        {
+          "name": "action_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        },
+        {
+          "name": "description_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "delegate_action",
+      "discriminator": [
+        253,
+        161,
+        8,
+        42,
+        136,
+        172,
+        55,
+        201
+      ],
+      "accounts": [
+        {
+          "name": "buffer_pda",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pda"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                142,
+                95,
+                9,
+                134,
+                52,
+                223,
+                98,
+                237,
+                131,
+                19,
+                221,
+                24,
+                83,
+                87,
+                239,
+                193,
+                232,
+                129,
+                228,
+                74,
+                175,
+                170,
+                193,
+                77,
+                67,
+                252,
+                156,
+                9,
+                82,
+                140,
+                221,
+                241
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_pda",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pda"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_pda",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pda"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "pda",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "validator",
+          "optional": true
+        },
+        {
+          "name": "owner_program",
+          "address": "AakwnBstczs5KC2jKPfBuFLQZADXrx4oPH8FtJbhPxwA"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "action_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer"
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tally_and_commit",
+      "discriminator": [
+        92,
+        215,
+        33,
+        43,
+        247,
+        252,
+        61,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "fast_action",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  115,
+                  116,
+                  95,
+                  97,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "fast_action.action_id",
+                "account": "FastAction"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "magic_context",
+          "address": "MagicContext1111111111111111111111111111111"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "vote_fast",
+      "discriminator": [
+        135,
+        169,
+        71,
+        250,
+        168,
+        103,
+        55,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "fast_action",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  115,
+                  116,
+                  95,
+                  97,
+                  99,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "action_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "fast_vote",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  115,
+                  116,
+                  95,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "fast_action"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "_action_id",
+          "type": "u64"
+        },
+        {
+          "name": "vote_value",
+          "type": "bool"
+        },
+        {
+          "name": "voter_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "FastAction",
+      "discriminator": [
+        249,
+        161,
+        52,
+        82,
+        46,
+        166,
+        161,
+        113
+      ]
+    },
+    {
+      "name": "FastVote",
+      "discriminator": [
+        22,
+        118,
+        18,
+        225,
+        203,
+        174,
+        254,
+        177
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "FastActionCancelled",
+      "discriminator": [
+        55,
+        225,
+        62,
+        8,
+        25,
+        110,
+        88,
+        45
+      ]
+    },
+    {
+      "name": "FastActionCreated",
+      "discriminator": [
+        199,
+        19,
+        109,
+        73,
+        148,
+        72,
+        45,
+        242
+      ]
+    },
+    {
+      "name": "FastActionExecuted",
+      "discriminator": [
+        92,
+        215,
+        54,
+        155,
+        19,
+        141,
+        238,
+        189
+      ]
+    },
+    {
+      "name": "FastVoteCast",
+      "discriminator": [
+        74,
+        108,
+        113,
+        216,
+        141,
+        16,
+        247,
+        33
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidThreshold",
+      "msg": "Threshold must be 1-100"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidActionHash",
+      "msg": "Action hash cannot be zero"
+    },
+    {
+      "code": 6002,
+      "name": "SlotOverflow",
+      "msg": "Slot calculation overflow"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidPda",
+      "msg": "PDA does not match expected derivation"
+    },
+    {
+      "code": 6004,
+      "name": "VotingEnded",
+      "msg": "Voting has ended"
+    },
+    {
+      "code": 6005,
+      "name": "VotingNotEnded",
+      "msg": "Voting has not ended yet"
+    },
+    {
+      "code": 6006,
+      "name": "ActionAlreadyExecuted",
+      "msg": "Action already executed"
+    },
+    {
+      "code": 6007,
+      "name": "VoteOverflow",
+      "msg": "Vote count overflow"
+    },
+    {
+      "code": 6008,
+      "name": "MaxVotesReached",
+      "msg": "Max votes reached for this action"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidVoterCommitment",
+      "msg": "Voter commitment cannot be zero"
+    },
+    {
+      "code": 6010,
+      "name": "QuorumNotMet",
+      "msg": "Quorum not met"
+    },
+    {
+      "code": 6011,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidMagicBlockProgram",
+      "msg": "Invalid MagicBlock program"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidMagicContext",
+      "msg": "Invalid MagicBlock context"
+    }
+  ],
+  "types": [
+    {
+      "name": "FastAction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "action_id",
+            "type": "u64"
+          },
+          {
+            "name": "action_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "description_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "votes_for",
+            "type": "u32"
+          },
+          {
+            "name": "votes_against",
+            "type": "u32"
+          },
+          {
+            "name": "vote_count",
+            "type": "u32"
+          },
+          {
+            "name": "created_slot",
+            "type": "u64"
+          },
+          {
+            "name": "deadline_slot",
+            "type": "u64"
+          },
+          {
+            "name": "executed",
+            "type": "bool"
+          },
+          {
+            "name": "result",
+            "type": {
+              "defined": {
+                "name": "VoteResult"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FastActionCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "action",
+            "type": "pubkey"
+          },
+          {
+            "name": "action_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FastActionCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "action",
+            "type": "pubkey"
+          },
+          {
+            "name": "action_id",
+            "type": "u64"
+          },
+          {
+            "name": "action_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "deadline_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FastActionExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "action",
+            "type": "pubkey"
+          },
+          {
+            "name": "action_id",
+            "type": "u64"
+          },
+          {
+            "name": "votes_for",
+            "type": "u32"
+          },
+          {
+            "name": "votes_against",
+            "type": "u32"
+          },
+          {
+            "name": "result",
+            "type": {
+              "defined": {
+                "name": "VoteResult"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "FastVote",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fast_action",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "vote_value",
+            "type": "bool"
+          },
+          {
+            "name": "voted_slot",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FastVoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "action",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "vote_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteResult",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Passed"
+          },
+          {
+            "name": "Failed"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    }
+  ]
+}

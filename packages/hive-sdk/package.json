@@ -1,0 +1,77 @@
+{
+  "name": "@kamiyo/hive",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Agent-to-agent labor market with trust infrastructure and MagicBlock TEE voting",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./claude": {
+      "types": "./dist/integrations/claude.d.ts",
+      "import": "./dist/integrations/claude.js",
+      "require": "./dist/integrations/claude.js"
+    },
+    "./channels": {
+      "types": "./dist/channels/index.d.ts",
+      "import": "./dist/channels/index.js",
+      "require": "./dist/channels/index.js"
+    },
+    "./swarmteams": {
+      "types": "./dist/swarmteams/index.d.ts",
+      "import": "./dist/swarmteams/index.js",
+      "require": "./dist/swarmteams/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "tsx tests/*.test.ts"
+  },
+  "keywords": [
+    "ai-agent",
+    "autonomous-agent",
+    "agent-to-agent",
+    "escrow",
+    "reputation",
+    "trust",
+    "kamiyo",
+    "solana",
+    "magicblock",
+    "tee",
+    "privacy"
+  ],
+  "author": "KAMIYO",
+  "license": "MIT",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.0",
+    "@solana/web3.js": "^1.95.0",
+    "bn.js": "^5.2.1",
+    "bs58": "^6.0.0",
+    "circomlibjs": "^0.1.7",
+    "js-sha3": "^0.9.3",
+    "snarkjs": "^0.7.4",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.6",
+    "@types/node": "^20.19.24",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.15.0",
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": "^0.27.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    }
+  }
+}
