@@ -7,8 +7,6 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import PayButton from '@/components/PayButton';
 import { createTeam, ensureAuthenticated } from '@/lib/hive-api';
-import { ReputationProof } from '@/components/hive/ReputationProof';
-import { PAYMENT_TIERS } from '@/lib/reputation-tiers';
 import { Dropdown } from '@/components/ui/Dropdown';
 import Link from 'next/link';
 
@@ -86,8 +84,6 @@ export default function HivePage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pendingCreate = useRef(false);
-  const [verifiedTier, setVerifiedTier] = useState<keyof typeof PAYMENT_TIERS | null>(null);
-  const [showProofPanel, setShowProofPanel] = useState(false);
 
   // Create form state
   const [name, setName] = useState('');
@@ -352,42 +348,14 @@ export default function HivePage() {
             </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8">
+          <div className="flex items-center justify-center">
             <PayButton
               text={creating ? 'Creating...' : !wallet.publicKey ? 'Connect Wallet' : 'Create Hive'}
               onClick={handleCreate}
               disabled={creating || !name || !dailyLimit}
             />
-            <button
-              onClick={() => setShowProofPanel(!showProofPanel)}
-              className="text-[10px] sm:text-xs hover:text-white transition-colors cursor-pointer"
-              style={{ color: '#ff44f5' }}
-            >
-              {showProofPanel ? 'Hide proof panel' : 'Prove reputation'}
-            </button>
           </div>
-
-          {/* Verified Tier Badge */}
-          {verifiedTier && (
-            <div className="mt-4 text-center">
-              <span
-                className="inline-flex items-center gap-2 px-3 py-1 rounded text-xs"
-                style={{ backgroundColor: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0, 240, 255, 0.3)', color: '#00f0ff' }}
-              >
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                {verifiedTier.toUpperCase()} tier verified on-chain
-              </span>
-            </div>
-          )}
           </div>
-
-            {showProofPanel && (
-              <div className="pointer-events-auto w-full max-w-sm">
-                <ReputationProof onVerified={(tier) => setVerifiedTier(tier)} />
-              </div>
-            )}
           </div>
         </div>
       </div>
