@@ -297,6 +297,9 @@ export * from './types.js';
 export { hiveTools, createToolHandlers } from './integrations/claude.js';
 export type { ClaudeTool, HiveToolHandlers } from './integrations/claude.js';
 
+export { MultiModelRouter } from './integrations/openai.js';
+export type { LLMAdapter, ModelResponse } from './integrations/openai.js';
+
 export {
   X402HiveAdapter,
   createX402Adapter,
