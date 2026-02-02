@@ -165,7 +165,7 @@ export function TrustGraphHUD({
           value={searchQuery}
           onChange={handleSearch}
           placeholder="Agent ID or name..."
-          className="w-full px-3 py-2 bg-black/[0.98] border border-gray-500/50 rounded text-white text-sm focus:border-cyan focus:outline-none transition-colors"
+          className="w-full px-3 py-2 bg-black/[0.98] border border-gray-500/50 rounded text-white text-sm focus:border-[#364153] focus:outline-none transition-colors"
         />
       </div>
 
