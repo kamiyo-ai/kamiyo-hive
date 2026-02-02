@@ -4,23 +4,8 @@ include "circomlib/circuits/poseidon.circom";
 include "circomlib/circuits/comparators.circom";
 include "circomlib/circuits/mux1.circom";
 
-/**
- * AgentIdentity - Prove ownership of a registered agent without revealing identity
- *
- * Use case: AI agents prove they're valid swarm members without doxxing their owner
- *
- * Public Inputs:
- *   - agents_root: Merkle root of all registered agents
- *   - nullifier: Prevents double-use in same epoch (Poseidon(agent_id, secret, epoch))
- *   - epoch: Time period for nullifier scoping
- *
- * Private Inputs:
- *   - owner_secret: Secret derived from owner's wallet
- *   - agent_id: Unique identifier for this agent
- *   - registration_secret: Random value from registration
- *   - merkle_path[20]: Sibling hashes in Merkle tree
- *   - path_indices[20]: Left(0)/Right(1) at each level
- */
+// Prove Merkle membership without revealing identity
+// nullifier = Poseidon(owner_secret, agent_id, registration_secret, epoch)
 template AgentIdentity(TREE_DEPTH) {
     // Public inputs
     signal input agents_root;

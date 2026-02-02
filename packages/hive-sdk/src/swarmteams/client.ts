@@ -28,11 +28,7 @@ import idlJson from './idl/swarmteams.json' with { type: 'json' };
 import { Idl } from '@coral-xyz/anchor';
 
 // Note: SWARMTEAMS_PROGRAM_ID is exported from swarm-types.js
-
-// ============================================================================
 // Compute Budget
-// ============================================================================
-
 // ZK proof verification requires ~400k compute units
 const ZK_COMPUTE_UNITS = 400_000;
 const PRIORITY_FEE_MICRO_LAMPORTS = 1_000; // 0.001 lamports per CU
@@ -47,11 +43,7 @@ function getZkComputeBudgetInstructions(): TransactionInstruction[] {
     ComputeBudgetProgram.setComputeUnitPrice({ microLamports: PRIORITY_FEE_MICRO_LAMPORTS }),
   ];
 }
-
-// ============================================================================
 // Poseidon Hash Helpers
-// ============================================================================
-
 const FIELD_MODULUS = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 
 let poseidonInstance: Poseidon | null = null;
@@ -86,11 +78,7 @@ function bytesToBigint(arr: Uint8Array): bigint {
   }
   return result;
 }
-
-// ============================================================================
 // Input Validation
-// ============================================================================
-
 class ValidationError extends Error {
   constructor(message: string) {
     super(message);
@@ -142,11 +130,7 @@ function validateStakeAmount(value: BN): void {
     throw new ValidationError('stakeAmount must be positive');
   }
 }
-
-// ============================================================================
 // Commitment Generation
-// ============================================================================
-
 /**
  * Create a signal commitment using Poseidon hash.
  * Format matches on-chain: poseidon(type, direction, confidence, magnitude, stake, secret, nullifier)
@@ -186,11 +170,7 @@ export async function createSignalCommitment(
   ]);
   return bigintToBytes32(hash);
 }
-
-// ============================================================================
 // Retry Logic
-// ============================================================================
-
 interface RetryConfig {
   maxRetries: number;
   baseDelayMs: number;
@@ -281,9 +261,9 @@ export class SwarmTeamsClient {
     this.program = new Program(idlJson as Idl, provider);
   }
 
-  // ============================================================================
+  
   // PDA Derivation
-  // ============================================================================
+  
 
   /**
    * Derive the registry PDA address.
@@ -388,9 +368,9 @@ export class SwarmTeamsClient {
     );
   }
 
-  // =========================================================================
+  
   // Vote+Bid PDA Methods
-  // =========================================================================
+  
 
   /**
    * Derive a swarm action bid PDA from registry and action hash.
@@ -526,9 +506,9 @@ export class SwarmTeamsClient {
     );
   }
 
-  // ============================================================================
+  
   // Account Fetching
-  // ============================================================================
+  
 
   /**
    * Fetch the agent registry account.
@@ -713,9 +693,9 @@ export class SwarmTeamsClient {
     }
   }
 
-  // ============================================================================
+  
   // Instructions
-  // ============================================================================
+  
 
   /**
    * Initialize the agent collaboration registry.
@@ -1000,9 +980,9 @@ export class SwarmTeamsClient {
     );
   }
 
-  // =========================================================================
+  
   // Swarm Vote+Bid Instructions (Private Task Allocation)
-  // =========================================================================
+  
 
   /**
    * Create a swarm action with bidding enabled for private task allocation.
@@ -1534,9 +1514,9 @@ export class SwarmTeamsClient {
     );
   }
 
-  // ============================================================================
+  
   // Collateral Instructions
-  // ============================================================================
+  
 
   /**
    * Deposit KAMIYO tokens as collateral.
@@ -1757,9 +1737,9 @@ export class SwarmTeamsClient {
     );
   }
 
-  // ============================================================================
+  
   // Utility Methods
-  // ============================================================================
+  
 
   async getCurrentEpoch(): Promise<BN> {
     const registry = await this.getRegistry();

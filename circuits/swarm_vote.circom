@@ -4,26 +4,9 @@ include "circomlib/circuits/poseidon.circom";
 include "circomlib/circuits/comparators.circom";
 include "circomlib/circuits/mux1.circom";
 
-/**
- * SwarmVote - Anonymous voting for coordinated agent actions
- *
- * Use case: Agent swarms vote on collective actions without revealing individual votes
- *
- * Public Inputs:
- *   - agents_root: Merkle root of registered agents
- *   - action_hash: Hash of the proposed action
- *   - vote_nullifier: Prevents double-voting (Poseidon(agent_id, secret, action_hash))
- *   - vote_commitment: Hides vote while allowing aggregation
- *
- * Private Inputs:
- *   - owner_secret: Secret derived from owner's wallet
- *   - agent_id: Unique agent identifier
- *   - registration_secret: Random value from registration
- *   - merkle_path[20]: Sibling hashes in Merkle tree
- *   - path_indices[20]: Left(0)/Right(1) at each level
- *   - vote: 0 for reject, 1 for approve
- *   - vote_salt: Random blinding factor for vote commitment
- */
+// Anonymous voting with Merkle membership proof
+// vote_commitment = Poseidon(vote, vote_salt, action_hash)
+// vote_nullifier = Poseidon(owner_secret, agent_id, registration_secret, action_hash)
 template SwarmVote(TREE_DEPTH) {
     // Public inputs
     signal input agents_root;

@@ -82,9 +82,9 @@ export class SwarmTeamsProver {
     }
   }
 
-  // ============================================================================
+  
   // Commitment Generation
-  // ============================================================================
+  
 
   /**
    * Generate identity commitment from owner secret, agent ID, and registration secret.
@@ -216,9 +216,9 @@ export class SwarmTeamsProver {
     return bigintToBytes32(hash);
   }
 
-  // ============================================================================
+  
   // Proof Generation
-  // ============================================================================
+  
 
   /**
    * Generate ZK proof of agent identity.
@@ -594,11 +594,7 @@ export class SwarmTeamsProver {
     return { a: aBytes, b: bBytes, c: cBytes };
   }
 }
-
-// ============================================================================
 // Utility Functions
-// ============================================================================
-
 /**
  * Write field element to buffer in big-endian format.
  * groth16-solana expects big-endian byte order for proof points.
