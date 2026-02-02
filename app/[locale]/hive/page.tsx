@@ -209,9 +209,7 @@ export default function HivePage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="overflow-y-auto flex items-start md:items-center pt-20 md:pt-0">
-        <div className="w-full px-3 sm:px-5 mx-auto py-4 sm:py-8" style={{ maxWidth: '1400px' }}>
+    <div className="min-h-screen pt-24 md:pt-28 pb-10 px-3 sm:px-5 max-w-[1400px] mx-auto">
           {/* Page Header */}
           <div className="mb-4 sm:mb-8">
             <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
@@ -341,8 +339,6 @@ export default function HivePage() {
           </div>
           </div>
           </div>
-        </div>
-      </div>
     </div>
   );
 }

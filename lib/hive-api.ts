@@ -288,26 +288,15 @@ export interface BlindfoldDirectFundingResponse {
 export async function initiateBlindfoldFunding(
   walletAddress: string,
   amountUsd: number,
-  poolId: string,
+  teamId: string,
   stateToken: string
 ): Promise<BlindfoldDirectFundingResponse> {
-  const res = await fetch('https://www.blindfoldfinance.com/api/partner/initiate-funding', {
+  return api<BlindfoldDirectFundingResponse>(`/api/swarm-teams/${teamId}/fund/initiate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      wallet_address: walletAddress,
-      amount_usd: amountUsd,
-      currency: 'SOL',
-      partner_id: 'kamiyo',
-      pool_id: poolId,
-      state: stateToken,
+      walletAddress,
+      amountUsd,
+      stateToken,
     }),
   });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || err.error || `Blindfold API error: ${res.status}`);
-  }
-
-  return res.json();
 }
