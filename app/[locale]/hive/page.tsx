@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import PayButton from '@/components/PayButton';
@@ -10,9 +9,6 @@ import { createTeam, ensureAuthenticated } from '@/lib/hive-api';
 import { Dropdown } from '@/components/ui/Dropdown';
 import Link from 'next/link';
 
-const HiveScene = dynamic(() => import('@/components/hive/HiveScene').then(m => m.HiveScene), {
-  ssr: false,
-});
 
 const PRESETS = [
   {
@@ -212,24 +208,12 @@ export default function HivePage() {
     setMembers(updated);
   };
 
-  // Live update scene with members as they're added
-  const sceneMembers = members
-    .filter((m) => m.agentId)
-    .map((m, i) => ({
-      id: `new-${i}`,
-      agentId: m.agentId,
-      role: m.role,
-    }));
-
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* 3D Scene Background */}
-      <HiveScene members={sceneMembers} />
-
-      <div className="absolute inset-0 pointer-events-none overflow-y-auto flex items-start md:items-center pt-20 md:pt-0">
+      <div className="overflow-y-auto flex items-start md:items-center pt-20 md:pt-0">
         <div className="w-full px-3 sm:px-5 mx-auto py-4 sm:py-8" style={{ maxWidth: '1400px' }}>
           {/* Page Header */}
-          <div className="mb-4 sm:mb-8 pointer-events-auto">
+          <div className="mb-4 sm:mb-8">
             <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
               — Hive ハイブ
             </p>
@@ -245,7 +229,7 @@ export default function HivePage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start">
-            <div className="card relative p-4 sm:p-6 rounded-lg border border-gray-500/25 bg-black/50 pointer-events-auto flex-1 w-full">
+            <div className="card relative p-4 sm:p-6 rounded-lg border border-gray-500/25 bg-black/50 flex-1 w-full">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-4">
               <h2 className="text-xs sm:text-sm uppercase tracking-wider text-gray-400">New Hive</h2>
               <div className="flex flex-wrap gap-1 sm:gap-2">
