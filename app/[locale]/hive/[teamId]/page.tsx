@@ -190,6 +190,8 @@ export default function TeamDetailPage() {
     return () => clearInterval(interval);
   }, [draws, fetchDraws]);
 
+  const MIN_FUND_AMOUNT = 100_000;
+
   const handleFund = async () => {
     const amount = parseFloat(fundAmount);
     if (!amount || amount <= 0) return;
@@ -199,6 +201,11 @@ export default function TeamDetailPage() {
         // Fund with actual $KAMIYO tokens
         if (!publicKey || !signTransaction) {
           setFundError('Connect wallet first');
+          return;
+        }
+
+        if (amount < MIN_FUND_AMOUNT) {
+          setFundError(`Minimum funding amount is ${MIN_FUND_AMOUNT.toLocaleString()} $KAMIYO`);
           return;
         }
 
