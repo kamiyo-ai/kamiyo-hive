@@ -63,8 +63,10 @@ export function Header() {
     setDeletingTeamId(teamId);
     try {
       const result = await deleteTeam(teamId);
-      if (result.refundAmount > 0) {
-        alert(`Hive deleted. ${result.refundAmount.toLocaleString()} ${result.currency} refund pending.`);
+      if (result.refundAmount > 0 && result.refundSignature) {
+        alert(`Hive deleted. ${result.refundAmount.toLocaleString()} ${result.currency} refunded!\n\nTx: ${result.refundSignature.slice(0, 20)}...`);
+      } else if (result.refundAmount > 0) {
+        alert(`Hive deleted. ${result.refundAmount.toLocaleString()} ${result.currency} (refund pending)`);
       }
       setTeams(prev => prev.filter(t => t.id !== teamId));
     } catch (err) {

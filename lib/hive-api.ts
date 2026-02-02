@@ -163,6 +163,7 @@ export interface DeleteTeamResult {
   success: boolean;
   refundAmount: number;
   currency: string;
+  refundSignature?: string;
 }
 
 export async function deleteTeam(teamId: string): Promise<DeleteTeamResult> {
