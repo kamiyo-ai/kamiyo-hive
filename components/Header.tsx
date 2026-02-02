@@ -11,7 +11,7 @@ import { useScrambleText } from '@/hooks/useScrambleText';
 import MorphingIcon from '@/components/MorphingIcon';
 import { MobileWalletModal } from '@/components/MobileWalletModal';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { listTeams, HiveTeam, ensureAuthenticated } from '@/lib/hive-api';
+import { listTeams, deleteTeam, HiveTeam, ensureAuthenticated } from '@/lib/hive-api';
 
 export function Header() {
   const t = useTranslations('common');
@@ -27,6 +27,7 @@ export function Header() {
   const [mounted, setMounted] = useState(false);
   const [teams, setTeams] = useState<HiveTeam[]>([]);
   const [isMobileWalletModalOpen, setMobileWalletModalOpen] = useState(false);
+  const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +49,30 @@ export function Header() {
   useEffect(() => {
     if (connected && publicKey && signMessage) fetchTeams();
   }, [connected, publicKey, signMessage, fetchTeams]);
+
+  const handleDeleteTeam = async (teamId: string, teamName: string) => {
+    if (deletingTeamId) return;
+
+    const team = teams.find(t => t.id === teamId);
+    const confirmMsg = team && team.poolBalance > 0
+      ? `Delete "${teamName}"? Pool balance of ${team.poolBalance.toLocaleString()} ${team.currency} will be refunded to your wallet.`
+      : `Delete "${teamName}"?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    setDeletingTeamId(teamId);
+    try {
+      const result = await deleteTeam(teamId);
+      if (result.refundAmount > 0) {
+        alert(`Hive deleted. ${result.refundAmount.toLocaleString()} ${result.currency} refund pending.`);
+      }
+      setTeams(prev => prev.filter(t => t.id !== teamId));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete');
+    } finally {
+      setDeletingTeamId(null);
+    }
+  };
 
   const navItems = [
     { href: '/stake', label: t('nav.stake') },
@@ -164,15 +189,33 @@ export function Header() {
                       <div className="py-2 border-b border-gray-500/25">
                         <p className="px-4 text-[0.65rem] text-gray-600 uppercase tracking-wider mb-1">Hives</p>
                         {teams.map((team) => (
-                          <Link
+                          <div
                             key={team.id}
-                            href={`/hive/${team.id}`}
-                            onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center justify-between px-4 py-1.5 text-[0.8rem] text-gray-400 hover:text-white hover:bg-gray-500/10 transition-colors"
+                            className="flex items-center justify-between px-4 py-1.5 text-[0.8rem] text-gray-400 hover:bg-gray-500/10 transition-colors group"
                           >
-                            <span>{team.name}</span>
-                            <span className="text-[0.65rem] text-gray-600">{team.poolBalance.toFixed(1)} {team.currency}</span>
-                          </Link>
+                            <Link
+                              href={`/hive/${team.id}`}
+                              onClick={() => setIsDropdownOpen(false)}
+                              className="flex-1 hover:text-white transition-colors"
+                            >
+                              <span>{team.name}</span>
+                            </Link>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[0.65rem] text-gray-600">{team.poolBalance.toFixed(1)} {team.currency}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleDeleteTeam(team.id, team.name);
+                                }}
+                                disabled={deletingTeamId === team.id}
+                                className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all text-xs px-1"
+                                title="Delete hive"
+                              >
+                                {deletingTeamId === team.id ? '...' : '×'}
+                              </button>
+                            </div>
+                          </div>
                         ))}
                         <Link
                           href="/hive"

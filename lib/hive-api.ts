@@ -159,8 +159,14 @@ export async function addMember(
   });
 }
 
-export async function deleteTeam(teamId: string): Promise<void> {
-  await api(`/api/swarm-teams/${teamId}`, { method: 'DELETE' });
+export interface DeleteTeamResult {
+  success: boolean;
+  refundAmount: number;
+  currency: string;
+}
+
+export async function deleteTeam(teamId: string): Promise<DeleteTeamResult> {
+  return api<DeleteTeamResult>(`/api/swarm-teams/${teamId}`, { method: 'DELETE' });
 }
 
 export async function removeMember(teamId: string, memberId: string): Promise<void> {
