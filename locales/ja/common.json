@@ -26,6 +26,7 @@
     "disconnect": "切断",
     "connected": "接続済み",
     "linkXAccount": "X アカウントを連携",
-    "newTeam": "新規チーム"
+    "newTeam": "新規チーム",
+    "newHive": "新規ハイブ"
   }
 }

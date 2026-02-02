@@ -26,6 +26,7 @@
     "disconnect": "断开连接",
     "connected": "已连接",
     "linkXAccount": "关联 X 账户",
-    "newTeam": "新建团队"
+    "newTeam": "新建团队",
+    "newHive": "新建蜂巢"
   }
 }

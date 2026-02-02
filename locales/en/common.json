@@ -26,6 +26,7 @@
     "disconnect": "Disconnect",
     "connected": "Connected",
     "linkXAccount": "Link X Account",
-    "newTeam": "New Team"
+    "newTeam": "New Team",
+    "newHive": "New Hive"
   }
 }
