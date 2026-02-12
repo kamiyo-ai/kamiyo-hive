@@ -5,14 +5,15 @@
  * Fixed depth of 20 supports up to ~1M agents.
  */
 
-import { buildPoseidon, Poseidon } from 'circomlibjs';
+import { buildPoseidon } from 'circomlibjs';
 
 const TREE_DEPTH = 20;
 const FIELD_MODULUS = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 
-let poseidonInstance: Poseidon | null = null;
+type PoseidonInstance = Awaited<ReturnType<typeof buildPoseidon>>;
+let poseidonInstance: PoseidonInstance | null = null;
 
-async function getPoseidon(): Promise<Poseidon> {
+async function getPoseidon(): Promise<PoseidonInstance> {
   if (!poseidonInstance) {
     poseidonInstance = await buildPoseidon();
   }

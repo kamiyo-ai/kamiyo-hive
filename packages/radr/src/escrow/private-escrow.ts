@@ -100,7 +100,7 @@ export class PrivateEscrowHandler {
     const data = new TextEncoder().encode(
       `commitment:${amountBigInt.toString()}:${blindingBigInt.toString()}`
     );
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', Uint8Array.from(data));
     const hashArray = new Uint8Array(hashBuffer);
     const commitment = '0x' + Buffer.from(hashArray).toString('hex');
 
@@ -145,7 +145,7 @@ export class PrivateEscrowHandler {
     const data = new TextEncoder().encode(
       `commitment:${amountBigInt.toString()}:${blindingBigInt.toString()}`
     );
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', Uint8Array.from(data));
     const hashArray = new Uint8Array(hashBuffer);
 
     return {

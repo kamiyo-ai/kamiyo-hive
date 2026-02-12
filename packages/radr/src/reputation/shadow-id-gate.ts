@@ -367,7 +367,7 @@ export class ShadowIdReputationGate {
     const commitmentData = new TextEncoder().encode(
       `reputation:${score}:${secretBigInt.toString()}`
     );
-    const hashBuffer = await crypto.subtle.digest('SHA-256', commitmentData);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', Uint8Array.from(commitmentData));
     const commitment = Buffer.from(hashBuffer).toString('hex');
 
     const marker = Buffer.from('STRUCTURAL_PROOF_NOT_CRYPTOGRAPHIC');

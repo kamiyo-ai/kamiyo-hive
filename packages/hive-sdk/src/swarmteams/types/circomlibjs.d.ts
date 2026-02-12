@@ -1,9 +1,9 @@
 declare module 'circomlibjs' {
   export interface Poseidon {
-    (inputs: (bigint | number)[]): Uint8Array;
+    (inputs: (bigint | number)[]): unknown;
     F: {
-      toObject(element: Uint8Array): bigint;
-      fromObject(n: bigint): Uint8Array;
+      toObject(element: unknown): bigint;
+      fromObject?(n: bigint): unknown;
     };
   }
 

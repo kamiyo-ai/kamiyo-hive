@@ -184,11 +184,19 @@ export class ChannelClient {
     }
   }
 
-  private handleMessage(raw: Buffer | ArrayBuffer | Buffer[]): void {
+  private handleMessage(raw: Buffer | ArrayBuffer | Buffer[] | string): void {
     let message: ServerMessage;
 
     try {
-      message = JSON.parse(raw.toString()) as ServerMessage;
+      const body =
+        typeof raw === 'string'
+          ? raw
+          : Array.isArray(raw)
+            ? Buffer.concat(raw).toString()
+            : raw instanceof ArrayBuffer
+              ? Buffer.from(new Uint8Array(raw)).toString()
+              : raw.toString();
+      message = JSON.parse(body) as ServerMessage;
     } catch {
       this.onError?.('Invalid server message');
       return;

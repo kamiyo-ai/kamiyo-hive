@@ -1,4 +1,4 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import WebSocket from 'ws';
 import { randomUUID } from 'crypto';
 import { MessageStore } from './message-store.js';
 import type {
@@ -17,7 +17,7 @@ const DEFAULT_MAX_AGE_DAYS = 7;
 type TokenVerifier = (token: string) => Promise<ChannelAccessToken | null>;
 
 export class ChannelServer {
-  private wss: WebSocketServer | null = null;
+  private wss: WebSocket.Server | null = null;
   private rooms: Map<string, Set<WebSocket>> = new Map();
   private members: Map<WebSocket, ChannelMember> = new Map();
   private store: MessageStore;
@@ -38,7 +38,7 @@ export class ChannelServer {
   start(): void {
     if (this.wss) return;
 
-    this.wss = new WebSocketServer({
+    this.wss = new WebSocket.Server({
       port: this.config.port ?? DEFAULT_PORT,
       host: this.config.host,
     });
@@ -81,11 +81,21 @@ export class ChannelServer {
     });
   }
 
-  private async handleMessage(ws: WebSocket, raw: Buffer | ArrayBuffer | Buffer[]): Promise<void> {
+  private async handleMessage(
+    ws: WebSocket,
+    raw: Buffer | ArrayBuffer | Buffer[] | string
+  ): Promise<void> {
     let payload: ClientPayload;
 
     try {
-      const str = raw.toString();
+      const str =
+        typeof raw === 'string'
+          ? raw
+          : Array.isArray(raw)
+            ? Buffer.concat(raw).toString()
+            : raw instanceof ArrayBuffer
+              ? Buffer.from(new Uint8Array(raw)).toString()
+              : raw.toString();
       payload = JSON.parse(str) as ClientPayload;
     } catch {
       this.sendError(ws, 'Invalid JSON');

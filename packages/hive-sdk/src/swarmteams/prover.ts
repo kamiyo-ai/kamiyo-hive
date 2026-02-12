@@ -1,7 +1,7 @@
 // ZK prover - Poseidon hash + Groth16 proofs
 
 import * as snarkjs from 'snarkjs';
-import { buildPoseidon, Poseidon } from 'circomlibjs';
+import { buildPoseidon } from 'circomlibjs';
 import { randomBytes } from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -21,9 +21,10 @@ import {
 // migrated from @pfi/kamiyo-internal 2024-03
 const FIELD_MODULUS = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 
-let poseidonInstance: Poseidon | null = null;
+type PoseidonInstance = Awaited<ReturnType<typeof buildPoseidon>>;
+let poseidonInstance: PoseidonInstance | null = null;
 
-async function getPoseidon(): Promise<Poseidon> {
+async function getPoseidon(): Promise<PoseidonInstance> {
   if (!poseidonInstance) {
     poseidonInstance = await buildPoseidon();
   }

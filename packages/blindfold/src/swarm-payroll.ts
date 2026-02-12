@@ -105,7 +105,7 @@ export class SwarmPayroll {
 
     return swarm.members.map((member) => ({
       member,
-      amount: (totalAmount * BigInt(Math.floor(member.weight * 100))) / 10000n,
+      amount: (totalAmount * BigInt(Math.floor(member.weight * 100))) / BigInt(10000),
       percentage: member.weight,
     }));
   }
@@ -127,7 +127,7 @@ export class SwarmPayroll {
 
     // Process each member's payment
     for (const dist of distributions) {
-      if (dist.amount === 0n) continue;
+      if (dist.amount === BigInt(0)) continue;
 
       const amountSol = Number(dist.amount) / LAMPORTS_PER_SOL;
       const tier = dist.member.tier || this.getTierForAmount(amountSol);
@@ -191,7 +191,7 @@ export class SwarmPayroll {
     const distributions = this.calculateDistribution(swarmId, BigInt(totalAmount.toString()));
 
     const batchPayments = distributions
-      .filter((d) => d.amount > 0n)
+      .filter((d) => d.amount > BigInt(0))
       .map((dist) => ({
         amount: Number(dist.amount) / LAMPORTS_PER_SOL,
         currency: 'SOL' as const,

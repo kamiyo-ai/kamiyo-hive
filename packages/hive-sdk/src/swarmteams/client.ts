@@ -3,7 +3,7 @@
 import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
 import BN from 'bn.js';
 import { PublicKey, Connection, Keypair, ComputeBudgetProgram, TransactionInstruction } from '@solana/web3.js';
-import { buildPoseidon, Poseidon } from 'circomlibjs';
+import { buildPoseidon } from 'circomlibjs';
 import {
   SWARMTEAMS_PROGRAM_ID,
   KAMIYO_MINT,
@@ -46,9 +46,10 @@ function getZkComputeBudgetInstructions(): TransactionInstruction[] {
 // Poseidon Hash Helpers
 const FIELD_MODULUS = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');
 
-let poseidonInstance: Poseidon | null = null;
+type PoseidonInstance = Awaited<ReturnType<typeof buildPoseidon>>;
+let poseidonInstance: PoseidonInstance | null = null;
 
-async function getPoseidon(): Promise<Poseidon> {
+async function getPoseidon(): Promise<PoseidonInstance> {
   if (!poseidonInstance) {
     poseidonInstance = await buildPoseidon();
   }
