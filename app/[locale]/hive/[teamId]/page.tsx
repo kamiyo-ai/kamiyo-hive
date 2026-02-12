@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -13,7 +13,8 @@ import {
   getTeam, addMember, removeMember, updateBudget, getDraws,
   initiateFunding, confirmFunding, fundWithTokens, submitTask, deleteTeam,
   ensureAuthenticated, getBlindfoldFundingUrl, initiateBlindfoldFunding,
-  HiveTeamDetail, HiveDraw, FundDeposit, TaskResult,
+  getKeiroMatchingJobs, getKeiroAgentJobs, getKeiroEarnings, getKeiroEarningsStats, getKeiroReceipts, getKeiroMeishi,
+  HiveTeamDetail, HiveDraw, FundDeposit, TaskResult, KeiroJob, KeiroEarning, KeiroEarningsStats, KeiroReceipt, KeiroMeishiBundle,
 } from '@/lib/hive-api';
 import { Dropdown } from '@/components/ui/Dropdown';
 
@@ -103,6 +104,15 @@ export default function TeamDetailPage() {
   const [taskSubmitting, setTaskSubmitting] = useState(false);
   const [taskResult, setTaskResult] = useState<TaskResult | null>(null);
   const [taskError, setTaskError] = useState('');
+  const [keiroAgentId, setKeiroAgentId] = useState('');
+  const [keiroLoading, setKeiroLoading] = useState(false);
+  const [keiroError, setKeiroError] = useState('');
+  const [keiroMatchingJobs, setKeiroMatchingJobs] = useState<KeiroJob[]>([]);
+  const [keiroAgentJobs, setKeiroAgentJobs] = useState<KeiroJob[]>([]);
+  const [keiroEarnings, setKeiroEarnings] = useState<KeiroEarning[]>([]);
+  const [keiroEarningsStats, setKeiroEarningsStats] = useState<KeiroEarningsStats | null>(null);
+  const [keiroReceipts, setKeiroReceipts] = useState<KeiroReceipt[]>([]);
+  const [keiroMeishi, setKeiroMeishi] = useState<KeiroMeishiBundle | null>(null);
 
   // Delete confirmation
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -164,6 +174,32 @@ export default function TeamDetailPage() {
     }
   }, [teamId]);
 
+  const fetchKeiroFlow = useCallback(async (agentId: string) => {
+    if (!agentId) return;
+    setKeiroLoading(true);
+    setKeiroError('');
+    try {
+      const [matchingJobs, agentJobs, earnings, earningsStats, receipts, meishi] = await Promise.all([
+        getKeiroMatchingJobs(agentId),
+        getKeiroAgentJobs(agentId),
+        getKeiroEarnings(agentId),
+        getKeiroEarningsStats(agentId),
+        getKeiroReceipts(agentId, 20),
+        getKeiroMeishi(agentId),
+      ]);
+      setKeiroMatchingJobs(matchingJobs);
+      setKeiroAgentJobs(agentJobs);
+      setKeiroEarnings(earnings);
+      setKeiroEarningsStats(earningsStats);
+      setKeiroReceipts(receipts);
+      setKeiroMeishi(meishi);
+    } catch (err) {
+      setKeiroError(err instanceof Error ? err.message : 'Failed to load Keiro data');
+    } finally {
+      setKeiroLoading(false);
+    }
+  }, []);
+
   // Authenticate and fetch when wallet connects
   useEffect(() => {
     const init = async () => {
@@ -180,6 +216,17 @@ export default function TeamDetailPage() {
     };
     init();
   }, [publicKey, wallet.signMessage, authenticate, fetchTeam]);
+
+  useEffect(() => {
+    if (!team || team.members.length === 0) return;
+    if (keiroAgentId && team.members.some((m) => m.agentId === keiroAgentId)) return;
+    setKeiroAgentId(team.members[0].agentId);
+  }, [team, keiroAgentId]);
+
+  useEffect(() => {
+    if (!keiroAgentId) return;
+    fetchKeiroFlow(keiroAgentId);
+  }, [keiroAgentId, fetchKeiroFlow]);
 
   // Poll for draw status updates every 10s
   useEffect(() => {
@@ -863,6 +910,126 @@ export default function TeamDetailPage() {
         </div>
       </div>
 
+      {/* Keiro-backed flow */}
+      <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm uppercase tracking-wider text-gray-400">Keiro Flow</h2>
+          <div className="flex items-center gap-2">
+            <Dropdown
+              value={keiroAgentId}
+              onChange={setKeiroAgentId}
+              options={[
+                { value: '', label: 'Select agent' },
+                ...team.members.map((m) => ({ value: m.agentId, label: m.agentId })),
+              ]}
+            />
+            <button
+              onClick={() => keiroAgentId && fetchKeiroFlow(keiroAgentId)}
+              disabled={!keiroAgentId || keiroLoading}
+              className="px-3 py-2 text-xs border border-gray-700 rounded text-gray-300 hover:border-gray-500 disabled:opacity-40"
+            >
+              {keiroLoading ? 'Loading...' : 'Refresh'}
+            </button>
+          </div>
+        </div>
+
+        {keiroError && <div className="text-red-400 text-xs mb-4">{keiroError}</div>}
+
+        {keiroAgentId && (
+          <div className="space-y-6">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">Jobs</div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="border border-gray-800 rounded p-3">
+                  <div className="text-[11px] text-gray-400 mb-2">Matching ({keiroMatchingJobs.length})</div>
+                  <div className="space-y-2 max-h-44 overflow-y-auto">
+                    {keiroMatchingJobs.length === 0 && <div className="text-gray-600 text-xs">No matching jobs</div>}
+                    {keiroMatchingJobs.slice(0, 10).map((job) => (
+                      <div key={job.id} className="text-xs border-b border-gray-900 pb-2">
+                        <div className="text-gray-200">{job.title}</div>
+                        <div className="text-gray-500">{job.payment} {job.paymentToken} • {job.requiredTier}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border border-gray-800 rounded p-3">
+                  <div className="text-[11px] text-gray-400 mb-2">Agent Jobs ({keiroAgentJobs.length})</div>
+                  <div className="space-y-2 max-h-44 overflow-y-auto">
+                    {keiroAgentJobs.length === 0 && <div className="text-gray-600 text-xs">No assigned/submitted jobs</div>}
+                    {keiroAgentJobs.slice(0, 10).map((job) => (
+                      <div key={job.id} className="text-xs border-b border-gray-900 pb-2">
+                        <div className="text-gray-200">{job.title}</div>
+                        <div className="text-gray-500">{job.status} • {job.payment} {job.paymentToken}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">Earnings</div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="border border-gray-800 rounded p-3 text-xs">
+                  <div className="text-gray-300 mb-2">Stats</div>
+                  <div className="space-y-1 text-gray-500">
+                    <div>today: ${keiroEarningsStats?.today.toFixed(2) ?? '0.00'}</div>
+                    <div>week: ${keiroEarningsStats?.thisWeek.toFixed(2) ?? '0.00'}</div>
+                    <div>month: ${keiroEarningsStats?.thisMonth.toFixed(2) ?? '0.00'}</div>
+                    <div>tx count: {keiroEarningsStats?.transactionCount ?? 0}</div>
+                  </div>
+                </div>
+                <div className="border border-gray-800 rounded p-3">
+                  <div className="text-[11px] text-gray-400 mb-2">Recent Earnings ({keiroEarnings.length})</div>
+                  <div className="space-y-2 max-h-44 overflow-y-auto">
+                    {keiroEarnings.length === 0 && <div className="text-gray-600 text-xs">No earnings yet</div>}
+                    {keiroEarnings.slice(0, 10).map((earning) => (
+                      <div key={earning.id} className="text-xs border-b border-gray-900 pb-2">
+                        <div className="text-gray-200">{earning.amount} {earning.token}</div>
+                        <div className="text-gray-500">{earning.status} • {new Date(earning.createdAt).toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">Receipts</div>
+              <div className="border border-gray-800 rounded p-3">
+                <div className="space-y-2 max-h-44 overflow-y-auto">
+                  {keiroReceipts.length === 0 && <div className="text-gray-600 text-xs">No receipts yet</div>}
+                  {keiroReceipts.slice(0, 15).map((receipt) => (
+                    <div key={receipt.id} className="text-xs border-b border-gray-900 pb-2">
+                      <div className="text-gray-200">{receipt.kind}</div>
+                      <div className="text-gray-500">{receipt.summary}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">Meishi</div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="border border-gray-800 rounded p-3">
+                  <div className="text-[11px] text-gray-400 mb-2">Passport</div>
+                  <pre className="text-[11px] text-gray-500 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                    {JSON.stringify(keiroMeishi?.passport ?? null, null, 2)}
+                  </pre>
+                </div>
+                <div className="border border-gray-800 rounded p-3">
+                  <div className="text-[11px] text-gray-400 mb-2">Mandate</div>
+                  <pre className="text-[11px] text-gray-500 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                    {JSON.stringify(keiroMeishi?.mandate ?? null, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       </div>
       {/* End main content */}
 
@@ -871,7 +1038,7 @@ export default function TeamDetailPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
           <div className="bg-black border border-gray-500/25 rounded-lg p-8 max-w-md w-full mx-4">
             <h3 className="text-xl text-white mb-2">Delete Team</h3>
-            <p className="text-gray-400 mb-6">Are you sure you want to delete "{team.name}"? This cannot be undone.</p>
+            <p className="text-gray-400 mb-6">Are you sure you want to delete &quot;{team.name}&quot;? This cannot be undone.</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}

@@ -307,3 +307,102 @@ export async function initiateBlindfoldFunding(
     }),
   });
 }
+
+// Keiro integration
+export interface KeiroJob {
+  id: string;
+  title: string;
+  description: string;
+  requiredSkills: string[];
+  requiredTier: string;
+  minimumCreditScore: number;
+  payment: number;
+  paymentToken: 'SOL' | 'USDC';
+  estimatedTime: string;
+  poster: string;
+  posterAddress: string;
+  status: string;
+  assignedAgent?: string;
+  escrowId?: string;
+  createdAt: string;
+  deadline?: string;
+}
+
+export interface KeiroEarning {
+  id: string;
+  agentId: string;
+  jobId: string;
+  amount: number;
+  token: 'SOL' | 'USDC';
+  status: 'pending' | 'released' | 'disputed';
+  createdAt: string;
+  releasedAt?: string;
+}
+
+export interface KeiroEarningsStats {
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+  totalEarned: { sol: number; usdc: number };
+  totalPending: { sol: number; usdc: number };
+  transactionCount: number;
+}
+
+export interface KeiroReceipt {
+  version: number;
+  id: string;
+  agentId: string;
+  agentIdentity: string;
+  kind: string;
+  summary: string;
+  payload: Record<string, unknown>;
+  hash: string;
+  signature: string | null;
+  signatureAlgo: string | null;
+  createdAt: string;
+}
+
+export interface KeiroMeishiBundle {
+  passport: Record<string, unknown> | null;
+  mandate: Record<string, unknown> | null;
+}
+
+export async function getKeiroMatchingJobs(agentId: string): Promise<KeiroJob[]> {
+  const data = await api<{ jobs: KeiroJob[] }>(`/api/jobs/matching/${encodeURIComponent(agentId)}`);
+  return data.jobs;
+}
+
+export async function getKeiroAgentJobs(agentId: string): Promise<KeiroJob[]> {
+  const data = await api<{ jobs: KeiroJob[] }>(`/api/jobs/agent/${encodeURIComponent(agentId)}`);
+  return data.jobs;
+}
+
+export async function getKeiroEarnings(agentId: string): Promise<KeiroEarning[]> {
+  const data = await api<{ earnings: KeiroEarning[] }>(`/api/earnings/agent/${encodeURIComponent(agentId)}`);
+  return data.earnings;
+}
+
+export async function getKeiroEarningsStats(agentId: string): Promise<KeiroEarningsStats> {
+  const data = await api<{ stats: KeiroEarningsStats }>(`/api/earnings/agent/${encodeURIComponent(agentId)}/stats`);
+  return data.stats;
+}
+
+export async function getKeiroReceipts(agentId: string, limit = 20): Promise<KeiroReceipt[]> {
+  const capped = Math.max(1, Math.min(200, Math.floor(limit)));
+  const data = await api<{ receipts: KeiroReceipt[] }>(
+    `/api/receipts/agent/${encodeURIComponent(agentId)}?limit=${capped}`
+  );
+  return data.receipts;
+}
+
+export async function getKeiroMeishi(agentId: string): Promise<KeiroMeishiBundle> {
+  const [passportRes, mandateRes] = await Promise.all([
+    api<{ passport: Record<string, unknown> }>(`/api/meishi/passport/${encodeURIComponent(agentId)}`).catch(() => null),
+    api<{ mandate: Record<string, unknown> | null }>(`/api/meishi/mandate/${encodeURIComponent(agentId)}`).catch(() => null),
+  ]);
+
+  return {
+    passport: passportRes?.passport ?? null,
+    mandate: mandateRes?.mandate ?? null,
+  };
+}
