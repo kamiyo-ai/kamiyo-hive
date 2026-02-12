@@ -3,6 +3,7 @@ import { AgentRegistry } from './registry.js';
 import { AgentDiscovery } from './discovery.js';
 import { A2AEscrow } from './escrow.js';
 import { QualityOracle } from './oracle.js';
+import { KeiroApiClient } from './keiro-client.js';
 import { X402HiveAdapter, type PriceResult } from './x402-adapter.js';
 import type {
   HiveConfig,
@@ -16,6 +17,11 @@ import type {
   RegisterOptions,
   RegistrationResult,
   QualityAssessment,
+  KeiroEarning,
+  KeiroEarningsStats,
+  KeiroJob,
+  KeiroMeishiBundle,
+  KeiroReceipt,
 } from './types.js';
 
 export class KamiyoHive {
@@ -24,6 +30,7 @@ export class KamiyoHive {
   private escrow: A2AEscrow;
   private oracle: QualityOracle;
   private x402Adapter?: X402HiveAdapter;
+  private keiro: KeiroApiClient;
 
   private keypair: Keypair;
   private connection: Connection;
@@ -33,6 +40,7 @@ export class KamiyoHive {
     this.keypair = config.keypair;
     this.connection = config.connection;
     this.enableReputationPricing = config.enableReputationPricing ?? false;
+    this.keiro = new KeiroApiClient(config.apiEndpoint);
 
     this.registry = new AgentRegistry({
       connection: config.connection,
@@ -225,6 +233,30 @@ export class KamiyoHive {
     return this.registry.get(agentId);
   }
 
+  async listOpenJobs(): Promise<KeiroJob[]> {
+    return this.keiro.getOpenJobs();
+  }
+
+  async listMatchingJobs(agentId: string): Promise<KeiroJob[]> {
+    return this.keiro.getMatchingJobs(agentId);
+  }
+
+  async getAgentEarnings(agentId: string): Promise<KeiroEarning[]> {
+    return this.keiro.getAgentEarnings(agentId);
+  }
+
+  async getAgentEarningsStats(agentId: string): Promise<KeiroEarningsStats> {
+    return this.keiro.getAgentEarningsStats(agentId);
+  }
+
+  async getAgentReceipts(agentId: string, limit = 50): Promise<KeiroReceipt[]> {
+    return this.keiro.getAgentReceipts(agentId, limit);
+  }
+
+  async getAgentMeishi(agentId: string): Promise<KeiroMeishiBundle> {
+    return this.keiro.getAgentMeishi(agentId);
+  }
+
   getActiveHires(): HiredAgent[] {
     return this.escrow.getAllActiveHires();
   }
@@ -291,6 +323,7 @@ export { AgentRegistry } from './registry.js';
 export { AgentDiscovery } from './discovery.js';
 export { A2AEscrow } from './escrow.js';
 export { QualityOracle } from './oracle.js';
+export { KeiroApiClient } from './keiro-client.js';
 
 export * from './types.js';
 

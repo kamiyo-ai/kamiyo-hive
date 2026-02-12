@@ -4,6 +4,7 @@ import type {
   DiscoveryQuery,
   DiscoveryResult,
 } from './types.js';
+import { KeiroApiClient } from './keiro-client.js';
 
 const DEFAULT_API_ENDPOINT = 'https://api.kamiyo.ai';
 const DEFAULT_LIMIT = 20;
@@ -13,10 +14,12 @@ export class AgentDiscovery {
   private apiEndpoint: string;
   private cache: Map<string, { data: AgentInfo[]; timestamp: number }> = new Map();
   private cacheTtlMs: number;
+  private keiro: KeiroApiClient;
 
   constructor(config: { apiEndpoint?: string; cacheTtlMs?: number } = {}) {
     this.apiEndpoint = config.apiEndpoint || DEFAULT_API_ENDPOINT;
     this.cacheTtlMs = config.cacheTtlMs ?? 60_000;
+    this.keiro = new KeiroApiClient(this.apiEndpoint);
   }
 
   async discover(query: DiscoveryQuery = {}): Promise<DiscoveryResult> {
@@ -29,15 +32,9 @@ export class AgentDiscovery {
       return this.paginateResults(cached.data, limit, offset);
     }
 
-    try {
-      const agents = await this.fetchAgents(query);
-
-      this.cache.set(cacheKey, { data: agents, timestamp: Date.now() });
-
-      return this.paginateResults(agents, limit, offset);
-    } catch (err) {
-      return { agents: [], total: 0, hasMore: false };
-    }
+    const agents = await this.fetchAgents(query);
+    this.cache.set(cacheKey, { data: agents, timestamp: Date.now() });
+    return this.paginateResults(agents, limit, offset);
   }
 
   async findBestMatch(
@@ -90,78 +87,13 @@ export class AgentDiscovery {
   }
 
   private async fetchAgents(query: DiscoveryQuery): Promise<AgentInfo[]> {
-    const mockAgents: AgentInfo[] = [
-      {
-        id: 'agent_mock_001',
-        address: 'MockAddr1111111111111111111111111111111111111',
-        capabilities: ['code-review', 'code-generation'],
-        pricing: { perTask: 0.05, currency: 'USD' },
-        endpoint: 'https://agent1.example.com/api',
-        reputation: 850,
-        totalJobs: 127,
-        successRate: 96,
-        avgResponseTime: 3500,
-        status: 'active',
-        registeredAt: new Date('2025-01-01').getTime(),
-      },
-      {
-        id: 'agent_mock_002',
-        address: 'MockAddr2222222222222222222222222222222222222',
-        capabilities: ['image-generation'],
-        pricing: { perTask: 0.10, currency: 'USD' },
-        endpoint: 'https://agent2.example.com/api',
-        reputation: 920,
-        totalJobs: 453,
-        successRate: 99,
-        avgResponseTime: 8000,
-        status: 'active',
-        registeredAt: new Date('2024-11-15').getTime(),
-      },
-      {
-        id: 'agent_mock_003',
-        address: 'MockAddr3333333333333333333333333333333333333',
-        capabilities: ['data-analysis', 'research'],
-        pricing: { perTask: 0.08, currency: 'USD' },
-        endpoint: 'https://agent3.example.com/api',
-        reputation: 720,
-        totalJobs: 89,
-        successRate: 91,
-        avgResponseTime: 12000,
-        status: 'active',
-        registeredAt: new Date('2025-01-10').getTime(),
-      },
-    ];
-
-    let filtered = mockAgents;
-
-    if (query.capability) {
-      filtered = filtered.filter(a => a.capabilities.includes(query.capability!));
+    try {
+      const filtered = await this.keiro.discoverAgents(query);
+      filtered.sort((a, b) => b.reputation - a.reputation);
+      return filtered;
+    } catch {
+      return [];
     }
-
-    if (query.capabilities?.length) {
-      filtered = filtered.filter(a =>
-        query.capabilities!.some(cap => a.capabilities.includes(cap))
-      );
-    }
-
-    if (query.minReputation !== undefined) {
-      filtered = filtered.filter(a => a.reputation >= query.minReputation!);
-    }
-
-    if (query.maxPrice !== undefined) {
-      filtered = filtered.filter(a => {
-        const price = a.pricing.perTask ?? a.pricing.perToken ?? Infinity;
-        return price <= query.maxPrice!;
-      });
-    }
-
-    if (query.status) {
-      filtered = filtered.filter(a => a.status === query.status);
-    }
-
-    filtered.sort((a, b) => b.reputation - a.reputation);
-
-    return filtered;
   }
 
   private paginateResults(

@@ -118,6 +118,8 @@ export interface HiveConfig {
 }
 
 export interface RegisterOptions {
+  name?: string;
+  personality?: 'professional' | 'creative' | 'efficient' | 'balanced';
   capabilities: Capability[];
   pricing: AgentPricing;
   endpoint: string;
@@ -145,4 +147,59 @@ export interface OracleResponse {
   passed: boolean;
   signature: string;
   timestamp: number;
+}
+
+export interface KeiroJob {
+  id: string;
+  title: string;
+  description: string;
+  requiredSkills: string[];
+  requiredTier: string;
+  minimumCreditScore: number;
+  payment: number;
+  paymentToken: 'SOL' | 'USDC';
+  estimatedTime: string;
+  status: string;
+  assignedAgent?: string;
+  createdAt: string;
+  deadline?: string;
+}
+
+export interface KeiroEarning {
+  id: string;
+  agentId: string;
+  jobId: string;
+  amount: number;
+  token: 'SOL' | 'USDC';
+  status: 'pending' | 'released' | 'disputed';
+  createdAt: string;
+  releasedAt?: string;
+}
+
+export interface KeiroEarningsStats {
+  today: number;
+  thisWeek: number;
+  thisMonth: number;
+  totalEarned: { sol: number; usdc: number };
+  totalPending: { sol: number; usdc: number };
+  transactionCount: number;
+}
+
+export interface KeiroReceipt {
+  version: number;
+  id: string;
+  agentId: string;
+  agentIdentity: string;
+  kind: string;
+  summary: string;
+  payload: Record<string, unknown>;
+  hash: string;
+  signature: string | null;
+  signatureAlgo: string | null;
+  createdAt: string;
+}
+
+export interface KeiroMeishiBundle {
+  passport: Record<string, unknown> | null;
+  mandate: Record<string, unknown> | null;
 }

@@ -1,11 +1,10 @@
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
 import type {
   AgentInfo,
-  AgentStatus,
   RegisterOptions,
   RegistrationResult,
-  Capability,
 } from './types.js';
+import { KeiroApiClient } from './keiro-client.js';
 
 const DEFAULT_PROGRAM_ID = '8sUnNU6WBD2SYapCE12S7LwH1b8zWoniytze7ifWwXCM';
 const AGENT_SEED_PREFIX = 'hive_agent';
@@ -19,6 +18,7 @@ export class AgentRegistry {
   private programId: PublicKey;
   private apiEndpoint: string;
   private registeredAgents: Map<string, AgentInfo> = new Map();
+  private keiro: KeiroApiClient;
 
   constructor(config: {
     connection: Connection;
@@ -30,6 +30,7 @@ export class AgentRegistry {
     this.keypair = config.keypair;
     this.programId = new PublicKey(config.programId || DEFAULT_PROGRAM_ID);
     this.apiEndpoint = config.apiEndpoint || 'https://api.kamiyo.ai';
+    this.keiro = new KeiroApiClient(this.apiEndpoint);
   }
 
   async register(options: RegisterOptions): Promise<RegistrationResult> {
@@ -68,32 +69,41 @@ export class AgentRegistry {
         this.programId
       );
 
-      const agentId = `agent_${this.keypair.publicKey.toBase58().slice(0, 8)}`;
-      const signature = `reg_${Date.now().toString(36)}_${agentId}`;
-
-      const agentInfo: AgentInfo = {
-        id: agentId,
-        address: agentPda.toBase58(),
-        capabilities: options.capabilities,
-        pricing: options.pricing,
-        endpoint: options.endpoint,
-        reputation: 500,
-        totalJobs: 0,
-        successRate: 100,
-        avgResponseTime: 5000,
-        status: 'active',
-        registeredAt: Date.now(),
-        lastActiveAt: Date.now(),
-      };
-
-      this.registeredAgents.set(agentId, agentInfo);
-
-      return {
-        success: true,
-        agentId,
-        address: agentPda.toBase58(),
-        signature,
-      };
+      try {
+        const created = await this.keiro.registerAgent(this.keypair.publicKey.toBase58(), options);
+        const agentInfo = this.keiro.mapAgent(created);
+        this.registeredAgents.set(agentInfo.id, agentInfo);
+        return {
+          success: true,
+          agentId: agentInfo.id,
+          address: agentInfo.address,
+          signature: `reg_${Date.now().toString(36)}_${agentInfo.id}`,
+        };
+      } catch {
+        const agentId = `agent_${this.keypair.publicKey.toBase58().slice(0, 8)}`;
+        const signature = `reg_${Date.now().toString(36)}_${agentId}`;
+        const agentInfo: AgentInfo = {
+          id: agentId,
+          address: agentPda.toBase58(),
+          capabilities: options.capabilities,
+          pricing: options.pricing,
+          endpoint: options.endpoint,
+          reputation: 500,
+          totalJobs: 0,
+          successRate: 100,
+          avgResponseTime: 5000,
+          status: 'active',
+          registeredAt: Date.now(),
+          lastActiveAt: Date.now(),
+        };
+        this.registeredAgents.set(agentId, agentInfo);
+        return {
+          success: true,
+          agentId,
+          address: agentPda.toBase58(),
+          signature,
+        };
+      }
     } catch (err) {
       return {
         success: false,
@@ -111,6 +121,12 @@ export class AgentRegistry {
     }
 
     try {
+      try {
+        const updated = await this.keiro.updateAgent(agentId, updates);
+        this.registeredAgents.set(updated.id, this.keiro.mapAgent(updated));
+      } catch {
+        // fall through to local behavior
+      }
       const signature = `update_${Date.now().toString(36)}_${agentId}`;
       return {
         success: true,
@@ -131,6 +147,15 @@ export class AgentRegistry {
     }
 
     try {
+      try {
+        const updated = await this.keiro.setAgentActive(agentId, false);
+        this.registeredAgents.set(updated.id, this.keiro.mapAgent(updated));
+      } catch {
+        const existing = this.registeredAgents.get(agentId);
+        if (existing) {
+          this.registeredAgents.set(agentId, { ...existing, status: 'inactive' });
+        }
+      }
       const signature = `deactivate_${Date.now().toString(36)}_${agentId}`;
       return {
         success: true,
@@ -147,7 +172,19 @@ export class AgentRegistry {
 
   async get(agentId: string): Promise<AgentInfo | null> {
     if (!agentId) return null;
-    return this.registeredAgents.get(agentId) ?? null;
+    const local = this.registeredAgents.get(agentId);
+    if (local) return local;
+
+    const remote = await this.keiro.getAgent(agentId);
+    if (!remote) return null;
+
+    let mapped = this.keiro.mapAgent(remote);
+    const reputation = await this.keiro.getAgentReputation(agentId);
+    if (reputation !== null) {
+      mapped = { ...mapped, reputation };
+    }
+    this.registeredAgents.set(agentId, mapped);
+    return mapped;
   }
 
   async getByAddress(address: string): Promise<AgentInfo | null> {
