@@ -194,7 +194,12 @@ export default function TeamDetailPage() {
       setKeiroReceipts(receipts);
       setKeiroMeishi(meishi);
     } catch (err) {
-      setKeiroError(err instanceof Error ? err.message : 'Failed to load Keiro data');
+      const message = err instanceof Error ? err.message : 'Failed to load Keiro data';
+      if (message === 'Endpoint not found') {
+        setKeiroError('Keiro API is not configured. Set NEXT_PUBLIC_KEIRO_API_URL to your keiro-api base URL.');
+      } else {
+        setKeiroError(message);
+      }
     } finally {
       setKeiroLoading(false);
     }

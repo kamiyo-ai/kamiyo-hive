@@ -1,4 +1,5 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kamiyo-protocol-4c70.onrender.com';
+const KEIRO_API_BASE = process.env.NEXT_PUBLIC_KEIRO_API_URL || API_BASE;
 
 // Auth token storage
 let authToken: string | null = null;
@@ -99,6 +100,37 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   const res = await fetch(`${API_BASE}${path}`, {
+    headers,
+    ...options,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    let message = `API error: ${res.status}`;
+    if (typeof err.error === 'string') {
+      message = err.error;
+    } else if (err.error?.message) {
+      message = err.error.message;
+    } else if (typeof err.message === 'string') {
+      message = err.message;
+    } else if (res.status === 401) {
+      message = 'Authentication required';
+    } else if (res.status === 403) {
+      message = 'Access denied';
+    }
+    throw new Error(message);
+  }
+  return res.json();
+}
+
+async function keiroApi<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+
+  const res = await fetch(`${KEIRO_API_BASE}${path}`, {
     headers,
     ...options,
   });
@@ -368,28 +400,28 @@ export interface KeiroMeishiBundle {
 }
 
 export async function getKeiroMatchingJobs(agentId: string): Promise<KeiroJob[]> {
-  const data = await api<{ jobs: KeiroJob[] }>(`/api/jobs/matching/${encodeURIComponent(agentId)}`);
+  const data = await keiroApi<{ jobs: KeiroJob[] }>(`/api/jobs/matching/${encodeURIComponent(agentId)}`);
   return data.jobs;
 }
 
 export async function getKeiroAgentJobs(agentId: string): Promise<KeiroJob[]> {
-  const data = await api<{ jobs: KeiroJob[] }>(`/api/jobs/agent/${encodeURIComponent(agentId)}`);
+  const data = await keiroApi<{ jobs: KeiroJob[] }>(`/api/jobs/agent/${encodeURIComponent(agentId)}`);
   return data.jobs;
 }
 
 export async function getKeiroEarnings(agentId: string): Promise<KeiroEarning[]> {
-  const data = await api<{ earnings: KeiroEarning[] }>(`/api/earnings/agent/${encodeURIComponent(agentId)}`);
+  const data = await keiroApi<{ earnings: KeiroEarning[] }>(`/api/earnings/agent/${encodeURIComponent(agentId)}`);
   return data.earnings;
 }
 
 export async function getKeiroEarningsStats(agentId: string): Promise<KeiroEarningsStats> {
-  const data = await api<{ stats: KeiroEarningsStats }>(`/api/earnings/agent/${encodeURIComponent(agentId)}/stats`);
+  const data = await keiroApi<{ stats: KeiroEarningsStats }>(`/api/earnings/agent/${encodeURIComponent(agentId)}/stats`);
   return data.stats;
 }
 
 export async function getKeiroReceipts(agentId: string, limit = 20): Promise<KeiroReceipt[]> {
   const capped = Math.max(1, Math.min(200, Math.floor(limit)));
-  const data = await api<{ receipts: KeiroReceipt[] }>(
+  const data = await keiroApi<{ receipts: KeiroReceipt[] }>(
     `/api/receipts/agent/${encodeURIComponent(agentId)}?limit=${capped}`
   );
   return data.receipts;
@@ -397,8 +429,8 @@ export async function getKeiroReceipts(agentId: string, limit = 20): Promise<Kei
 
 export async function getKeiroMeishi(agentId: string): Promise<KeiroMeishiBundle> {
   const [passportRes, mandateRes] = await Promise.all([
-    api<{ passport: Record<string, unknown> }>(`/api/meishi/passport/${encodeURIComponent(agentId)}`).catch(() => null),
-    api<{ mandate: Record<string, unknown> | null }>(`/api/meishi/mandate/${encodeURIComponent(agentId)}`).catch(() => null),
+    keiroApi<{ passport: Record<string, unknown> }>(`/api/meishi/passport/${encodeURIComponent(agentId)}`).catch(() => null),
+    keiroApi<{ mandate: Record<string, unknown> | null }>(`/api/meishi/mandate/${encodeURIComponent(agentId)}`).catch(() => null),
   ]);
 
   return {
