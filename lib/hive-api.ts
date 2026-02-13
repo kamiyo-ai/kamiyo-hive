@@ -89,6 +89,8 @@ export interface CreateTeamInput {
   members?: Array<{ agentId: string; role?: string; drawLimit?: number }>;
 }
 
+const TEAMS_PATH = '/api/hive-teams';
+
 async function requestJson<T>(baseUrl: string, path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -140,26 +142,26 @@ export async function authenticateWallet(wallet: string, signature: string): Pro
 }
 
 export async function listTeams(): Promise<HiveTeam[]> {
-  const data = await api<{ teams: HiveTeam[] }>('/api/swarm-teams');
+  const data = await api<{ teams: HiveTeam[] }>(TEAMS_PATH);
   return data.teams;
 }
 
 export async function createTeam(input: CreateTeamInput): Promise<HiveTeamDetail> {
-  return api<HiveTeamDetail>('/api/swarm-teams', {
+  return api<HiveTeamDetail>(TEAMS_PATH, {
     method: 'POST',
     body: JSON.stringify(input),
   });
 }
 
 export async function getTeam(teamId: string): Promise<HiveTeamDetail> {
-  return api<HiveTeamDetail>(`/api/swarm-teams/${teamId}`);
+  return api<HiveTeamDetail>(`${TEAMS_PATH}/${teamId}`);
 }
 
 export async function addMember(
   teamId: string,
   data: { agentId: string; role?: string; drawLimit?: number }
 ): Promise<HiveMember> {
-  return api<HiveMember>(`/api/swarm-teams/${teamId}/members`, {
+  return api<HiveMember>(`${TEAMS_PATH}/${teamId}/members`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -173,15 +175,15 @@ export interface DeleteTeamResult {
 }
 
 export async function deleteTeam(teamId: string): Promise<DeleteTeamResult> {
-  return api<DeleteTeamResult>(`/api/swarm-teams/${teamId}`, { method: 'DELETE' });
+  return api<DeleteTeamResult>(`${TEAMS_PATH}/${teamId}`, { method: 'DELETE' });
 }
 
 export async function removeMember(teamId: string, memberId: string): Promise<void> {
-  await api(`/api/swarm-teams/${teamId}/members/${memberId}`, { method: 'DELETE' });
+  await api(`${TEAMS_PATH}/${teamId}/members/${memberId}`, { method: 'DELETE' });
 }
 
 export async function fundTeam(teamId: string, amount: number): Promise<{ poolBalance: number }> {
-  return api<{ success: boolean; poolBalance: number }>(`/api/swarm-teams/${teamId}/fund`, {
+  return api<{ success: boolean; poolBalance: number }>(`${TEAMS_PATH}/${teamId}/fund`, {
     method: 'POST',
     body: JSON.stringify({ amount }),
   });
@@ -191,7 +193,7 @@ export async function updateBudget(
   teamId: string,
   data: { dailyLimit?: number; memberLimits?: Record<string, number> }
 ): Promise<void> {
-  await api(`/api/swarm-teams/${teamId}/budget`, {
+  await api(`${TEAMS_PATH}/${teamId}/budget`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
@@ -207,7 +209,7 @@ export async function getDraws(
   if (params?.agentId) query.set('agentId', params.agentId);
   const qs = query.toString();
   return api<{ draws: HiveDraw[]; total: number }>(
-    `/api/swarm-teams/${teamId}/draws${qs ? `?${qs}` : ''}`
+    `${TEAMS_PATH}/${teamId}/draws${qs ? `?${qs}` : ''}`
   );
 }
 
@@ -218,7 +220,7 @@ export interface BlindfoldFundingUrl {
 }
 
 export async function getBlindfoldFundingUrl(teamId: string): Promise<BlindfoldFundingUrl> {
-  return api<BlindfoldFundingUrl>(`/api/swarm-teams/${teamId}/fund/blindfold`);
+  return api<BlindfoldFundingUrl>(`${TEAMS_PATH}/${teamId}/fund/blindfold`);
 }
 
 export interface FundDeposit {
@@ -231,7 +233,7 @@ export interface FundDeposit {
 }
 
 export async function initiateFunding(teamId: string, amount: number): Promise<FundDeposit> {
-  return api<FundDeposit>(`/api/swarm-teams/${teamId}/fund`, {
+  return api<FundDeposit>(`${TEAMS_PATH}/${teamId}/fund`, {
     method: 'POST',
     body: JSON.stringify({ amount }),
   });
@@ -241,14 +243,14 @@ export async function confirmFunding(teamId: string, depositId: string): Promise
   status: string;
   poolBalance?: number;
 }> {
-  return api(`/api/swarm-teams/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
+  return api(`${TEAMS_PATH}/${teamId}/fund/${depositId}/confirm`, { method: 'POST' });
 }
 
 export async function fundFromCredits(teamId: string, wallet: string, amountUsd: number): Promise<{
   success: boolean;
   poolBalance: number;
 }> {
-  return api(`/api/swarm-teams/${teamId}/fund-credits`, {
+  return api(`${TEAMS_PATH}/${teamId}/fund-credits`, {
     method: 'POST',
     body: JSON.stringify({ wallet, amountUsd }),
   });
@@ -260,7 +262,7 @@ export async function fundWithTokens(teamId: string, signedTransaction: string):
   tokenAmount: number;
   signature: string;
 }> {
-  return api(`/api/swarm-teams/${teamId}/fund-tokens`, {
+  return api(`${TEAMS_PATH}/${teamId}/fund-tokens`, {
     method: 'POST',
     body: JSON.stringify({ signedTransaction }),
   });
@@ -281,7 +283,7 @@ export interface TaskResult {
 }
 
 export async function submitTask(teamId: string, task: TaskSubmission): Promise<TaskResult> {
-  return api<TaskResult>(`/api/swarm-teams/${teamId}/tasks`, {
+  return api<TaskResult>(`${TEAMS_PATH}/${teamId}/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),
   });
@@ -300,7 +302,7 @@ export async function initiateBlindfoldFunding(
   teamId: string,
   stateToken: string
 ): Promise<BlindfoldDirectFundingResponse> {
-  return api<BlindfoldDirectFundingResponse>(`/api/swarm-teams/${teamId}/fund/initiate`, {
+  return api<BlindfoldDirectFundingResponse>(`${TEAMS_PATH}/${teamId}/fund/initiate`, {
     method: 'POST',
     body: JSON.stringify({
       walletAddress,
