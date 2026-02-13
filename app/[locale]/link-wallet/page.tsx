@@ -20,7 +20,6 @@ export default function LinkWalletPage() {
 
   // Update step based on auth state
   useEffect(() => {
-    console.log('[link-wallet] sessionStatus:', sessionStatus, 'session:', session, 'publicKey:', publicKey?.toBase58(), 'step:', step);
     if (sessionStatus === 'loading') return;
 
     if (!session) {
@@ -38,7 +37,7 @@ export default function LinkWalletPage() {
 
     const timestamp = Date.now();
     const nonce = Math.random().toString(36).substring(2, 10);
-    const message = `KAMIYO Wallet Verification\n\nTwitter: @${session.user.twitterUsername}\nWallet: ${publicKey.toBase58()}\nTimestamp: ${timestamp}\nNonce: ${nonce}\n\nSign this message to link your wallet to your X account.`;
+    const message = `KAMIYO Wallet Verification\n\nTwitter: @${session.user.twitterUsername}\nTwitter ID: ${session.user.twitterId}\nWallet: ${publicKey.toBase58()}\nTimestamp: ${timestamp}\nNonce: ${nonce}\n\nSign this message to link your wallet to your X account.`;
     setChallenge(message);
   }
 

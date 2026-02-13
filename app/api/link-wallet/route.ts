@@ -6,50 +6,83 @@ import bs58 from 'bs58';
 
 const API_URL = process.env.KAMIYO_API_URL || 'https://api.kamiyo.ai';
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function badRequest(error: string) {
+  return NextResponse.json({ error }, { status: 400 });
+}
+
 export async function POST(request: NextRequest) {
+  const session = await auth();
+
+  if (!session?.user?.twitterId || !session.user.twitterUsername) {
+    return NextResponse.json({ error: 'Not authenticated with X' }, { status: 401 });
+  }
+
+  let body: unknown;
   try {
-    const session = await auth();
+    body = await request.json();
+  } catch {
+    return badRequest('Invalid JSON');
+  }
 
-    if (!session?.user?.twitterId) {
-      return NextResponse.json(
-        { error: 'Not authenticated with X' },
-        { status: 401 }
-      );
-    }
+  if (!isRecord(body)) return badRequest('Invalid request body');
 
-    const { walletAddress, signature, message } = await request.json();
+  const walletAddress = body.walletAddress;
+  const signature = body.signature;
+  const message = body.message;
 
-    if (!walletAddress || !signature || !message) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
+  if (typeof walletAddress !== 'string' || typeof signature !== 'string' || typeof message !== 'string') {
+    return badRequest('Missing required fields');
+  }
 
-    // Verify the signature
-    const publicKey = new PublicKey(walletAddress);
-    const messageBytes = new TextEncoder().encode(message);
-    const signatureBytes = bs58.decode(signature);
+  if (message.length > 4096) return badRequest('Message too long');
 
-    const isValid = nacl.sign.detached.verify(
-      messageBytes,
-      signatureBytes,
-      publicKey.toBytes()
+  if (!message.includes('KAMIYO Wallet Verification')) return badRequest('Invalid message');
+  if (!message.includes(`Twitter: @${session.user.twitterUsername}`)) return badRequest('Invalid message');
+  if (!message.includes(`Twitter ID: ${session.user.twitterId}`)) return badRequest('Invalid message');
+  if (!message.includes(`Wallet: ${walletAddress}`)) return badRequest('Invalid message');
+
+  const apiSecret = process.env.API_SECRET;
+  if (!apiSecret) {
+    return NextResponse.json(
+      { error: 'Server not configured' },
+      { status: 503 }
     );
+  }
 
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
-    }
+  let publicKey: PublicKey;
+  let signatureBytes: Uint8Array;
+  try {
+    publicKey = new PublicKey(walletAddress);
+  } catch {
+    return badRequest('Invalid wallet address');
+  }
 
-    // Forward to kamiyo-x-bot API to store the link
-    const response = await fetch(`${API_URL}/api/link-wallet`, {
+  try {
+    signatureBytes = bs58.decode(signature);
+  } catch {
+    return badRequest('Invalid signature encoding');
+  }
+
+  if (signatureBytes.length !== nacl.sign.signatureLength) {
+    return badRequest('Invalid signature');
+  }
+
+  const messageBytes = new TextEncoder().encode(message);
+  const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKey.toBytes());
+
+  if (!isValid) return badRequest('Invalid signature');
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/link-wallet`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.API_SECRET}`,
+        'Authorization': `Bearer ${apiSecret}`,
       },
       body: JSON.stringify({
         twitterId: session.user.twitterId,
@@ -58,23 +91,18 @@ export async function POST(request: NextRequest) {
         signature,
         message,
       }),
+      signal: AbortSignal.timeout(15_000),
     });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('Failed to link wallet:', error);
-      return NextResponse.json(
-        { error: 'Failed to link wallet' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Link wallet error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Failed to link wallet (upstream request failed):', error);
+    return NextResponse.json({ error: 'Failed to link wallet' }, { status: 502 });
   }
+
+  if (!response.ok) {
+    const upstreamText = await response.text().catch(() => '');
+    console.error('Failed to link wallet (upstream error):', response.status, upstreamText.slice(0, 500));
+    return NextResponse.json({ error: 'Failed to link wallet' }, { status: 502 });
+  }
+
+  return NextResponse.json({ success: true });
 }
