@@ -30,7 +30,7 @@ const getRandomScramble = () => {
     let text = baseText[Math.floor(Math.random() * baseText.length)];
 
     const injectRandomNoise = (str: string): string => {
-        let chars = str.split("");
+        const chars = str.split("");
         for (let i = 0; i < chars.length; i++) {
             if (Math.random() > 0.9) {
                 chars[i] = Math.random() > 0.5
