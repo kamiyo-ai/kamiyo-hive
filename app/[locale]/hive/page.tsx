@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -95,15 +95,7 @@ export default function HivePage() {
     setMembers(preset.members);
   };
 
-  // When wallet connects after user clicked create, proceed with creation
-  useEffect(() => {
-    if (wallet.publicKey && pendingCreate.current) {
-      pendingCreate.current = false;
-      doCreate();
-    }
-  }, [wallet.publicKey]);
-
-  const authenticate = async (): Promise<boolean> => {
+  const authenticate = useCallback(async (): Promise<boolean> => {
     if (!wallet.publicKey || !wallet.signMessage) {
       return false;
     }
@@ -129,9 +121,9 @@ export default function HivePage() {
       }
       return false;
     }
-  };
+  }, [wallet.publicKey, wallet.signMessage]);
 
-  const doCreate = async () => {
+  const doCreate = useCallback(async () => {
     if (!name || !dailyLimit || !wallet.publicKey) return;
     setCreating(true);
     setError(null);
@@ -167,7 +159,15 @@ export default function HivePage() {
       setError(message);
       setCreating(false);
     }
-  };
+  }, [name, dailyLimit, wallet.publicKey, authenticate, currency, members, router]);
+
+  // When wallet connects after user clicked create, proceed with creation
+  useEffect(() => {
+    if (wallet.publicKey && pendingCreate.current) {
+      pendingCreate.current = false;
+      void doCreate();
+    }
+  }, [wallet.publicKey, doCreate]);
 
   const handleCreate = async () => {
     setError(null);

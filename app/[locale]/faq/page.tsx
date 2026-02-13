@@ -11,18 +11,26 @@ interface FAQ {
   answer: string;
 }
 
+const CATEGORIES: Category[] = [
+  'gettingStarted',
+  'identity',
+  'staking',
+  'governance',
+  'hive',
+  'escrow',
+  'technical',
+];
+
 export default function FAQPage() {
   const t = useTranslations('faq');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  const categories: Category[] = ['gettingStarted', 'identity', 'staking', 'governance', 'hive', 'escrow', 'technical'];
-
   // Get all FAQs from translations
   const allFaqs = useMemo(() => {
     const faqList: Array<{ category: Category; faq: FAQ; index: number }> = [];
-    categories.forEach(category => {
+    CATEGORIES.forEach(category => {
       const categoryFaqs = t.raw(`faqs.${category}`) as FAQ[];
       categoryFaqs.forEach((faq, index) => {
         faqList.push({ category, faq, index });
@@ -94,7 +102,7 @@ export default function FAQPage() {
         >
           {t('allCategories')}
         </button>
-        {categories.map(category => (
+        {CATEGORIES.map(category => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}

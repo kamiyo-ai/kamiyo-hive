@@ -350,7 +350,7 @@ export default function TeamDetailPage() {
         // Silently fail - will retry on tab click
       });
     }
-  }, [team, teamId]);
+  }, [team, teamId, blindfoldUrl]);
 
   // Poll deposit confirmation
   useEffect(() => {

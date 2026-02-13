@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
@@ -18,6 +18,15 @@ export default function LinkWalletPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const generateChallenge = useCallback(() => {
+    if (!publicKey || !session?.user?.twitterId || !session.user.twitterUsername) return;
+
+    const timestamp = Date.now();
+    const nonce = Math.random().toString(36).substring(2, 10);
+    const message = `KAMIYO Wallet Verification\n\nTwitter: @${session.user.twitterUsername}\nTwitter ID: ${session.user.twitterId}\nWallet: ${publicKey.toBase58()}\nTimestamp: ${timestamp}\nNonce: ${nonce}\n\nSign this message to link your wallet to your X account.`;
+    setChallenge(message);
+  }, [publicKey, session?.user?.twitterId, session?.user?.twitterUsername]);
+
   // Update step based on auth state
   useEffect(() => {
     if (sessionStatus === 'loading') return;
@@ -30,16 +39,7 @@ export default function LinkWalletPage() {
       setStep('sign');
       generateChallenge();
     }
-  }, [session, sessionStatus, publicKey, step]);
-
-  function generateChallenge() {
-    if (!publicKey || !session?.user?.twitterId) return;
-
-    const timestamp = Date.now();
-    const nonce = Math.random().toString(36).substring(2, 10);
-    const message = `KAMIYO Wallet Verification\n\nTwitter: @${session.user.twitterUsername}\nTwitter ID: ${session.user.twitterId}\nWallet: ${publicKey.toBase58()}\nTimestamp: ${timestamp}\nNonce: ${nonce}\n\nSign this message to link your wallet to your X account.`;
-    setChallenge(message);
-  }
+  }, [session, sessionStatus, publicKey, step, generateChallenge]);
 
   async function handleSign() {
     if (!publicKey || !signMessage || !challenge || !session?.user?.twitterId) return;

@@ -35,16 +35,20 @@ function useSvgTexture(url: string): THREE.Texture | null {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    let tex: THREE.Texture | null = null;
+
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
+      if (cancelled) return;
       const canvas = document.createElement("canvas");
       canvas.width = 128;
       canvas.height = 128;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(img, 0, 0, 128, 128);
-        const tex = new THREE.CanvasTexture(canvas);
+        tex = new THREE.CanvasTexture(canvas);
         tex.needsUpdate = true;
         setTexture(tex);
       }
@@ -52,7 +56,9 @@ function useSvgTexture(url: string): THREE.Texture | null {
     img.src = url;
 
     return () => {
-      if (texture) texture.dispose();
+      cancelled = true;
+      img.onload = null;
+      if (tex) tex.dispose();
     };
   }, [url]);
 
