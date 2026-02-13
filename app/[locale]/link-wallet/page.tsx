@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { SessionProvider, useSession, signIn, signOut } from 'next-auth/react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import PayButton from '@/components/PayButton';
 import bs58 from 'bs58';
 
-export default function LinkWalletPage() {
+function LinkWalletPageInner() {
   const { data: session, status: sessionStatus } = useSession();
   const { publicKey, signMessage, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
@@ -259,5 +259,13 @@ export default function LinkWalletPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LinkWalletPage() {
+  return (
+    <SessionProvider>
+      <LinkWalletPageInner />
+    </SessionProvider>
   );
 }
