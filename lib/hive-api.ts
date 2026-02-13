@@ -1,7 +1,6 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kamiyo-protocol-4c70.onrender.com';
 const KEIRO_API_BASE = process.env.NEXT_PUBLIC_KEIRO_API_URL || API_BASE;
 
-// Auth token storage
 let authToken: string | null = null;
 let authPromise: Promise<boolean> | null = null;
 
@@ -13,7 +12,6 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
-// Centralized auth function that deduplicates concurrent requests
 export async function ensureAuthenticated(
   getWallet: () => { publicKey: string; signMessage: (msg: Uint8Array) => Promise<Uint8Array> } | null
 ): Promise<boolean> {
@@ -28,8 +26,8 @@ export async function ensureAuthenticated(
       const { challenge } = await getChallenge(wallet.publicKey);
       const messageBytes = new TextEncoder().encode(challenge);
       const signatureBytes = await wallet.signMessage(messageBytes);
-      const bs58 = await import('bs58');
-      const signature = bs58.default.encode(signatureBytes);
+      const { default: bs58 } = await import('bs58');
+      const signature = bs58.encode(signatureBytes);
       const { token } = await authenticateWallet(wallet.publicKey, signature);
       authToken = token;
       return true;
@@ -91,7 +89,7 @@ export interface CreateTeamInput {
   members?: Array<{ agentId: string; role?: string; drawLimit?: number }>;
 }
 
-async function api<T>(path: string, options?: RequestInit): Promise<T> {
+async function requestJson<T>(baseUrl: string, path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -99,7 +97,7 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
     headers['Authorization'] = `Bearer ${authToken}`;
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${baseUrl}${path}`, {
     headers,
     ...options,
   });
@@ -120,40 +118,16 @@ async function api<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(message);
   }
   return res.json();
+}
+
+async function api<T>(path: string, options?: RequestInit): Promise<T> {
+  return requestJson(API_BASE, path, options);
 }
 
 async function keiroApi<T>(path: string, options?: RequestInit): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
-  }
-
-  const res = await fetch(`${KEIRO_API_BASE}${path}`, {
-    headers,
-    ...options,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    let message = `API error: ${res.status}`;
-    if (typeof err.error === 'string') {
-      message = err.error;
-    } else if (err.error?.message) {
-      message = err.error.message;
-    } else if (typeof err.message === 'string') {
-      message = err.message;
-    } else if (res.status === 401) {
-      message = 'Authentication required';
-    } else if (res.status === 403) {
-      message = 'Access denied';
-    }
-    throw new Error(message);
-  }
-  return res.json();
+  return requestJson(KEIRO_API_BASE, path, options);
 }
 
-// Auth functions
 export async function getChallenge(wallet: string): Promise<{ challenge: string; expiresAt: number }> {
   return api(`/api/auth/challenge?wallet=${encodeURIComponent(wallet)}`);
 }
@@ -237,7 +211,6 @@ export async function getDraws(
   );
 }
 
-// Blindfold iframe funding
 export interface BlindfoldFundingUrl {
   fundingUrl: string;
   stateToken: string;
@@ -248,7 +221,6 @@ export async function getBlindfoldFundingUrl(teamId: string): Promise<BlindfoldF
   return api<BlindfoldFundingUrl>(`/api/swarm-teams/${teamId}/fund/blindfold`);
 }
 
-// Fund deposit flow (Blindfold integration)
 export interface FundDeposit {
   depositId: string;
   paymentId: string;
@@ -294,7 +266,6 @@ export async function fundWithTokens(teamId: string, signedTransaction: string):
   });
 }
 
-// Task submission
 export interface TaskSubmission {
   memberId: string;
   description: string;
@@ -316,7 +287,6 @@ export async function submitTask(teamId: string, task: TaskSubmission): Promise<
   });
 }
 
-// Blindfold direct funding (bypasses iframe wallet connect issue)
 export interface BlindfoldDirectFundingResponse {
   transaction: string;
   amount_crypto: string;
@@ -340,7 +310,6 @@ export async function initiateBlindfoldFunding(
   });
 }
 
-// Keiro integration
 export interface KeiroJob {
   id: string;
   title: string;

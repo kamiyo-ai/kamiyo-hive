@@ -244,7 +244,9 @@ export class MultiModelRouter {
   }
 
   switchModel(from: string, to: string, reason: string): void {
-    console.log(`Switching model: ${from} → ${to} (${reason})`);
+    void from;
+    void to;
+    void reason;
   }
 
   estimateCost(modelName: string, tokens: number): number {

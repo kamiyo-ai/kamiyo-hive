@@ -1,6 +1,5 @@
 import type {
   AgentInfo,
-  AgentPricing,
   AgentStatus,
   DiscoveryQuery,
   KeiroEarning,
@@ -36,13 +35,6 @@ const DEFAULT_TIMEOUT_MS = 10_000;
 
 function normalizeCapability(value: string): string {
   return value.trim().toLowerCase().replace(/[\s_]+/g, '-');
-}
-
-function mapPrice(metadata: Record<string, unknown> | undefined): AgentPricing {
-  const raw = metadata?.pricePerTask;
-  const perTask = typeof raw === 'number' && Number.isFinite(raw) && raw >= 0 ? raw : 0;
-  const currency = metadata?.priceCurrency === 'USD' ? 'USD' : 'SOL';
-  return { perTask, currency };
 }
 
 export class KeiroApiClient {
@@ -209,7 +201,7 @@ export class KeiroApiClient {
       id: agent.id,
       address: agent.walletAddress,
       capabilities,
-      pricing: mapPrice(undefined),
+      pricing: { perTask: 0, currency: 'SOL' },
       endpoint: `${this.baseUrl}/api/agents/${encodeURIComponent(agent.id)}`,
       reputation: Math.max(0, Math.min(1000, Math.round(agent.creditScore * 10))),
       totalJobs: Math.max(0, agent.tasksCompleted),
