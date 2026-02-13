@@ -97,6 +97,7 @@ export class TestWalletAdapter extends BaseMessageSignerWalletAdapter {
  * Get test wallet secret from URL param
  */
 export function getTestWalletSecret(): string | null {
+  if (process.env.NODE_ENV === 'production') return null;
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
   return params.get('testWallet');
