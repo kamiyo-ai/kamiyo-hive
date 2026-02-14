@@ -45,6 +45,20 @@ export default async function SwarmRunPage({ params }: Props) {
   const followups = Array.isArray(final?.followups) ? final.followups.filter((f) => typeof f === 'string') : [];
   const fixes = Array.isArray(critique?.fixes) ? critique!.fixes.filter((f) => typeof f === 'string') : [];
 
+  let totalSpent = 0;
+  const spentByAgent = new Map<string, number>();
+  for (const o of outputs) {
+    if (!o || typeof o !== 'object') continue;
+    const oo = o as Record<string, unknown>;
+    const agentId = typeof oo.agentId === 'string' ? oo.agentId : '';
+    const amountDrawn = typeof oo.amountDrawn === 'number' && Number.isFinite(oo.amountDrawn) ? oo.amountDrawn : 0;
+    if (!agentId || !amountDrawn) continue;
+    totalSpent += amountDrawn;
+    spentByAgent.set(agentId, (spentByAgent.get(agentId) ?? 0) + amountDrawn);
+  }
+
+  const topSpend = [...spentByAgent.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+
   return (
     <div className="min-h-screen pt-24 md:pt-28 pb-10 px-5 max-w-[1400px] mx-auto">
       <div className="mb-10">
@@ -56,6 +70,12 @@ export default async function SwarmRunPage({ params }: Props) {
           <span>Max steps: {run.maxSteps}</span>
           {typeof run.maxBudgetPerStep === 'number' && Number.isFinite(run.maxBudgetPerStep) ? (
             <span>Max budget/step: {run.maxBudgetPerStep.toFixed(2)}</span>
+          ) : null}
+          {totalSpent > 0 ? <span>Total spent: {totalSpent.toFixed(4)}</span> : null}
+          {topSpend.length > 0 ? (
+            <span>
+              Top spend: {topSpend.map(([agentId, amt]) => `${agentId} ${amt.toFixed(4)}`).join(' · ')}
+            </span>
           ) : null}
           <span>Created: {fmtDate(run.createdAt)}</span>
           <Link href={`/${locale}/hive/${run.teamId}`} className="text-gray-300 hover:text-white">
@@ -164,6 +184,9 @@ export default async function SwarmRunPage({ params }: Props) {
               const stepId = typeof oo.stepId === 'string' ? oo.stepId : `s${i + 1}`;
               const title = typeof oo.title === 'string' ? oo.title : '';
               const agentId = typeof oo.agentId === 'string' ? oo.agentId : '';
+              const status = typeof oo.status === 'string' ? oo.status : '';
+              const amountDrawn =
+                typeof oo.amountDrawn === 'number' && Number.isFinite(oo.amountDrawn) ? oo.amountDrawn : null;
               const result = typeof oo.result === 'string' ? oo.result : '';
               return (
                 <details key={stepId} className="border border-gray-900 rounded p-3">
@@ -171,6 +194,8 @@ export default async function SwarmRunPage({ params }: Props) {
                     <span className="text-gray-500 mr-2">{stepId}</span>
                     <span className="text-white font-mono mr-2">{agentId}</span>
                     <span className="text-gray-300">{title}</span>
+                    {status ? <span className="text-gray-600 ml-2">{status}</span> : null}
+                    {amountDrawn !== null ? <span className="text-gray-600 ml-2">{amountDrawn.toFixed(4)}</span> : null}
                   </summary>
                   {result ? (
                     <pre className="mt-3 text-xs text-gray-200 whitespace-pre-wrap max-h-72 overflow-y-auto">
@@ -188,4 +213,3 @@ export default async function SwarmRunPage({ params }: Props) {
     </div>
   );
 }
-

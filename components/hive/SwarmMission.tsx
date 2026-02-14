@@ -45,6 +45,12 @@ function fmtTime(ts: number) {
   return new Date(ts).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
+function fmtAmount(amount: number, currency: string) {
+  if (!Number.isFinite(amount)) return '';
+  const fixed = Math.abs(amount) >= 1000 ? amount.toFixed(2) : amount.toFixed(4);
+  return `${fixed} ${currency}`;
+}
+
 function statusClass(status: string) {
   switch (status) {
     case 'completed':
@@ -238,10 +244,20 @@ export function SwarmMission({
     });
 
     setResults((prev) => ({ ...prev, [step.id]: result }));
+    const spent =
+      typeof result.amountDrawn === 'number' && Number.isFinite(result.amountDrawn)
+        ? result.amountDrawn
+        : null;
     pushTrace({
       kind: 'step_completed',
       stepId: step.id,
-      message: `${step.agentId}: ${result.status}${budget ? ` (${budget.toFixed(2)} ${currencyDisplay} cap)` : ''}`,
+      message: [
+        `${step.agentId}: ${result.status}`,
+        spent !== null ? `spent ${fmtAmount(spent, currencyDisplay)}` : null,
+        budget ? `cap ${fmtAmount(budget, currencyDisplay)}` : null,
+      ]
+        .filter((x): x is string => Boolean(x))
+        .join(' · '),
     });
 
     try {
@@ -252,6 +268,12 @@ export function SwarmMission({
 
     if (result.status === 'failed') {
       throw new Error(`${step.agentId} failed`);
+    }
+
+    if (budget && spent !== null && spent > budget + 1e-9) {
+      throw new Error(
+        `${step.agentId} breached budget cap (${fmtAmount(spent, currencyDisplay)} > ${fmtAmount(budget, currencyDisplay)})`
+      );
     }
 
     return result;
@@ -319,7 +341,16 @@ export function SwarmMission({
               r?.output?.result ||
               (r?.error ? `ERROR: ${r.error}` : '') ||
               (r ? `Status: ${r.status}` : '');
-            return text ? { stepId: s.id, title: s.title, agentId: s.agentId, result: text } : null;
+            return text
+              ? {
+                  stepId: s.id,
+                  title: s.title,
+                  agentId: s.agentId,
+                  status: r?.status,
+                  amountDrawn: r?.amountDrawn,
+                  result: text,
+                }
+              : null;
           })
           .filter((x): x is NonNullable<typeof x> => Boolean(x));
       };
@@ -454,6 +485,25 @@ export function SwarmMission({
   };
 
   const steps = plan?.steps ?? [];
+  const spend = useMemo(() => {
+    let total = 0;
+    const perAgent = new Map<string, number>();
+
+    for (const s of steps) {
+      const r = results[s.id];
+      const drawn =
+        typeof r?.amountDrawn === 'number' && Number.isFinite(r.amountDrawn) ? r.amountDrawn : 0;
+      if (!drawn) continue;
+      total += drawn;
+      perAgent.set(s.agentId, (perAgent.get(s.agentId) ?? 0) + drawn);
+    }
+
+    const byAgent = [...perAgent.entries()]
+      .map(([agentId, amount]) => ({ agentId, amount }))
+      .sort((a, b) => b.amount - a.amount);
+
+    return { total, byAgent };
+  }, [results, steps]);
 
   return (
     <div className="space-y-4">
@@ -555,6 +605,11 @@ export function SwarmMission({
                       {results[s.id]!.status}
                     </span>
                   )}
+                  {typeof results[s.id]?.amountDrawn === 'number' && Number.isFinite(results[s.id]!.amountDrawn!) ? (
+                    <span className="text-gray-400">
+                      {fmtAmount(results[s.id]!.amountDrawn!, currencyDisplay)}
+                    </span>
+                  ) : null}
                   <span className="text-gray-600">
                     {typeof s.budget === 'number' ? `${s.budget.toFixed(2)} ${currencyDisplay}` : ''}
                   </span>
@@ -562,6 +617,22 @@ export function SwarmMission({
               </div>
             ))}
           </div>
+
+          {spend.total > 0 && (
+            <div className="mt-4 border-t border-gray-900 pt-3">
+              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">Spend</div>
+              <div className="flex flex-wrap items-center gap-3 text-xs">
+                <span className="text-gray-300">
+                  Total: <span className="text-white">{fmtAmount(spend.total, currencyDisplay)}</span>
+                </span>
+                {spend.byAgent.slice(0, 6).map((a) => (
+                  <span key={a.agentId} className="text-gray-500">
+                    {a.agentId}: <span className="text-gray-300">{fmtAmount(a.amount, currencyDisplay)}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {Object.keys(results).length > 0 && (
             <div className="mt-4 space-y-2">
