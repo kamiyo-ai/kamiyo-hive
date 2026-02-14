@@ -130,3 +130,42 @@ model TrialsCompletion {
 
   @@map("trials_completions")
 }
+
+model SwarmRun {
+  id              String    @id @default(cuid())
+  teamId          String
+  mission         String
+  pattern         String
+  maxSteps        Int
+  maxBudgetPerStep Float?
+  status          String    @default("completed")
+  critiqueOk      Boolean?
+  critiqueScore   Int?
+  plan            Json
+  outputs         Json
+  final           Json
+  critique        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  events          SwarmEvent[]
+
+  @@index([teamId])
+  @@index([createdAt])
+  @@map("swarm_runs")
+}
+
+model SwarmEvent {
+  id        String   @id @default(cuid())
+  runId     String
+  kind      String
+  message   String
+  stepId    String?
+  data      Json?
+  at        DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  run SwarmRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, at])
+  @@map("swarm_events")
+}

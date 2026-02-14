@@ -47,3 +47,6 @@ next-env.d.ts
 CLAUDE.md
 .playwright-cli/
 output/playwright/
+
+# local planning docs (not shipped)
+/docs/

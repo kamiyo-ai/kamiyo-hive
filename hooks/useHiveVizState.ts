@@ -57,7 +57,7 @@ export function useHiveVizState(members: HiveMember[], draws: HiveDraw[]) {
       const newEffects: HiveVizEffect[] = newDraws.map((draw) => {
         const agentIndex = members.findIndex((m) => m.agentId === draw.agentId);
         const pos = positions[agentIndex] || [0, 0, 0];
-        const color = draw.blindfoldStatus === 'completed' ? '#00ff88' : '#ffaa22';
+        const color = draw.status === 'completed' ? '#00ff88' : '#ffaa22';
         return {
           id: draw.id,
           type: 'ring' as const,

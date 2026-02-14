@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
-import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
+import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   TOKEN_2022_PROGRAM_ID,
@@ -16,11 +16,10 @@ import {
 import PayButton from '@/components/PayButton';
 import {
   addMember,
-  confirmFunding,
   deleteTeam,
   ensureAuthenticated,
   fundWithTokens,
-  getBlindfoldFundingUrl,
+  fundWithSol,
   getDraws,
   getKeiroAgentJobs,
   getKeiroEarnings,
@@ -29,14 +28,11 @@ import {
   getKeiroMeishi,
   getKeiroReceipts,
   getTeam,
-  initiateBlindfoldFunding,
-  initiateFunding,
   removeMember,
   submitTask,
   updateBudget,
 } from '@/lib/hive-api';
 import type {
-  FundDeposit,
   HiveDraw,
   HiveTeamDetail,
   KeiroEarning,
@@ -47,6 +43,7 @@ import type {
   TaskResult,
 } from '@/lib/hive-api';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { SwarmMission } from '@/components/hive/SwarmMission';
 
 const KAMIYO_MINT = new PublicKey('Gy55EJmheLyDXiZ7k7CW2FhunD1UgjQxQibuBn3Npump');
 const KAMIYO_DECIMALS = 6;
@@ -115,17 +112,8 @@ export default function TeamDetailPage() {
   const [editingDailyLimit, setEditingDailyLimit] = useState(false);
   const [dailyLimitValue, setDailyLimitValue] = useState('');
 
-  // Fund deposit state
-  const [fundMode, setFundMode] = useState<'crypto' | 'credits' | 'blindfold'>('credits');
-  const [fundingDeposit, setFundingDeposit] = useState<FundDeposit | null>(null);
+  const [fundMode, setFundMode] = useState<'kamiyo' | 'sol'>('kamiyo');
   const [fundError, setFundError] = useState('');
-  const [blindfoldUrl, setBlindfoldUrl] = useState<string | null>(null);
-  const [blindfoldStateToken, setBlindfoldStateToken] = useState<string | null>(null);
-
-  // Blindfold direct pay state
-  const [blindfoldAmount, setBlindfoldAmount] = useState('');
-  const [blindfoldLoading, setBlindfoldLoading] = useState(false);
-  const [blindfoldTx, setBlindfoldTx] = useState<{ transaction: string; amountCrypto: string } | null>(null);
 
   // Task submission state
   const [taskMemberId, setTaskMemberId] = useState('');
@@ -134,6 +122,7 @@ export default function TeamDetailPage() {
   const [taskSubmitting, setTaskSubmitting] = useState(false);
   const [taskResult, setTaskResult] = useState<TaskResult | null>(null);
   const [taskError, setTaskError] = useState('');
+  const [taskMode, setTaskMode] = useState<'swarm' | 'single'>('swarm');
   const [keiroAgentId, setKeiroAgentId] = useState('');
   const [keiroLoading, setKeiroLoading] = useState(false);
   const [keiroError, setKeiroError] = useState('');
@@ -265,7 +254,7 @@ export default function TeamDetailPage() {
 
   // Poll for draw status updates every 10s
   useEffect(() => {
-    const hasPending = draws.some((d) => d.blindfoldStatus === 'pending' || d.blindfoldStatus === 'processing');
+    const hasPending = draws.some((d) => d.status === 'pending' || d.status === 'processing');
     if (!hasPending) return;
 
     const interval = setInterval(fetchDraws, 10000);
@@ -279,130 +268,110 @@ export default function TeamDetailPage() {
     if (!amount || amount <= 0) return;
     setFundError('');
     try {
-      if (fundMode === 'credits') {
-        // Fund with actual $KAMIYO tokens
-        if (!publicKey || !signTransaction) {
-          setFundError('Connect wallet first');
-          return;
-        }
+      if (!publicKey || !signTransaction) {
+        setFundError('Connect wallet first');
+        return;
+      }
 
-        if (amount < MIN_FUND_AMOUNT) {
-          setFundError(`Minimum funding amount is ${MIN_FUND_AMOUNT.toLocaleString()} $KAMIYO`);
-          return;
-        }
+      if (amount < MIN_FUND_AMOUNT) {
+        setFundError(`Minimum funding amount is ${MIN_FUND_AMOUNT.toLocaleString()} $KAMIYO`);
+        return;
+      }
 
-        // Get user's token account
-        // pump.fun tokens use Token-2022, try that first
-        let userAta: PublicKey;
-        let tokenProgram = TOKEN_2022_PROGRAM_ID;
+      let userAta: PublicKey;
+      let tokenProgram = TOKEN_2022_PROGRAM_ID;
 
+      try {
+        userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_2022_PROGRAM_ID);
+        await getAccount(connection, userAta, 'confirmed', TOKEN_2022_PROGRAM_ID);
+      } catch {
         try {
-          userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_2022_PROGRAM_ID);
-          await getAccount(connection, userAta, 'confirmed', TOKEN_2022_PROGRAM_ID);
+          userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_PROGRAM_ID);
+          await getAccount(connection, userAta, 'confirmed', TOKEN_PROGRAM_ID);
+          tokenProgram = TOKEN_PROGRAM_ID;
         } catch {
-          // Fall back to standard token program
-          try {
-            userAta = await getAssociatedTokenAddress(KAMIYO_MINT, publicKey, false, TOKEN_PROGRAM_ID);
-            await getAccount(connection, userAta, 'confirmed', TOKEN_PROGRAM_ID);
-            tokenProgram = TOKEN_PROGRAM_ID;
-          } catch {
-            setFundError('No $KAMIYO tokens found in wallet');
-            return;
-          }
-        }
-
-        // Get treasury's token account (create if needed)
-        const treasuryAta = await getAssociatedTokenAddress(KAMIYO_MINT, HIVE_TREASURY, false, tokenProgram);
-        const tx = new Transaction();
-
-        // Check if treasury ATA exists, create if not
-        try {
-          await getAccount(connection, treasuryAta, 'confirmed', tokenProgram);
-        } catch {
-          // Treasury ATA doesn't exist, add create instruction (user pays)
-          tx.add(createAssociatedTokenAccountInstruction(
-            publicKey,
-            treasuryAta,
-            HIVE_TREASURY,
-            KAMIYO_MINT,
-            tokenProgram
-          ));
-        }
-
-        // Build transfer instruction
-        const tokenAmount = BigInt(Math.floor(amount * Math.pow(10, KAMIYO_DECIMALS)));
-        const transferIx = createTransferCheckedInstruction(
-          userAta,
-          KAMIYO_MINT,
-          treasuryAta,
-          publicKey,
-          tokenAmount,
-          KAMIYO_DECIMALS,
-          [],
-          tokenProgram
-        );
-
-        // Add transfer to transaction and sign
-        tx.add(transferIx);
-        const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
-        tx.recentBlockhash = blockhash;
-        tx.lastValidBlockHeight = lastValidBlockHeight;
-        tx.feePayer = publicKey;
-
-        const signedTx = await signTransaction(tx);
-        const serialized = signedTx.serialize().toString('base64');
-
-        // Send to backend for submission and pool balance update
-        const result = await fundWithTokens(teamId, serialized);
-        setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance } : prev);
-        setFundAmount('');
-      } else {
-        const deposit = await initiateFunding(teamId, amount);
-        if (deposit.status === 'confirmed') {
-          setFundAmount('');
-          fetchTeam();
-        } else {
-          setFundingDeposit(deposit);
+          setFundError('No $KAMIYO tokens found in wallet');
+          return;
         }
       }
+
+      const treasuryAta = await getAssociatedTokenAddress(KAMIYO_MINT, HIVE_TREASURY, false, tokenProgram);
+      const tx = new Transaction();
+
+      try {
+        await getAccount(connection, treasuryAta, 'confirmed', tokenProgram);
+      } catch {
+        tx.add(createAssociatedTokenAccountInstruction(
+          publicKey,
+          treasuryAta,
+          HIVE_TREASURY,
+          KAMIYO_MINT,
+          tokenProgram
+        ));
+      }
+
+      const tokenAmount = BigInt(Math.floor(amount * Math.pow(10, KAMIYO_DECIMALS)));
+      tx.add(createTransferCheckedInstruction(
+        userAta,
+        KAMIYO_MINT,
+        treasuryAta,
+        publicKey,
+        tokenAmount,
+        KAMIYO_DECIMALS,
+        [],
+        tokenProgram
+      ));
+
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+      tx.recentBlockhash = blockhash;
+      tx.lastValidBlockHeight = lastValidBlockHeight;
+      tx.feePayer = publicKey;
+
+      const signedTx = await signTransaction(tx);
+      const serialized = signedTx.serialize().toString('base64');
+
+      const result = await fundWithTokens(teamId, serialized);
+      setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance, poolBalanceSol: result.poolBalanceSol } : prev);
+      setFundAmount('');
     } catch (err) {
       setFundError(err instanceof Error ? err.message : 'Funding failed');
     }
   };
 
-  // Preload Blindfold URL on page load
-  useEffect(() => {
-    if (team && !blindfoldUrl) {
-      getBlindfoldFundingUrl(teamId).then(({ fundingUrl, stateToken }) => {
-        setBlindfoldUrl(fundingUrl);
-        setBlindfoldStateToken(stateToken);
-      }).catch(() => {
-        // Silently fail - will retry on tab click
-      });
-    }
-  }, [team, teamId, blindfoldUrl]);
-
-  // Poll deposit confirmation
-  useEffect(() => {
-    if (!fundingDeposit || fundingDeposit.status === 'confirmed') return;
-    const interval = setInterval(async () => {
-      try {
-        const result = await confirmFunding(teamId, fundingDeposit.depositId);
-        if (result.status === 'confirmed' && result.poolBalance !== undefined) {
-          const balance = result.poolBalance;
-          setTeam((prev) => prev ? { ...prev, poolBalance: balance } : prev);
-          setFundingDeposit(null);
-          setFundAmount('');
-        } else if (result.status === 'expired') {
-          setFundingDeposit(null);
-          setFundError('Payment expired');
-        }
-      } catch {
-        // continue polling
+  const handleFundSol = async () => {
+    const amount = parseFloat(fundAmount);
+    if (!amount || amount <= 0) return;
+    setFundError('');
+    try {
+      if (!publicKey || !signTransaction) {
+        setFundError('Connect wallet first');
+        return;
       }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [fundingDeposit, teamId]);
+
+      const lamports = Math.floor(amount * LAMPORTS_PER_SOL);
+      const tx = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: HIVE_TREASURY,
+          lamports,
+        })
+      );
+
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+      tx.recentBlockhash = blockhash;
+      tx.lastValidBlockHeight = lastValidBlockHeight;
+      tx.feePayer = publicKey;
+
+      const signedTx = await signTransaction(tx);
+      const serialized = signedTx.serialize().toString('base64');
+
+      const result = await fundWithSol(teamId, serialized);
+      setTeam((prev) => prev ? { ...prev, poolBalance: result.poolBalance, poolBalanceSol: result.poolBalanceSol } : prev);
+      setFundAmount('');
+    } catch (err) {
+      setFundError(err instanceof Error ? err.message : 'Funding failed');
+    }
+  };
 
   const handleSubmitTask = async () => {
     if (!taskMemberId || !taskDescription) return;
@@ -511,187 +480,39 @@ export default function TeamDetailPage() {
 
         <div className="space-y-6">
 
-      {/* Fund Section - Folder Tab Style */}
+      {/* Fund Section - Tabbed */}
       <div className="relative">
-        {/* Tabs row */}
         <div className="flex">
-          {/* Left tab */}
           <div
-            onClick={() => { setFundMode('credits'); setBlindfoldUrl(null); }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 ${fundMode === 'credits' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            style={fundMode === 'credits'
-              ? { border: '1px solid #364153', borderBottom: '1px solid transparent', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem', background: 'rgba(0,0,0,0.2)' }
-              : { border: '1px solid transparent', borderBottom: '1px solid #364153' }}
+            onClick={() => { setFundMode('kamiyo'); setFundError(''); setFundAmount(''); }}
+            style={fundMode === 'kamiyo' ? { borderWidth: '1px 1px 0 1px', borderColor: '#364153' } : { borderWidth: '0 0 1px 0', borderColor: '#364153' }}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 border-solid ${fundMode === 'kamiyo' ? 'text-white rounded-t-lg bg-black/20' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <img src="/favicon.png" alt="" className="h-[25px] w-auto" />
             Fund with $KAMIYO
           </div>
-          {/* Right tab */}
           <div
-            onClick={() => {
-              setFundMode('blindfold');
-              setFundError('');
-            }}
-            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 ${fundMode === 'blindfold' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
-            style={fundMode === 'blindfold'
-              ? { border: '1px solid #364153', borderBottom: '1px solid transparent', borderTopLeftRadius: '0.5rem', borderTopRightRadius: '0.5rem', background: 'rgba(0,0,0,0.2)' }
-              : { border: '1px solid transparent', borderBottom: '1px solid #364153' }}
+            onClick={() => { setFundMode('sol'); setFundError(''); setFundAmount(''); }}
+            style={fundMode === 'sol' ? { borderWidth: '1px 1px 0 1px', borderColor: '#364153' } : { borderWidth: '0 0 1px 0', borderColor: '#364153' }}
+            className={`flex-1 px-4 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-[color,background,border-color] duration-200 border-solid ${fundMode === 'sol' ? 'text-white rounded-t-lg bg-black/20' : 'text-gray-500 hover:text-gray-300'}`}
           >
-            <img src="/media/blindfold-logo.jpg" alt="" className="h-[60px] w-auto" />
-            Blindfold Card
+            <img src="/media/solana-logo.svg" alt="" className="h-[22px] w-auto" />
+            Fund with SOL
           </div>
         </div>
-        {/* Card body */}
-        <div className="p-6 rounded-b-lg bg-black/20" style={{ border: '1px solid #364153', borderTop: 'none' }}>
-        {/* Blindfold funding - iframe + our pay button */}
-        {fundMode === 'blindfold' && (
-          <div className="relative">
-            {blindfoldUrl ? (
-              <>
-                {/* Iframe for Blindfold UI */}
-                <div className="-mx-6 -mt-6">
-                  <iframe
-                    src={blindfoldUrl}
-                    className="w-full h-[700px] border-0"
-                    allow="payment"
-                  />
-                </div>
-                {/* Our payment controls - outside iframe so wallet works */}
-                <div className="flex justify-end mt-4">
-                <div className="bg-black/90 rounded-lg p-5">
-                  <div className="text-gray-400 text-xs mb-6 pl-2">
-                    Pay with connected wallet:
-                  </div>
-                  {blindfoldTx ? (
-                    <div className="space-y-3">
-                      <div className="text-center">
-                        <div className="text-lg font-mono text-white">{blindfoldTx.amountCrypto} SOL</div>
-                        <div className="text-gray-500 text-xs">${blindfoldAmount} USD</div>
-                      </div>
-                      <PayButton
-                        text={blindfoldLoading ? 'Signing...' : 'Sign & Pay'}
-                        onClick={async () => {
-                          if (!publicKey || !signTransaction) return;
-                          setBlindfoldLoading(true);
-                          setFundError('');
-                          try {
-                            const txBytes = Buffer.from(blindfoldTx.transaction, 'base64');
-                            const tx = VersionedTransaction.deserialize(txBytes);
-                            const signedTx = await signTransaction(tx);
-                            const signature = await connection.sendRawTransaction(signedTx.serialize(), {
-                              skipPreflight: false,
-                              preflightCommitment: 'confirmed',
-                            });
-                            await connection.confirmTransaction(signature, 'confirmed');
-                            setBlindfoldTx(null);
-                            setBlindfoldAmount('');
-                            fetchTeam();
-                          } catch (err) {
-                            setFundError(err instanceof Error ? err.message : 'Payment failed');
-                          } finally {
-                            setBlindfoldLoading(false);
-                          }
-                        }}
-                        disabled={blindfoldLoading}
-                      />
-                      <button
-                        onClick={() => { setBlindfoldTx(null); setFundError(''); }}
-                        disabled={blindfoldLoading}
-                        className="text-xs text-gray-600 hover:text-gray-400 transition-colors block mx-auto mt-2"
-                      >
-                        Cancel
-                      </button>
-                      {fundError && <div className="text-red-400 text-xs text-center mt-2">{fundError}</div>}
-                    </div>
-                  ) : (
-                    <div className="px-2">
-                      <div className="flex items-center gap-18">
-                        <input
-                          value={blindfoldAmount}
-                          onChange={(e) => setBlindfoldAmount(e.target.value)}
-                          type="number"
-                          className="w-24 bg-transparent border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
-                          placeholder="USD"
-                        />
-                        <div className="mr-4">
-                          <PayButton
-                            text={blindfoldLoading ? 'Loading...' : 'Pay with Wallet'}
-                            onClick={async () => {
-                              const amount = parseFloat(blindfoldAmount);
-                              if (!amount || amount <= 0 || !publicKey || !blindfoldStateToken) return;
-                              setBlindfoldLoading(true);
-                              setFundError('');
-                              try {
-                                const result = await initiateBlindfoldFunding(
-                                  publicKey.toBase58(),
-                                  amount,
-                                  teamId,
-                                  blindfoldStateToken
-                                );
-                                setBlindfoldTx({
-                                  transaction: result.transaction,
-                                  amountCrypto: result.amount_crypto,
-                                });
-                              } catch (err) {
-                                setFundError(err instanceof Error ? err.message : 'Failed to initiate');
-                              } finally {
-                                setBlindfoldLoading(false);
-                              }
-                            }}
-                            disabled={!blindfoldAmount || !publicKey || blindfoldLoading}
-                          />
-                        </div>
-                      </div>
-                      {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
-                    </div>
-                  )}
-                </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <div className="text-gray-400 text-sm animate-pulse">Loading Blindfold...</div>
-              </div>
-            )}
-            <button
-              onClick={() => { setFundMode('credits'); setBlindfoldTx(null); setBlindfoldAmount(''); }}
-              className="text-xs text-gray-600 hover:text-gray-400 transition-colors mt-3 block"
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-        {fundMode === 'credits' && (
-          fundingDeposit ? (
-            <div className="space-y-3">
-              <div className="text-sm text-gray-300">Send exactly:</div>
-              <div className="text-lg font-mono text-white">{fundingDeposit.cryptoAmount} {currencyDisplay}</div>
-              <div className="text-sm text-gray-400">To address:</div>
-              <div className="text-xs font-mono text-[#00f0ff] bg-gray-900 rounded p-2 break-all">{fundingDeposit.cryptoAddress}</div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">
-                  {fundingDeposit.expiresAt ? `Expires: ${new Date(fundingDeposit.expiresAt).toLocaleTimeString()}` : ''}
-                </span>
-                <span className="text-xs text-yellow-400 animate-pulse">Waiting for payment...</span>
-              </div>
-              <button
-                onClick={() => setFundingDeposit(null)}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
+
+        <div className="p-6 rounded-b-lg bg-black/20 border border-[#364153] border-t-0">
+          {fundMode === 'kamiyo' && (
             <>
               <input
                 value={fundAmount}
                 onChange={(e) => setFundAmount(e.target.value)}
                 type="number"
-                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none mt-4"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
                 placeholder="Amount ($KAMIYO)"
               />
               <div className="flex items-center gap-2 mt-4">
-                {[100, 500, 1000, 5000].map((amt) => (
+                {[100_000, 500_000, 1_000_000, 5_000_000].map((amt) => (
                   <button
                     key={amt}
                     onClick={() => setFundAmount(String(amt))}
@@ -708,10 +529,41 @@ export default function TeamDetailPage() {
                   disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
                 />
               </div>
-              {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
             </>
-          )
-        )}
+          )}
+
+          {fundMode === 'sol' && (
+            <>
+              <input
+                value={fundAmount}
+                onChange={(e) => setFundAmount(e.target.value)}
+                type="number"
+                step="0.01"
+                className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none"
+                placeholder="Amount (SOL)"
+              />
+              <div className="flex items-center gap-2 mt-4">
+                {[0.1, 0.5, 1, 5].map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setFundAmount(String(amt))}
+                    className="text-xs text-gray-500 border border-gray-700 rounded px-2 py-1 hover:border-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                  >
+                    {amt} SOL
+                  </button>
+                ))}
+              </div>
+              <div className="ml-8 mt-8">
+                <PayButton
+                  text="Fund with SOL"
+                  onClick={handleFundSol}
+                  disabled={!fundAmount || parseFloat(fundAmount) <= 0 || !publicKey}
+                />
+              </div>
+            </>
+          )}
+
+          {fundError && <div className="text-red-400 text-xs mt-2">{fundError}</div>}
         </div>
       </div>
 
@@ -721,10 +573,17 @@ export default function TeamDetailPage() {
         <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
           <h2 className="text-sm uppercase tracking-wider text-gray-400 mb-4">Budget</h2>
           <div className="space-y-4">
-            <div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent mb-1">
-                {team.poolBalance.toFixed(2)} {currencyDisplay}
-              </div>
+            <div className="space-y-2">
+              {team.poolBalance > 0 && (
+                <div className="text-3xl font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent">
+                  {team.poolBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {currencyDisplay}
+                </div>
+              )}
+              {((team.poolBalanceSol ?? 0) > 0 || team.poolBalance === 0) && (
+                <div className={`font-bold bg-gradient-to-r from-[#00f0ff] to-[#ff44f5] bg-clip-text text-transparent ${team.poolBalance > 0 ? 'text-xl' : 'text-3xl'}`}>
+                  {(team.poolBalanceSol ?? 0).toFixed(4)} SOL
+                </div>
+              )}
               <span className="text-gray-500 text-xs">Pool balance</span>
             </div>
             <div>
@@ -777,7 +636,7 @@ export default function TeamDetailPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-gray-300 text-sm">{d.amount.toFixed(2)} {currencyDisplay}</span>
-                    <StatusBadge status={d.blindfoldStatus} />
+                    <StatusBadge status={d.status} />
                     <span className="text-gray-600 text-xs">
                       {new Date(d.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -873,76 +732,109 @@ export default function TeamDetailPage() {
       {/* Submit Task */}
       <div className="card relative p-6 rounded-lg border border-gray-500/25 bg-black/20">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm uppercase tracking-wider text-gray-400">Submit Task</h2>
-          {EXAMPLE_TASKS[team.name] && (
-            <div className="flex gap-2 flex-wrap justify-end">
-              {EXAMPLE_TASKS[team.name].map((example, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    const member = team.members.find(m => m.agentId === example.agent);
-                    if (member) setTaskMemberId(member.id);
-                    setTaskDescription(example.task);
-                  }}
-                  className="px-2 py-1 text-xs border border-gray-600/50 rounded hover:border-gray-500 text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  {example.agent}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="space-y-3">
-          <div className="flex gap-2 items-center">
-            <Dropdown
-              value={taskMemberId}
-              onChange={setTaskMemberId}
-              options={[
-                { value: '', label: 'Select agent' },
-                ...team.members.map((m) => ({ value: m.id, label: m.agentId })),
-              ]}
-            />
-            <input
-              value={taskBudget}
-              onChange={(e) => setTaskBudget(e.target.value)}
-              type="number"
-              className="w-32 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
-              placeholder="Task budget"
-            />
+          <h2 className="text-sm uppercase tracking-wider text-gray-400">Tasks</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setTaskMode('swarm')}
+              className={`px-2 py-1 text-xs border rounded transition-colors ${
+                taskMode === 'swarm'
+                  ? 'border-[#00f0ff]/40 text-[#00f0ff]'
+                  : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+              }`}
+            >
+              Swarm
+            </button>
+            <button
+              onClick={() => setTaskMode('single')}
+              className={`px-2 py-1 text-xs border rounded transition-colors ${
+                taskMode === 'single'
+                  ? 'border-[#00f0ff]/40 text-[#00f0ff]'
+                  : 'border-gray-700 text-gray-500 hover:text-gray-300 hover:border-gray-500'
+              }`}
+            >
+              Single
+            </button>
           </div>
-          <textarea
-            value={taskDescription}
-            onChange={(e) => setTaskDescription(e.target.value)}
-            className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none resize-none h-24"
-            placeholder="Describe the task (research, market analysis, wallet lookup...)"
+        </div>
+        {taskMode === 'swarm' ? (
+          <SwarmMission
+            teamId={teamId}
+            members={team.members}
+            currencyDisplay={currencyDisplay}
+            onAfterStep={fetchDraws}
           />
-          <div className="flex items-center justify-between">
-            <div className="ml-8">
-              <PayButton
-                text={taskSubmitting ? 'Running...' : 'Execute'}
-                onClick={handleSubmitTask}
-                disabled={!taskMemberId || !taskDescription || taskSubmitting}
+        ) : (
+          <div className="space-y-3">
+            {EXAMPLE_TASKS[team.name] && (
+              <div className="flex gap-2 flex-wrap">
+                {EXAMPLE_TASKS[team.name].map((example, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      const member = team.members.find((m) => m.agentId === example.agent);
+                      if (member) setTaskMemberId(member.id);
+                      setTaskDescription(example.task);
+                    }}
+                    className="px-2 py-1 text-xs border border-gray-600/50 rounded hover:border-gray-500 text-gray-500 hover:text-gray-300 transition-colors"
+                  >
+                    {example.agent}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-2 items-center">
+              <Dropdown
+                value={taskMemberId}
+                onChange={setTaskMemberId}
+                options={[
+                  { value: '', label: 'Select agent' },
+                  ...team.members.map((m) => ({ value: m.id, label: m.agentId })),
+                ]}
+              />
+              <input
+                value={taskBudget}
+                onChange={(e) => setTaskBudget(e.target.value)}
+                type="number"
+                className="w-32 bg-black/20 border border-gray-500/50 rounded px-3 py-2 text-white text-sm focus:border-[#364153] focus:outline-none"
+                placeholder="Task budget"
               />
             </div>
-            {taskError && <span className="text-red-400 text-xs">{taskError}</span>}
-          </div>
-          {taskResult && (
-            <div className="mt-3 border border-gray-800 rounded p-3">
-              <div className="flex items-center justify-between mb-2">
-                <StatusBadge status={taskResult.status} />
-                {taskResult.amountDrawn !== undefined && (
-                  <span className="text-gray-400 text-xs">{taskResult.amountDrawn.toFixed(4)} {currencyDisplay} drawn</span>
-                )}
+            <textarea
+              value={taskDescription}
+              onChange={(e) => setTaskDescription(e.target.value)}
+              className="w-full bg-black/20 border border-gray-500/50 rounded px-4 py-3 text-white text-sm focus:border-[#364153] focus:outline-none resize-none h-24"
+              placeholder="Describe the task (research, market analysis, wallet lookup...)"
+            />
+            <div className="flex items-center justify-between">
+              <div className="ml-8">
+                <PayButton
+                  text={taskSubmitting ? 'Running...' : 'Execute'}
+                  onClick={handleSubmitTask}
+                  disabled={!taskMemberId || !taskDescription || taskSubmitting}
+                />
               </div>
-              {taskResult.output && (
-                <pre className="text-gray-300 text-xs whitespace-pre-wrap max-h-48 overflow-y-auto">{taskResult.output.result}</pre>
-              )}
-              {taskResult.error && (
-                <div className="text-red-400 text-xs">{taskResult.error}</div>
-              )}
+              {taskError && <span className="text-red-400 text-xs">{taskError}</span>}
             </div>
-          )}
-        </div>
+            {taskResult && (
+              <div className="mt-3 border border-gray-800 rounded p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <StatusBadge status={taskResult.status} />
+                  {taskResult.amountDrawn !== undefined && (
+                    <span className="text-gray-400 text-xs">
+                      {taskResult.amountDrawn.toFixed(4)} {currencyDisplay} drawn
+                    </span>
+                  )}
+                </div>
+                {taskResult.output && (
+                  <pre className="text-gray-300 text-xs whitespace-pre-wrap max-h-48 overflow-y-auto">
+                    {taskResult.output.result}
+                  </pre>
+                )}
+                {taskResult.error && <div className="text-red-400 text-xs">{taskResult.error}</div>}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Keiro-backed flow */}

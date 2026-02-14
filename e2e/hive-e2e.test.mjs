@@ -256,30 +256,18 @@ let poolFunded = false;
 async function testFunding() {
   console.log('\n📋 FUNDING TESTS\n');
 
-  await test('GET /api/hive-teams/:id/fund/blindfold - returns funding URL', async () => {
-    const res = await api(`/api/hive-teams/${teamId}/fund/blindfold`);
-    assert(res.ok, `Expected 200, got ${res.status}`);
-    assert(res.data.fundingUrl, 'Missing fundingUrl');
-    assert(res.data.stateToken, 'Missing stateToken');
-    assert(res.data.expiresAt, 'Missing expiresAt');
-  });
-
   await test('POST /api/hive-teams/:id/fund - handles funding request', async () => {
     const res = await api(`/api/hive-teams/${teamId}/fund`, {
       method: 'POST',
       body: JSON.stringify({ amount: 50 }),
     });
-    // In dev mode without Blindfold key, this credits directly
-    // In production with Blindfold, this returns a fundingUrl for redirect
     assert(res.ok, `Expected 200, got ${res.status}: ${JSON.stringify(res.data)}`);
 
-    // Check if this is dev mode (auto-credit) or production (redirect)
+    // Check if this is dev mode (auto-credit) or a production deposit flow.
     const detail = await api(`/api/hive-teams/${teamId}`);
     if (detail.data.poolBalance >= 50) {
       poolFunded = true;
       console.log('   (dev mode: pool auto-credited)');
-    } else if (res.data.fundingUrl) {
-      console.log('   (production mode: returns redirect URL)');
     }
   });
 

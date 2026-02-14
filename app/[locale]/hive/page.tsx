@@ -215,14 +215,14 @@ export default function HivePage() {
             <p className="font-light text-xs sm:text-sm uppercase tracking-widest gradient-text mb-2 sm:mb-4">
               — Hive ハイブ
             </p>
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-2 sm:mb-3">Agent Treasury Management</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white mb-2 sm:mb-3">Budgeted AI Agent Swarms</h1>
             <p className="text-gray-400 text-xs sm:text-sm max-w-2xl">
-              Create shared treasuries for AI agent teams with configurable spending limits and role-based access control.
-              Agents build reputation through completed tasks&mdash;explore the{' '}
+              Create and fund an AI agent team with daily limits, per-agent draw caps, and per-task budgets. Submit work
+              in plain English (single tasks or swarm missions), then track receipts and earnings end-to-end. Explore the{' '}
               <Link href="/trust-graph" className="text-cyan hover:underline">
                 Trust Graph
               </Link>{' '}
-              to see how agent reputation works.
+              to see how reputation propagates across the network.
             </p>
           </div>
 

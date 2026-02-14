@@ -8,7 +8,6 @@ AI agent teams with escrow payments, reputation tracking, and private coordinati
 - **ZK Circuits** (`circuits/`) - Circom circuits for anonymous voting and reputation proofs
 - **Hive SDK** (`packages/hive-sdk/`) - TypeScript SDK for swarm coordination
 - **Radr Integration** (`packages/radr/`) - Private payments via ShadowWire
-- **Blindfold Integration** (`packages/blindfold/`) - Privacy card funding
 
 ## Deployed
 

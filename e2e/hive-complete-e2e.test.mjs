@@ -4,7 +4,6 @@
  * Comprehensive end-to-end tests covering:
  * - API endpoints (all CRUD operations)
  * - UI flows (Playwright browser automation)
- * - Blindfold integration (payment flow)
  * - $KAMIYO token funding
  * - Task execution
  * - Proposal voting lifecycle
@@ -404,17 +403,6 @@ let poolFunded = false;
 
 async function testFunding() {
   section('FUNDING (API)');
-
-  await test('GET /api/hive-teams/:id/fund/blindfold - returns funding URL', async () => {
-    const res = await api(`/api/hive-teams/${teamId}/fund/blindfold`);
-    assert(res.ok, `Expected 200, got ${res.status}`);
-    assert(res.data.fundingUrl, 'Missing fundingUrl');
-    assert(res.data.fundingUrl.includes('blindfold'), 'URL should contain blindfold');
-    assert(res.data.stateToken, 'Missing stateToken');
-    assert(res.data.stateToken.startsWith('bf_'), 'State token should start with bf_');
-    assert(res.data.expiresAt, 'Missing expiresAt');
-    assert(res.data.expiresAt > Date.now(), 'ExpiresAt should be in future');
-  });
 
   await test('POST /api/hive-teams/:id/fund - initiates funding request', async () => {
     const res = await api(`/api/hive-teams/${teamId}/fund`, {

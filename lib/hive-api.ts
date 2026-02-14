@@ -47,6 +47,7 @@ export interface HiveTeam {
   currency: string;
   dailyLimit: number;
   poolBalance: number;
+  poolBalanceSol: number;
   memberCount: number;
   dailySpend: number;
   createdAt: number;
@@ -65,8 +66,7 @@ export interface HiveDraw {
   agentId: string;
   amount: number;
   purpose: string | null;
-  blindfoldPaymentId: string | null;
-  blindfoldStatus: string;
+  status: string;
   createdAt: number;
 }
 
@@ -76,6 +76,7 @@ export interface HiveTeamDetail {
   currency: string;
   dailyLimit: number;
   poolBalance: number;
+  poolBalanceSol: number;
   dailySpend: number;
   createdAt: number;
   members: HiveMember[];
@@ -213,16 +214,6 @@ export async function getDraws(
   );
 }
 
-export interface BlindfoldFundingUrl {
-  fundingUrl: string;
-  stateToken: string;
-  expiresAt: number;
-}
-
-export async function getBlindfoldFundingUrl(teamId: string): Promise<BlindfoldFundingUrl> {
-  return api<BlindfoldFundingUrl>(`${TEAMS_PATH}/${teamId}/fund/blindfold`);
-}
-
 export interface FundDeposit {
   depositId: string;
   paymentId: string;
@@ -259,10 +250,24 @@ export async function fundFromCredits(teamId: string, wallet: string, amountUsd:
 export async function fundWithTokens(teamId: string, signedTransaction: string): Promise<{
   success: boolean;
   poolBalance: number;
+  poolBalanceSol: number;
   tokenAmount: number;
   signature: string;
 }> {
   return api(`${TEAMS_PATH}/${teamId}/fund-tokens`, {
+    method: 'POST',
+    body: JSON.stringify({ signedTransaction }),
+  });
+}
+
+export async function fundWithSol(teamId: string, signedTransaction: string): Promise<{
+  success: boolean;
+  poolBalance: number;
+  poolBalanceSol: number;
+  solAmount: number;
+  signature: string;
+}> {
+  return api(`${TEAMS_PATH}/${teamId}/fund-sol`, {
     method: 'POST',
     body: JSON.stringify({ signedTransaction }),
   });
@@ -286,29 +291,6 @@ export async function submitTask(teamId: string, task: TaskSubmission): Promise<
   return api<TaskResult>(`${TEAMS_PATH}/${teamId}/tasks`, {
     method: 'POST',
     body: JSON.stringify(task),
-  });
-}
-
-export interface BlindfoldDirectFundingResponse {
-  transaction: string;
-  amount_crypto: string;
-  expires_at: string;
-  payment_id: string;
-}
-
-export async function initiateBlindfoldFunding(
-  walletAddress: string,
-  amountUsd: number,
-  teamId: string,
-  stateToken: string
-): Promise<BlindfoldDirectFundingResponse> {
-  return api<BlindfoldDirectFundingResponse>(`${TEAMS_PATH}/${teamId}/fund/initiate`, {
-    method: 'POST',
-    body: JSON.stringify({
-      walletAddress,
-      amountUsd,
-      stateToken,
-    }),
   });
 }
 
